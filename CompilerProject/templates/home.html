@@ -1,10 +1,28 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
         <title>Python Compiler</title>
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     </head>
     <body>
-        <h1>Liam's Compiler</h1>
+        <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+            <h1>Liam's Python Compiler</h1>
+        </nav>
+        <div class="container">
+            <label for="form1">Input:</label>
+            <div class="container">
+                <textarea class="float-none" type="text" id="form1" rows="10" cols="40"></textarea>
+                <div class="container">
+                    <button type="button" class="btn btn-primary btn-sm">Compile</button>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <label for="form2">Output:</label>
+            <div class="container">
+                <textarea type="text" id="form2" rows="10" cols="40"></textarea>
+            </div>
+        </div>
     </body>
 </html>
