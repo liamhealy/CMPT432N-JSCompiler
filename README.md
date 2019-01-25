@@ -27,6 +27,9 @@ Open the given URL in a web browser and you can view the project. To stop the se
 
 When creating an app using Django, it creates a file structure in which the app can be found within a lower level directory, in our case, the initial 'compilerProject' directory. This app is named 'pythonCompiler'.
 
+# Styling
+I style my components using Bootstrap 4. Bootstrap is a popular open-source front-end framework that contains HTML and CSS design templates.
+
 # Development
 
 I use a text editor for development of this project, most of them work fine however I do not recommend using an editor's built in console, I use my system's command line.
