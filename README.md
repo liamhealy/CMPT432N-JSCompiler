@@ -25,7 +25,7 @@ Django is installed with many tools, among them is the utility django-admin whic
 Open the given URL in a web browser and you can view the project. To stop the server, execute:
 - `CTRL + C`
 
-When creating an app using Django, it creates a file structure in which the app can be found within a lower level directory, in our case, the initial 'compilerProject' directory. This app is named 'pythonCompiler'.
+When creating an app using Django, it creates a file structure in which the app can be found within a lower level directory, in our case, the initial 'CompilerProject' directory. This app is simply named 'compiler'.
 
 # Styling
 I style my components using Bootstrap 4. Bootstrap is a popular open-source front-end framework that contains HTML and CSS design templates.
