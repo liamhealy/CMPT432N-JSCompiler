@@ -10,11 +10,11 @@ If you already have Python installed, you can check the version by opening a com
 - `python --version`
 
 Within this project, I have already created the necessary virtual environment for testing and development. When in the root directory of the project, execute this command to enter this virtual environment:
-- `compilers\Scripts\activate`
+- `environment\Scripts\activate`
 
-Each command line should now appear with `(compilers)` at the beginning of it, meaning everything installed correctly and you are currently in the virtual environment. 
+Each command line should now appear with `(environment)` at the beginning of it, meaning everything installed correctly and you are currently in the virtual environment. 
 To deactivate the virtual environment at any time, execute the command:
-- `compilers\Scripts\deactivate.bat` 
+- `environment\Scripts\deactivate.bat` 
 
 Now, install Django. Django is a popular web framework written in Python, and while we don't need to utilize it's authentication or database abilities, it does provide us with a convenient webserver for development and testing. This project uses Django's latest version (currently 2.1.5). While the virtual environment is activated, execute the following command to install:
 - `pip install django` 
