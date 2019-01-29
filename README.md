@@ -19,7 +19,7 @@ To deactivate the virtual environment at any time, execute the command:
 Now, install Django. Django is a popular web framework written in Python, and while we don't need to utilize it's authentication or database abilities, it does provide us with a convenient webserver for development and testing. This project uses Django's latest version (currently 2.1.5). While the virtual environment is activated, execute the following command to install:
 - `pip install django` 
 
-Django is installed with many tools, among them is the utility django-admin which allows developers to run a local webserver for testing and development of their projects. In addition, a shortcut for django-admin is also created with any new Django project, this shortcut is the 'manage.py' file. Because this project's directory already exists, you just need to navigate to the directory 'compilerProject' while the compilers virtual environment is activated, and execute the command:
+Django is installed with many tools, among them is the utility django-admin which allows developers to run a local webserver for testing and development of their projects. In addition, a shortcut for django-admin is also created with any new Django project, this shortcut is the 'manage.py' file. Because this project's directory already exists, you just need to navigate to the directory 'CompilerProject' while the 'environment' virtual environment is activated, and execute the command:
 - `python manage.py runserver`
 
 Open the given URL in a web browser and you can view the project. To stop the server, execute:
