@@ -24,10 +24,24 @@
                 <textarea type="text" id="form2" rows="10" cols="40"></textarea>
             </div>
         </div>
+        <script type="text/javascript" src="scripts/lexer.js"></script>
+        <script type="text/javascript" src="scripts/utils.js"></script>
         <script type="text/javascript">
-            // Clear the output box when loading in and reset the values
+            // These are the global variables
+            var tokens = "";
+            var tokenIndex = 0;
+            var currentToken = "";
+            var errorCount = 0;
+            var EOF = "$";
+
             function init(){
+                // Clear the output box when loading in
                 document.getElementById("form2").value = "";
+                // Set the values for our global variables
+                tokens = "";
+                tokenIndex = 0;
+                currentToken = ' ';
+                errorCount = 0;
             }
         </script>
     </body>
