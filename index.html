@@ -10,19 +10,15 @@
             <h1>Liam's JavaScript Compiler</h1>
         </nav>
         <div class="container">
-            <label for="form1">Input:</label>
-            <div class="container">
-                <textarea type="text" id="form1" rows="10" cols="40"></textarea>
-                <div class="container">
-                    <button type="button" class="btn btn-primary btn-sm" id="compiler">Compile</button>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <label for="form2">Output:</label>
-            <div class="container">
-                <textarea type="text" id="form2" rows="10" cols="40"></textarea>
-            </div>
+            <label for="form1">Source Code:</label>
+            <br>
+            <textarea type="text" id="input" rows="10" cols="40"></textarea>   
+            <br>
+            <button type="button" class="btn btn-primary btn-sm" id="btnCompiler">Compile</button>        
+            <br>
+            <label for="form2">Output:</label>        
+            <br>
+            <textarea type="text" id="output" rows="10" cols="40"></textarea>
         </div>
         <script type="text/javascript" src="scripts/lexer.js"></script>
         <script type="text/javascript" src="scripts/utils.js"></script>
@@ -36,7 +32,7 @@
 
             function init(){
                 // Clear the output box when loading in
-                document.getElementById("form2").value = "";
+                document.getElementById("output").value = "";
                 // Set the values for our global variables
                 tokens = "";
                 tokenIndex = 0;
