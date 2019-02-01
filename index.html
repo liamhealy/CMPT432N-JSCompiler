@@ -5,16 +5,16 @@
         <link rel="stylesheet" href="css/bootstrap.min.css"/>
         <title>JavaScript Compiler</title>
     </head>
-    <body>
+    <body onload="init();">
         <nav class="navbar navbar-expand-lg navbar-light bg-primary">
             <h1>Liam's JavaScript Compiler</h1>
         </nav>
         <div class="container">
             <label for="form1">Input:</label>
             <div class="container">
-                <textarea class="float-none" type="text" id="form1" rows="10" cols="40"></textarea>
+                <textarea type="text" id="form1" rows="10" cols="40"></textarea>
                 <div class="container">
-                    <button type="button" class="btn btn-primary btn-sm">Compile</button>
+                    <button type="button" class="btn btn-primary btn-sm" id="compiler">Compile</button>
                 </div>
             </div>
         </div>
@@ -24,5 +24,11 @@
                 <textarea type="text" id="form2" rows="10" cols="40"></textarea>
             </div>
         </div>
+        <script type="text/javascript">
+            // Clear the output box when loading in and reset the values
+            function init(){
+                document.getElementById("form2").value = "";
+            }
+        </script>
     </body>
 </html>
