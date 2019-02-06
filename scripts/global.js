@@ -69,46 +69,46 @@ function parseE() {
     }
 }
 
-function checkToken(expectedKind) {
-    // Validate that we have the expected token kind and get the next token.
-    switch(expectedKind) {
-        case "digit":   putMessage("Expecting a digit");
-                if (currentToken=="0" || currentToken=="1" || currentToken=="2" || 
-                    currentToken=="3" || currentToken=="4" || currentToken=="5" || 
-                    currentToken=="6" || currentToken=="7" || currentToken=="8" || 
-                    currentToken=="9") {
-                    putMessage("Got a digit!");
-                }
-                else {
-                    errorCount++;
-                    putMessage("NOT a digit.  Error at position " + tokenIndex + ".");
-                }
-                break;
-        case "op":      putMessage("Expecting an operator");
-                if (currentToken=="+" || currentToken=="-") {
-                putMessage("Got an operator!");
-                }
-                else {
-                    errorCount++;
-                    putMessage("NOT an operator.  Error at position " + tokenIndex + ".");
-                }
-                break;
-        case "keyword":      putMessage("Expecting a keyword");
-                if (currentToken=="int" || currentToken=="String" || currentToken=="bool") {
-                    putMessage("Got a keyword!");
-                }
-                else {
-                    errorCount++;
-                    putMessage("Not a keyword. Error at position " + tokenIndex + ".");
-                }
-                break;
-        default:        putMessage("Parse Error: Invalid Token Type at position " + tokenIndex + ".");
-                break;			
-    }
-    // Consume another token, having just checked this one, because that 
-    // will allow the code to see what's coming next... a sort of "look-ahead".
-    currentToken = getNextToken();
-}
+// function checkToken(expectedKind) {
+//     // Validate that we have the expected token kind and get the next token.
+//     switch(expectedKind) {
+//         case "digit":   putMessage("Expecting a digit");
+//                 if (currentToken=="0" || currentToken=="1" || currentToken=="2" || 
+//                     currentToken=="3" || currentToken=="4" || currentToken=="5" || 
+//                     currentToken=="6" || currentToken=="7" || currentToken=="8" || 
+//                     currentToken=="9") {
+//                     putMessage("Got a digit!");
+//                 }
+//                 else {
+//                     errorCount++;
+//                     putMessage("NOT a digit.  Error at position " + tokenIndex + ".");
+//                 }
+//                 break;
+//         case "op":      putMessage("Expecting an operator");
+//                 if (currentToken=="+" || currentToken=="-") {
+//                 putMessage("Got an operator!");
+//                 }
+//                 else {
+//                     errorCount++;
+//                     putMessage("NOT an operator.  Error at position " + tokenIndex + ".");
+//                 }
+//                 break;
+//         case "keyword":      putMessage("Expecting a keyword");
+//                 if (currentToken=="int" || currentToken=="String" || currentToken=="bool") {
+//                     putMessage("Got a keyword!");
+//                 }
+//                 else {
+//                     errorCount++;
+//                     putMessage("Not a keyword. Error at position " + tokenIndex + ".");
+//                 }
+//                 break;
+//         default:        putMessage("Parse Error: Invalid Token Type at position " + tokenIndex + ".");
+//                 break;			
+//     }
+//     // Consume another token, having just checked this one, because that 
+//     // will allow the code to see what's coming next... a sort of "look-ahead".
+//     currentToken = getNextToken();
+// }
 
 function getNextToken() {
     var thisToken = EOF;    // Let's assume that we're at the EOF.
