@@ -52,7 +52,8 @@ function parse() {
     // Count lex errors and add them to total count.
     errorCount += lexErrors;
     // Report the results.
-    putMessage("Parsing found " + errorCount + " error(s).");        
+    // putMessage("Parsing found " + errorCount + " error(s).");        
+    putMessage("Lexer found " + errorCount + " error(s).");
 }
 
 function parseG() {
@@ -75,6 +76,7 @@ function parseE() {
             // There is nothing else in the token stream, 
             // and that's cool since E --> digit is valid.
             putMessage("EOF reached.");
+            putMessage("Token sequence: " + tokenSequence);
         }
     }
 }

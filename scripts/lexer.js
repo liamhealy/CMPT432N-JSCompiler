@@ -66,7 +66,8 @@ function checkToken(expectedKind) {
                     putMessage("Invalid input at line " + tokenIndex + ".");
                 }
                 break;
-        default:        putMessage("Parse Error: Invalid Token Type at position " + tokenIndex + ".");
+        default:        putMessage("Parse Error: Invalid Input Type at position " + tokenIndex + ".");
+                lexErrors++;
                 break;			
     }
     // Consume another token, having just checked this one, because that 
