@@ -1,5 +1,5 @@
 /*
- *  This template can be found at 
+ *  This template project can be found at 
  *  https://github.com/AlanClasses/JS-Compiler
  *  Modified by: Liam Healy - liam.healy1@marist.edu
  */
@@ -20,6 +20,8 @@ function init() {
     tokenIndex = 0;
     currentToken = ' ';
     errorCount = 0;
+    tokenSequence = [];
+    lexErrors = 0;
 }
 
 function btnCompile_click() {
@@ -27,10 +29,11 @@ function btnCompile_click() {
     // the text areas.
     init();
     if (trim(document.getElementById("input").value) == "") {
-        putMessage("Nothing to compile...")
+        putMessage("Nothing to lex...")
     }
     else {
-        putMessage("Compilation Started");
+        programCount++;
+        putMessage("Lexing program " + programCount + "...");
         // Take the tokens from the lexer
         tokens = lex();
         putMessage("Lex returned [" + tokens + "]");
@@ -67,10 +70,10 @@ function parseE() {
     // Look ahead 1 char (which is now in currentToken because checkToken.
     // consumes another one) and see which E production to follow.
     if (currentToken != EOF) {
-        // We're not done, we expect to have an op.
+        // We're not done, we might have another program to lex.
         checkToken(currentToken);
         parseE();
-    } 
+    }
     else {
         if (currentToken == EOF) {
             // There is nothing else in the token stream, 
