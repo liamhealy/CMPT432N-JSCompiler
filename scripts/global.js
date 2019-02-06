@@ -1,5 +1,5 @@
 // These are the global variables
-var tokens = "";
+var tokens = [];
 var tokenIndex = 0;
 var currentToken = "";
 var errorCount = 0;
@@ -52,7 +52,7 @@ function parseE() {
     // Look ahead 1 char (which is now in currentToken because checkToken 
     // consumes another one) and see which E production to follow.
     if (currentToken != EOF) {
-        // We're not done, we we expect to have an op.
+        // We're not done, we expect to have an op.
         checkToken("op");
         parseE();
     } 
