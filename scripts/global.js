@@ -25,12 +25,17 @@ function btnCompile_click() {
     // User clicks compile button between
     // the text areas.
     init();
-    putMessage("Compilation Started");
-    // Take the tokens from the lexer
-    tokens = lex();
-    putMessage("Lex returned [" + tokens + "]");
-    // now parse.
-    parse();
+    if (trim(document.getElementById("input").value) == '') {
+        putMessage("Nothing to compile...")
+    }
+    else {
+        putMessage("Compilation Started");
+        // Take the tokens from the lexer
+        tokens = lex();
+        putMessage("Lex returned [" + tokens + "]");
+        // now parse.
+        parse();
+    }
 }
 
 function putMessage(msg) {
