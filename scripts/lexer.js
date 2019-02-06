@@ -57,6 +57,15 @@ function checkToken(expectedKind) {
                     putMessage("Invalid input at line " + tokenIndex + ".");
                 }
                 break;
+        case "$":
+                if (currentToken=="$") {
+                    putMessage("Found '$'.");
+                }
+                else {
+                    errorCount++;
+                    putMessage("Invalid input at line " + tokenIndex + ".");
+                }
+                break;
         default:        putMessage("Parse Error: Invalid Token Type at position " + tokenIndex + ".");
                 break;			
     }
@@ -71,16 +80,3 @@ function addToken(tokenId, value, line) {
     // Add our new token
     tokenSequence.push(newToken);
 }
-
-// function checkToken(token) {
-//     if (token == "i") {
-//         document.getElementById("output").putMessage("We found an i");
-//         token.tokenId = "T_I";
-//         token.value = "i";
-//         token.line = tokenIndex;
-//         tokenSequence.push(token)
-//     }
-//     else {
-//         document.getElementById("output").putMessage("Not sure what to do with this token yet...");
-//     }
-// }
