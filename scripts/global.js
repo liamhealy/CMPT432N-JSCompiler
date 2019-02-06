@@ -5,20 +5,21 @@
  */
 
 // These are the global variables
-var tokens = "";
-var tokenIndex = 0;
-var currentToken = "";
-var errorCount = 0;
+var tokens = "";            // Our source code
+var tokenIndex = 0;         // The line # of the token being examined
+var currentToken = "";      // The token being examined
+var errorCount = 0;         // Count of errors
 var EOF = "$";
+var tokenSequence = [];     // Hold all valid tokens
 
 function init() {
     // Clear the output box when loading in
     document.getElementById("output").value = "";
     // Set the values for our global variables
-    tokens = "";            // Our source code
-    tokenIndex = 0;         // The line for the token being examined
-    currentToken = ' ';     // The token being examined
-    errorCount = 0;         // Count of lex errors - pattern does not exist in our alphabet
+    tokens = "";
+    tokenIndex = 0;
+    currentToken = ' ';
+    errorCount = 0;
 }
 
 function btnCompile_click() {
@@ -59,18 +60,23 @@ function parseG() {
 
 function parseE() {
     // All E productions begin with a digit, so make sure that we have one.
-    checkToken("digit");
-    // Look ahead 1 char (which is now in currentToken because checkToken 
+    checkToken(currentToken);
+    // Look ahead 1 char (which is now in currentToken because checkToken.
     // consumes another one) and see which E production to follow.
     if (currentToken != EOF) {
         // We're not done, we expect to have an op.
-        checkToken("op");
+        checkToken(currentToken);
         parseE();
     } 
     else {
-        // There is nothing else in the token stream, 
-        // and that's cool since E --> digit is valid.
-        putMessage("EOF reached");
+        if (currentToken == EOF) {
+            // There is nothing else in the token stream, 
+            // and that's cool since E --> digit is valid.
+            putMessage("EOF reached.");
+        }
+        else {
+            putMessage("Missing '$' at EOF.")
+        }
     }
 }
 
@@ -98,9 +104,9 @@ function parseE() {
 //                     putMessage("NOT an operator.  Error at position " + tokenIndex + ".");
 //                 }
 //                 break;
-//         case "keyword":      putMessage("Expecting a keyword");
-//                 if (currentToken=="int" || currentToken=="String" || currentToken=="bool") {
-//                     putMessage("Got a keyword!");
+//         case "i":      putMessage("Examining token...");
+//                 if (currentToken=="i") {
+//                     putMessage("Got an i!");
 //                 }
 //                 else {
 //                     errorCount++;

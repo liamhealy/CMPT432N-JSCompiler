@@ -1,6 +1,6 @@
 // This function allows us to create usable tokens
-function createToken(token, value, line) {
-    this.token = token;
+function token(tokenId, value, line) {
+    this.tokenId = tokenId;
     this.value = value;
     this.line = line;
 }
