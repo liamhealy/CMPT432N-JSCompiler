@@ -49,6 +49,8 @@ function parse() {
     currentToken = getNextToken();
     // A valid parse derives the G(oal) production, so begin there.
     parseG();
+    // Count lex errors and add them to total count.
+    errorCount += lexErrors;
     // Report the results.
     putMessage("Parsing found " + errorCount + " error(s).");        
 }
@@ -73,9 +75,6 @@ function parseE() {
             // There is nothing else in the token stream, 
             // and that's cool since E --> digit is valid.
             putMessage("EOF reached.");
-        }
-        else {
-            putMessage("Missing '$' at EOF.")
         }
     }
 }

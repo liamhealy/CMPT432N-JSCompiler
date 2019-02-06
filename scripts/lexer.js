@@ -2,6 +2,7 @@
 
 // Keep count of lex errors
 var lexErrors = 0;
+var programCount = 0;
 
 function lex() {
     // Grab the "raw" source code.
@@ -29,7 +30,7 @@ function checkToken(expectedKind) {
                 break;
         case "op":      putMessage("Expecting an operator");
                 if (currentToken=="+" || currentToken=="-") {
-                putMessage("Got an operator!");
+                    putMessage("Got an operator!");
                 }
                 else {
                     errorCount++;
@@ -38,11 +39,22 @@ function checkToken(expectedKind) {
                 break;
         case "i":      putMessage("Examining token...");
                 if (currentToken=="i") {
-                    putMessage("Got an i!");
+                    addToken("T_CHAR", "i", tokenIndex);
+                    putMessage("New token '" + currentToken + "' at line " + tokenIndex + ".");
                 }
                 else {
                     errorCount++;
-                    putMessage("Not a keyword. Error at position " + tokenIndex + ".");
+                    putMessage("Invalid input at line " + tokenIndex + ".");
+                }
+                break;
+        case "=":
+                if (currentToken=="=") {
+                    addToken("T_ASSIGNOP", "=", tokenIndex);
+                    putMessage("New token '" + currentToken + "' at line " + tokenIndex + ".");
+                }
+                else {
+                    errorCount++;
+                    putMessage("Invalid input at line " + tokenIndex + ".");
                 }
                 break;
         default:        putMessage("Parse Error: Invalid Token Type at position " + tokenIndex + ".");
