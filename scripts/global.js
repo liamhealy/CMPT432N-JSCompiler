@@ -1,5 +1,11 @@
+/*
+ *  This template can be found at 
+ *  https://github.com/AlanClasses/JS-Compiler
+ *  Modified by: Liam Healy - liam.healy1@marist.edu
+ */
+
 // These are the global variables
-var tokens = [];
+var tokens = "";
 var tokenIndex = 0;
 var currentToken = "";
 var errorCount = 0;
@@ -9,10 +15,10 @@ function init() {
     // Clear the output box when loading in
     document.getElementById("output").value = "";
     // Set the values for our global variables
-    tokens = "";
-    tokenIndex = 0;
-    currentToken = ' ';
-    errorCount = 0;
+    tokens = "";            // Our source code
+    tokenIndex = 0;         // The line for the token being examined
+    currentToken = ' ';     // The token being examined
+    errorCount = 0;         // Count of lex errors - pattern does not exist in our alphabet
 }
 
 function btnCompile_click() {
@@ -88,7 +94,7 @@ function checkToken(expectedKind) {
                 }
                 break;
         case "keyword":      putMessage("Expecting a keyword");
-                if (currentToken=="int" || currentToken=="String" || currenToken=="bool") {
+                if (currentToken=="int" || currentToken=="String" || currentToken=="bool") {
                     putMessage("Got a keyword!");
                 }
                 else {
