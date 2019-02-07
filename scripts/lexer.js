@@ -16,7 +16,7 @@ function lex() {
 function checkToken(expectedKind) {
     // Validate that we have the expected token kind and get the next token.
     switch(expectedKind) {
-        case "i":      putMessage("Examining token...");
+        case "i":
                 if (currentToken=="i") {
                     addToken("T_CHAR", "i", tokenIndex);
                     putMessage("New token '" + currentToken + "' at line " + tokenIndex + ".");
