@@ -5,3 +5,9 @@ function token(tokenId, value, line, col) {
     this.line = line;
     this.col = col;
 }
+
+function tokenToString(token) {
+    for (var i = 0; i < tokens.length; i++) {
+        
+    }
+}
