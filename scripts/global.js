@@ -57,11 +57,11 @@ function parse () {
     currentToken = getNextToken();
     // A valid parse derives the G(oal) production, so begin there.
     parseG();
-    // Count lex errors and add them to total count.
-    errorCount += lexErrorCount;
-    warningCount += lexWarningCount;
-    // Report the results.
-    putMessage("Lexer completed with " + errorCount + " error(s) and " + warningCount + " warning(s).");
+    // // Count lex errors and add them to total count.
+    // errorCount += lexErrorCount;
+    // warningCount += lexWarningCount;
+    // // Report the results.
+    // putMessage("Lexer completed with " + errorCount + " error(s) and " + warningCount + " warning(s).");
 }
 
 function parseG () {
@@ -77,20 +77,21 @@ function parseE () {
         // We're not done, we might have another program to lex.
         // checkToken(currentToken);
         checkToken(currentToken);
+        // Commented out the function below to avoid
+        // hitting a call stack maximum size error.
         // parseE();
     }
-    else {
-        // Alert at the end of programs where '$' is not found.
-        if (currentToken == EOP) {
-            // There is nothing else in the token stream,
-            // and that's cool since E --> digit is valid.
-            putMessage("EOP reached.");
-            putMessage("Token sequence: ");
-        }
-        else if (tokens.substr(currenToken) == null) {
-            putMessage("EOP reached.");
-            putMessage("Token sequence: ");
-        }
+    // When the program finds an end we show some ouput.
+    if (currentToken == EOP) {
+        // There is nothing else in the token stream,
+        // and that's cool since E --> digit is valid.
+        putMessage("EOP reached.");
+        putMessage("Token sequence: ");
+    }
+    // Alert at the end of programs where '$' is not found.
+    else if (tokens.substr(currentToken) == null && lexGrammarWarning == true) {
+        putMessage("EOP reached.");
+        putMessage("Token sequence: ");
     }
 }
 
@@ -101,6 +102,9 @@ function getNextToken () {
         thisToken = tokens[tokenIndex];
         // putMessage("Current token:" + thisToken);
         // tokenIndex++;
+    }
+    else if (tokens.substr(currentToken) == null && lexGrammarWarning == true){
+        endOfProgram();
     }
     return thisToken;
 }

@@ -16,8 +16,8 @@ function addToken (tokenId, value, line, col) {
 
 // We can print our token sequence
 function printSequence () {
+    putMessage("Token sequence for program " + programCount + ":\n");
     for (var i = 0; i < tokenSequence.length; i++) {
-        // return this.tokenId + ", " + this.value + ", " + this.line + ", " + this.col;
         if (i == tokenSequence.length - 1) {
             putMessage("[" + tokenToString(tokenSequence[i]) + "]\n");
         }
@@ -27,14 +27,13 @@ function printSequence () {
     }
 }
 
-// Doesn't seem like this function should really exist.
-// Won't comment out yet in case we wanna style how 
-// the token sequence appears.
+// toString() function for "token" constructor function
+// that allows us to print the contents of our token sequence
 function tokenToString (tempToken) {
     var tempId = tempToken.tokenId;
     var tempVal = tempToken.value;
     var tempLine = tempToken.line;
     var tempCol = tempToken.col;
-    var listToken = tempId + ", " + tempVal + ", " + tempLine + ", " + tempCol;
+    var listToken = "\"" + tempId + "\", '" + tempVal + "', " + tempLine + ", " + tempCol;
     return listToken;
 }

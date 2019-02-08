@@ -1,7 +1,7 @@
 /*  lexer.js    */
 
 // Keep count of lex warnings, errors and programs
-var grammarWarning = false;
+var lexGrammarWarning = false;
 var lexWarningCount = 0;
 var lexErrorCount = 0;
 var programCount = 0;
@@ -23,11 +23,12 @@ function lex() {
 
 function checkToken(currentToken) {
     // Initiate line number
+    // Resets to one after an EOP is reached
     lineNum = 1;
 
     // Check for '$' (EOP), if it does not exist return a warning.
     if (tokens.substr(-1) != EOP) {
-        grammarWarning = true;
+        lexGrammarWarning = true;
         lexWarningCount++;
         putMessage("Warning: Expecting '$' following the end of program " + programCount + ".");
     }
@@ -46,7 +47,7 @@ function checkToken(currentToken) {
             putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + tokenIndex + ".");
             var iterationNum = tokenIndex;
             // Just for debugging:
-            console.log("iteration number: " + iterationNum + ", tokens: " + tokens.toString());
+            // console.log("iteration number: " + iterationNum + ", tokens: " + tokens.toString());
             continue;
         }
 
@@ -55,7 +56,7 @@ function checkToken(currentToken) {
             putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + tokenIndex + ".");
             var iterationNum = tokenIndex;
             // Just for debugging:
-            console.log("iteration number: " + iterationNum + ", tokens: " + tokens.toString());
+            // console.log("iteration number: " + iterationNum + ", tokens: " + tokens.toString());
             continue;
         }
 
@@ -63,12 +64,7 @@ function checkToken(currentToken) {
         if (currentToken == EOP) {
             addToken("T_EOP", "$", lineNum, tokenIndex);
             putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + tokenIndex + ".");
-            putMessage("EOP reached.");
-            var tempSequence = tokens.toString();
-            tempSequence = tempSequence.split();
-            // putMessage("Token sequence: " + tempSequence);
-            printSequence();
-            programCount++;
+            endOfProgram();
             continue;
         }
 
@@ -82,4 +78,18 @@ function checkToken(currentToken) {
             continue;
         }
     }
+    // return currentToken;
+}
+
+// Return some output when the lexer is finished with a program
+function endOfProgram() {
+    putMessage("EOP reached.");
+    // Count lex errors and add them to total count.
+    errorCount += lexErrorCount;
+    warningCount += lexWarningCount;
+    // Report the results.
+    putMessage("Lexer completed with " + errorCount + " error(s) and " + warningCount + " warning(s).");
+    printSequence();
+    // Prepare for the next program.
+    programCount++;
 }
