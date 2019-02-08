@@ -82,17 +82,17 @@ function parseE () {
         // parseE();
     }
     // When the program finds an end we show some ouput.
-    if (currentToken == EOP) {
-        // There is nothing else in the token stream,
-        // and that's cool since E --> digit is valid.
-        putMessage("EOP reached.");
-        putMessage("Token sequence: ");
-    }
-    // Alert at the end of programs where '$' is not found.
-    else if (tokens.substr(currentToken) == null && lexGrammarWarning == true) {
-        putMessage("EOP reached.");
-        putMessage("Token sequence: ");
-    }
+    // if (currentToken == EOP) {
+    //     // There is nothing else in the token stream,
+    //     // and that's cool since E --> digit is valid.
+    //     putMessage("EOP reached.");
+    //     putMessage("Token sequence: ");
+    // }
+    // // Alert at the end of programs where '$' is not found.
+    // else if (tokens.substr(currentToken) == null && lexGrammarWarning == true) {
+    //     putMessage("EOP reached.");
+    //     putMessage("Token sequence: ");
+    // }
 }
 
 function getNextToken () {

@@ -69,6 +69,10 @@ function checkToken(currentToken) {
             continue;
         }
 
+        if (currentToken == str.match()) {
+            lineNum++;
+        }
+
         // Handle new lines
         // Doesn't work just yet
         if (currentToken == '\\n') {
@@ -81,7 +85,7 @@ function checkToken(currentToken) {
 
         else {
             lexErrorCount++;
-            putMessage("Error: The input '" + currentToken + "' at line " + lineNum + ", index " + tokenIndex + " was not recognized.");
+            putMessage("ERROR: The input '" + currentToken + "' at line " + lineNum + ", index " + tokenIndex + " was not recognized.");
         }
     }
     // return currentToken;

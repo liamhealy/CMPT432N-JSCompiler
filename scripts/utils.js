@@ -42,3 +42,12 @@ function rot13(str)     // An easy-to understand implementation of the famous an
     }
     return retVal;
 }
+
+function match(str) {
+    if (str == /[^\n]*\n[^\n]*/gi) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
