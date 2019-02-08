@@ -101,6 +101,7 @@ function checkToken(currentToken) {
         }
 
         // Handle new lines
+        // Doesn't work just yet
         if (currentToken == '\\n') {
             // Ignore them, but increment line number
             lineCol = 0;
@@ -111,15 +112,17 @@ function checkToken(currentToken) {
     }
 }
 
-function printSequence () {
-    for (var i = 0; i < tokens.length; i++) {
-        putMessage("" + tokenToString(tokens[i]) + "\n");
-    }
-}
-
+// We can add our token to the toke sequence
 function addToken (tokenId, value, line, col) {
     // Create a token to enter into the token sequence
     var newToken = new token(tokenId, value, line, col);
     // Add our new token
     tokenSequence.push(newToken);
+}
+
+// We can print our token sequence
+function printSequence () {
+    for (var i = 0; i < tokens.length; i++) {
+        putMessage("" + tokenToString(tokens[i]) + "\n");
+    }
 }
