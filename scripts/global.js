@@ -9,8 +9,9 @@ var tokens = "";            // Our source code
 var tokenIndex = 0;         // The line # of the token being examined
 var currentToken = "";      // The token being examined
 var errorCount = 0;         // Count of errors
-var EOF = "$";
+var EOF = "$";              // Denotes the end of a program/file
 var tokenSequence = [];     // Hold all valid tokens
+var ongoing = false;        // False = lexer is done, True = more prorgrams to lex
 
 function init() {
     // Clear the output box when loading in
@@ -70,17 +71,17 @@ function parseG() {
 }
 
 function parseE() {
-    // All E productions begin with a digit, so make sure that we have one.
     checkToken(currentToken);
     // Look ahead 1 char (which is now in currentToken because checkToken.
     // consumes another one) and see which E production to follow.
     if (currentToken != EOF) {
         // We're not done, we might have another program to lex.
+        // checkToken(currentToken);
         checkToken(currentToken);
         parseE();
     }
     else {
-        if (currentToken == EOF) {
+        if (currentToken == EOF && ongoing == false) {
             // There is nothing else in the token stream, 
             // and that's cool since E --> digit is valid.
             putMessage("EOF reached.");
@@ -91,7 +92,7 @@ function parseE() {
 
 function getNextToken() {
     var thisToken = EOF;    // Let's assume that we're at the EOF.
-    if (tokenIndex < tokens.length) {
+    if (tokenIndex < tokens.length) {    
         // If we're not at EOF, then return the next token in the stream and advance the index.
         thisToken = tokens[tokenIndex];
         putMessage("Current token:" + thisToken);
