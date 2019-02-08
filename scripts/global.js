@@ -103,8 +103,5 @@ function getNextToken () {
         // putMessage("Current token:" + thisToken);
         // tokenIndex++;
     }
-    else if (tokens.substr(currentToken) == null && lexGrammarWarning == true){
-        endOfProgram();
-    }
     return thisToken;
 }

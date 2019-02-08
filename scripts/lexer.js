@@ -30,7 +30,8 @@ function checkToken(currentToken) {
     if (tokens.substr(-1) != EOP) {
         lexGrammarWarning = true;
         lexWarningCount++;
-        putMessage("Warning: Expecting '$' following the end of program " + programCount + ".");
+        tokens += "$";
+        putMessage("Warning: Expecting '$' following the end of program " + programCount + ". The lexer has gone ahead and added it.");
     }
 
     for (tokenIndex; tokenIndex < tokens.length; tokenIndex++) {
@@ -76,6 +77,11 @@ function checkToken(currentToken) {
             // lineNum++;
             console.log(tokens);
             continue;
+        }
+
+        else {
+            lexErrorCount++;
+            putMessage("Error: The input '" + currentToken + "' at line " + lineNum + ", index " + tokenIndex + " was not recognized.");
         }
     }
     // return currentToken;
