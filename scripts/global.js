@@ -13,7 +13,7 @@ var EOP = "$";              // Denotes the end of a program/file
 var tokenSequence = [];     // Hold all valid tokens
 var ongoing = false;        // False = lexer is done, True = more prorgrams to lex
 
-function init() {
+function init () {
     // Clear the output box when loading in
     document.getElementById("output").value = "";
     // Set the values for our global variables
@@ -26,7 +26,7 @@ function init() {
     programCount = 0;
 }
 
-function btnCompile_click() {
+function btnCompile_click () {
     // User clicks compile button between
     // the text areas.
     init();
@@ -44,11 +44,11 @@ function btnCompile_click() {
     }
 }
 
-function putMessage(msg) {
+function putMessage (msg) {
     document.getElementById("output").value += msg + "\n";
 }
 
-function parse() {
+function parse () {
     putMessage("Parsing [" + tokens + "]");
     // Grab the next token.
     currentToken = getNextToken();
@@ -66,12 +66,12 @@ function parse() {
     }
 }
 
-function parseG() {
+function parseG () {
     // A G(oal) production can only be an E(xpression), so parse the E production.
     parseE();
 }
 
-function parseE() {
+function parseE () {
     // checkToken(currentToken);
     // Look ahead 1 char (which is now in currentToken because checkToken.
     // consumes another one) and see which E production to follow.
@@ -91,7 +91,7 @@ function parseE() {
     }
 }
 
-function getNextToken() {
+function getNextToken () {
     var thisToken = EOP;    // Let's assume that we're at the EOF.
     if (tokenIndex < tokens.length) {
         // If we're not at EOF, then return the next token in the stream and advance the index.

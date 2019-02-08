@@ -83,7 +83,7 @@ function checkToken(currentToken) {
             putMessage("New token '" + currentToken + "' at line " + lineNum + ", position " + tokenIndex + ".");
             var iterationNum = tokenIndex;
             // Just for debugging:
-            console.log("iteration number: " + iterationNum);
+            console.log("iteration number: " + iterationNum + ", tokens: " + tokens.toString());
             continue;
         }
 
@@ -94,7 +94,8 @@ function checkToken(currentToken) {
             putMessage("EOF reached.");
             var tempSequence = tokens.toString();
             tempSequence = tempSequence.split();
-            putMessage("Token sequence: " + tempSequence);
+            // putMessage("Token sequence: " + tempSequence);
+            printSequence();
             programCount++;
             continue;
         }
@@ -110,9 +111,15 @@ function checkToken(currentToken) {
     }
 }
 
-function addToken(tokenId, value, line) {
+function printSequence () {
+    for (var i = 0; i < tokens.length; i++) {
+        putMessage("" + tokenToString(tokens[i]) + "\n");
+    }
+}
+
+function addToken (tokenId, value, line, col) {
     // Create a token to enter into the token sequence
-    var newToken = new token(tokenId, value, line);
+    var newToken = new token(tokenId, value, line, col);
     // Add our new token
     tokenSequence.push(newToken);
 }
