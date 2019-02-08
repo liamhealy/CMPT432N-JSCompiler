@@ -1,10 +1,14 @@
 /*  lexer.js    */
 
-// Keep count of lex errors and programs
-var lexErrors = 0;
+// Keep count of lex warnings, errors and programs
+var grammarWarning = false;
+var lexWarningCount = 0;
+var lexErrorCount = 0;
 var programCount = 0;
+
 // Line number
 var lineNum = 0;
+
 // Detect new lines
 // var newLine = tokens.split(" ");
 
@@ -18,50 +22,18 @@ function lex() {
 }
 
 function checkToken(currentToken) {
-    // Validate that we have the expected token kind and get the next token.
-    // switch(expectedKind) {
-    //     case "i":
-    //             if (currentToken=="i") {
-    //                 addToken("T_CHAR", "i", tokenIndex);
-    //                 putMessage("New token '" + currentToken + "' at line " + tokenIndex + ".");
-    //             }
-    //             else {
-    //                 errorCount++;
-    //                 putMessage("Invalid input at line " + tokenIndex + ".");
-    //             }
-    //             break;
-    //     case "=":
-    //             if (currentToken=="=") {
-    //                 addToken("T_ASSIGNOP", "=", tokenIndex);
-    //                 putMessage("New token '" + currentToken + "' at line " + tokenIndex + ".");
-    //             }
-    //             else {
-    //                 errorCount++;
-    //                 putMessage("Invalid input at line " + tokenIndex + ".");
-    //             }
-    //             break;
-    //     case "$":
-    //             if (currentToken=="$" && getNextToken(currentToken) != "") {
-    //                 putMessage("Found '$'.");
-    //             }
-    //             else {
-    //                 errorCount++;
-    //                 putMessage("Invalid input at line " + tokenIndex + ".");
-    //             }
-    //             break;
-    //     default:        putMessage("Parse Error: Invalid Input Type at position " + tokenIndex + ".");
-    //             lexErrors++;
-    //             break;			
-    // }
-    // Consume another token, having just checked this one, because that 
-    // will allow the code to see what's coming next... a sort of "look-ahead".
-    
-    // Initiate line number 
+    // Initiate line number
     lineNum = 1;
-    var lineCol = 0;
+
+    // Check for '$' (EOP), if it does not exist return a warning.
+    if (tokens.substr(-1) != EOP) {
+        grammarWarning = true;
+        lexWarningCount++;
+        putMessage("Warning: Expecting '$' following the end of program " + programCount + ".");
+    }
 
     for (tokenIndex; tokenIndex < tokens.length; tokenIndex++) {
-        
+
         if (tokenIndex > 0) {
             currentToken = getNextToken(currentToken);
         }
@@ -70,8 +42,8 @@ function checkToken(currentToken) {
 
         // Handle "i"
         if (currentToken == "i") {
-            addToken("T_CHAR", "i", lineNum, lineCol);
-            putMessage("New token '" + currentToken + "' at line " + lineNum + ", position " + tokenIndex + ".");
+            addToken("T_CHAR", "i", lineNum, tokenIndex);
+            putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + tokenIndex + ".");
             var iterationNum = tokenIndex;
             // Just for debugging:
             console.log("iteration number: " + iterationNum + ", tokens: " + tokens.toString());
@@ -79,19 +51,19 @@ function checkToken(currentToken) {
         }
 
         if (currentToken == "w") {
-            addToken("T_CHAR", "w", lineNum, lineCol);
-            putMessage("New token '" + currentToken + "' at line " + lineNum + ", position " + tokenIndex + ".");
+            addToken("T_CHAR", "w", lineNum, tokenIndex);
+            putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + tokenIndex + ".");
             var iterationNum = tokenIndex;
             // Just for debugging:
             console.log("iteration number: " + iterationNum + ", tokens: " + tokens.toString());
             continue;
         }
 
-        // Handle EOF
+        // Handle EOP
         if (currentToken == EOP) {
-            addToken("T_EOP", "$", lineNum, lineCol);
-            putMessage("New token '" + currentToken + "' at line " + lineNum + ", position " + tokenIndex + ".");
-            putMessage("EOF reached.");
+            addToken("T_EOP", "$", lineNum, tokenIndex);
+            putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + tokenIndex + ".");
+            putMessage("EOP reached.");
             var tempSequence = tokens.toString();
             tempSequence = tempSequence.split();
             // putMessage("Token sequence: " + tempSequence);
@@ -109,20 +81,5 @@ function checkToken(currentToken) {
             console.log(tokens);
             continue;
         }
-    }
-}
-
-// We can add our token to the toke sequence
-function addToken (tokenId, value, line, col) {
-    // Create a token to enter into the token sequence
-    var newToken = new token(tokenId, value, line, col);
-    // Add our new token
-    tokenSequence.push(newToken);
-}
-
-// We can print our token sequence
-function printSequence () {
-    for (var i = 0; i < tokens.length; i++) {
-        putMessage("" + tokenToString(tokens[i]) + "\n");
     }
 }

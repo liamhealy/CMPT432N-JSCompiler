@@ -8,7 +8,8 @@
 var tokens = "";            // Our source code
 var tokenIndex = 0;         // The line # of the token being examined
 var currentToken = "";      // The token being examined
-var errorCount = 0;         // Count of errors
+var errorCount = 0;         // Total count of errors
+var warningCount = 0;       // Total count of warnings
 var EOP = "$";              // Denotes the end of a program/file
 var tokenSequence = [];     // Hold all valid tokens
 var ongoing = false;        // False = lexer is done, True = more prorgrams to lex
@@ -16,11 +17,13 @@ var ongoing = false;        // False = lexer is done, True = more prorgrams to l
 function init () {
     // Clear the output box when loading in
     document.getElementById("output").value = "";
+
     // Set the values for our global variables
     tokens = "";
     tokenIndex = 0;
     currentToken = ' ';
     errorCount = 0;
+    warningCount = 0;
     tokenSequence = [];
     lexErrors = 0;
     programCount = 0;
@@ -55,15 +58,10 @@ function parse () {
     // A valid parse derives the G(oal) production, so begin there.
     parseG();
     // Count lex errors and add them to total count.
-    errorCount += lexErrors;
+    errorCount += lexErrorCount;
+    warningCount += lexWarningCount;
     // Report the results.
-    // putMessage("Parsing found " + errorCount + " error(s).");
-    if (errorCount == 0) {        
-        putMessage("Lexer completed with " + errorCount + " errors.");
-    }
-    else {
-        putMessage("Lexer failed with " + errorCount + " error(s).");
-    }
+    putMessage("Lexer completed with " + errorCount + " error(s) and " + warningCount + " warning(s).");
 }
 
 function parseG () {
@@ -82,9 +80,14 @@ function parseE () {
         // parseE();
     }
     else {
+        // Alert at the end of programs where '$' is not found.
         if (currentToken == EOP) {
-            // There is nothing else in the token stream, 
+            // There is nothing else in the token stream,
             // and that's cool since E --> digit is valid.
+            putMessage("EOP reached.");
+            putMessage("Token sequence: ");
+        }
+        else if (tokens.substr(currenToken) == null) {
             putMessage("EOP reached.");
             putMessage("Token sequence: ");
         }
