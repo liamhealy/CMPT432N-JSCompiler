@@ -36,7 +36,7 @@ function checkToken(currentToken) {
 
     for (tokenIndex; tokenIndex < tokens.length; tokenIndex++) {
 
-        if (tokenIndex > 0) {
+        if (tokenIndex >= 0) {
             currentToken = getNextToken(currentToken);
         }
 
@@ -69,19 +69,19 @@ function checkToken(currentToken) {
             continue;
         }
 
-        if (currentToken == str.match()) {
+        if (currentToken == match(currentToken)) {
             lineNum++;
         }
 
-        // Handle new lines
-        // Doesn't work just yet
-        if (currentToken == '\\n') {
-            // Ignore them, but increment line number
-            lineCol = 0;
-            // lineNum++;
-            console.log(tokens);
-            continue;
-        }
+        // // Handle new lines
+        // // Doesn't work just yet
+        // if (currentToken == "\n") {
+        //     // Ignore them, but increment line number
+        //     lineCol = 0;
+        //     // lineNum++;
+        //     console.log(tokens);
+        //     continue;
+        // }
 
         else {
             lexErrorCount++;
