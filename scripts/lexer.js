@@ -9,8 +9,15 @@ var programCount = 0;
 // Line number
 var lineNum = 0;
 
-// Detect new lines
-// var newLine = tokens.split(" ");
+// newLine boolean alerts the lexer of a line break
+// so that the lexer knows to ignore it.
+// var newLine = false;
+
+// lineCol represents the index for a character
+// on an individual line, while tokenIndex
+// represents the index of each character in the
+// order they appear in the source code
+var lineCol = 0;
 
 function lex() {
     // Grab the "raw" source code.
@@ -22,9 +29,10 @@ function lex() {
 }
 
 function checkToken(currentToken) {
-    // Initiate line number
+    // Initiate line number and column/index number
     // Resets to one after an EOP is reached
     lineNum = 1;
+    lineCol = 0;
 
     // Check for '$' (EOP), if it does not exist return a warning.
     if (tokens.substr(-1) != EOP) {
@@ -36,56 +44,68 @@ function checkToken(currentToken) {
 
     for (tokenIndex; tokenIndex < tokens.length; tokenIndex++) {
 
-        if (tokenIndex >= 0) {
+        if (lineCol >= 0) {
             currentToken = getNextToken(currentToken);
         }
 
-        putMessage("Current token:" + currentToken);
+        if (currentToken == match(currentToken)) {
+            // newLine = true;
+            lineCol = 0;
+            lineNum++;
+        }
+        // else {
+        //     if(newLine != true) {
+        //         putMessage("Current token: '" + currentToken + "'");
+        //     }
+        //     else {
+        //         newLine == false;
+        //     } 
+        // }
+        
+        // if(newLine != true) {
+        //     putMessage("Current token: '" + currentToken + "'");
+        // }
+        // else {
+        //     newLine == false;
+        // }
 
         // Handle "i"
         if (currentToken == "i") {
-            addToken("T_CHAR", "i", lineNum, tokenIndex);
-            putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + tokenIndex + ".");
-            var iterationNum = tokenIndex;
+            addToken("T_CHAR", "i", lineNum, lineCol);
+            putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + lineCol + ".");
+            lineCol++;
             // Just for debugging:
+            // var iterationNum = tokenIndex;
             // console.log("iteration number: " + iterationNum + ", tokens: " + tokens.toString());
             continue;
         }
 
         if (currentToken == "w") {
-            addToken("T_CHAR", "w", lineNum, tokenIndex);
-            putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + tokenIndex + ".");
-            var iterationNum = tokenIndex;
+            addToken("T_CHAR", "w", lineNum, lineCol);
+            putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + lineCol + ".");
+            lineCol++;
             // Just for debugging:
+            // var iterationNum = tokenIndex;
             // console.log("iteration number: " + iterationNum + ", tokens: " + tokens.toString());
             continue;
         }
 
         // Handle EOP
         if (currentToken == EOP) {
-            addToken("T_EOP", "$", lineNum, tokenIndex);
-            putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + tokenIndex + ".");
+            addToken("T_EOP", "$", lineNum, lineCol);
+            putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + lineCol + ".");
             endOfProgram();
             continue;
         }
 
         if (currentToken == match(currentToken)) {
-            lineNum++;
+            // Do nothing
         }
-
-        // // Handle new lines
-        // // Doesn't work just yet
-        // if (currentToken == "\n") {
-        //     // Ignore them, but increment line number
-        //     lineCol = 0;
-        //     // lineNum++;
-        //     console.log(tokens);
-        //     continue;
-        // }
 
         else {
             lexErrorCount++;
-            putMessage("ERROR: The input '" + currentToken + "' at line " + lineNum + ", index " + tokenIndex + " was not recognized.");
+            putMessage("ERROR: The input '" + currentToken + "' at line " + lineNum + ", index " + lineCol + " is not valid.");
+            lineCol++;
         }
     }
     // return currentToken;
@@ -97,6 +117,9 @@ function endOfProgram() {
     // Count lex errors and add them to total count.
     errorCount += lexErrorCount;
     warningCount += lexWarningCount;
+    // Reset line # and column/index #
+    lineNum = 1;
+    lineCol = 0;
     // Report the results.
     putMessage("Lexer completed with " + errorCount + " error(s) and " + warningCount + " warning(s).");
     printSequence();
