@@ -41,18 +41,24 @@ function btnCompile_click () {
         putMessage("Lexing program " + programCount + "...");
         // Take the tokens from the lexer
         tokens = lex();
-        putMessage("Lex returned [" + tokens + "]");
+        // putMessage("Lex returned [" + tokens + "]");
         // now parse.
         parse();
     }
 }
 
 function putMessage (msg) {
+    document.getElementById("output").style.color = "#000000";
     document.getElementById("output").value += msg + "\n";
 }
 
+// function putErrorMessage (msg) {
+//     document.getElementById("output").style.color = "#FF0000";
+//     document.getElementById("output").value += msg + "\n";
+// }
+
 function parse () {
-    putMessage("Parsing [" + tokens + "]");
+    // putMessage("Parsing [" + tokens + "]");
     // Grab the next token.
     currentToken = getNextToken();
     // A valid parse derives the G(oal) production, so begin there.

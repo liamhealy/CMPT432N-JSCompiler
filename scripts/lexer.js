@@ -29,10 +29,11 @@ function lex() {
 }
 
 function checkToken(currentToken) {
+    console.log(breakUp(tokens));
     // Initiate line number and column/index number
     // Resets to one after an EOP is reached
     lineNum = 1;
-    lineCol = 0;
+    lineCol = 1;
 
     // Check for '$' (EOP), if it does not exist return a warning.
     if (tokens.substr(-1) != EOP) {
@@ -44,34 +45,13 @@ function checkToken(currentToken) {
 
     for (tokenIndex; tokenIndex < tokens.length; tokenIndex++) {
 
-        if (lineCol >= 0) {
+        if (lineCol >= 1) {
             currentToken = getNextToken(currentToken);
         }
 
-        if (currentToken == match(currentToken)) {
-            // newLine = true;
-            lineCol = 0;
-            lineNum++;
-        }
-        // else {
-        //     if(newLine != true) {
-        //         putMessage("Current token: '" + currentToken + "'");
-        //     }
-        //     else {
-        //         newLine == false;
-        //     } 
-        // }
-        
-        // if(newLine != true) {
-        //     putMessage("Current token: '" + currentToken + "'");
-        // }
-        // else {
-        //     newLine == false;
-        // }
-
         // Handle "i"
         if (currentToken == "i") {
-            addToken("T_CHAR", "i", lineNum, lineCol);
+            addToken("T_CHAR", "i", lineNum, lineCol, programCount);
             putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + lineCol + ".");
             lineCol++;
             // Just for debugging:
@@ -81,8 +61,19 @@ function checkToken(currentToken) {
         }
 
         if (currentToken == "w") {
-            addToken("T_CHAR", "w", lineNum, lineCol);
+            addToken("T_CHAR", "w", lineNum, lineCol, programCount);
             putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + lineCol + ".");
+            lineCol++;
+            // Just for debugging:
+            // var iterationNum = tokenIndex;
+            // console.log("iteration number: " + iterationNum + ", tokens: " + tokens.toString());
+            continue;
+        }
+
+        // Handle spaces
+        if (currentToken == " ") {
+            addToken("T_SPACE", "[Space]", lineNum, lineCol, programCount);
+            putMessage("New token '[Space]' at line " + lineNum + ", index " + lineCol + ".");
             lineCol++;
             // Just for debugging:
             // var iterationNum = tokenIndex;
@@ -92,14 +83,23 @@ function checkToken(currentToken) {
 
         // Handle EOP
         if (currentToken == EOP) {
-            addToken("T_EOP", "$", lineNum, lineCol);
+            addToken("T_EOP", "$", lineNum, lineCol, programCount);
             putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + lineCol + ".");
-            endOfProgram();
-            continue;
+            if (tokenIndex < tokens.length - 1) {
+                endOfProgram();
+                continue;
+            }
+            else {
+                endOfProgram();
+                break;
+            }
         }
 
-        if (currentToken == match(currentToken)) {
-            // Do nothing
+        // Handle line breaks
+        if (currentToken == matchBreak(currentToken)) {
+            // Ignore it, but increment line number
+            lineCol = 1;
+            lineNum++;
         }
 
         else {
@@ -119,10 +119,26 @@ function endOfProgram() {
     warningCount += lexWarningCount;
     // Reset line # and column/index #
     lineNum = 1;
-    lineCol = 0;
+    lineCol = 1;
     // Report the results.
-    putMessage("Lexer completed with " + errorCount + " error(s) and " + warningCount + " warning(s).");
-    printSequence();
-    // Prepare for the next program.
-    programCount++;
+    if (errorCount > 0) {
+        putMessage("Lexer failed with " + lexErrorCount + " error(s) and " + lexWarningCount + " warning(s).");
+    }
+    else {
+        putMessage("Lexer completed with " + lexErrorCount + " error(s) and " + lexWarningCount + " warning(s).");
+    }
+    // We can print the token sequence here, but there is no need.
+    // printSequence();
+
+    // Move on to the next program if we are not done.
+    if (tokenIndex < tokens.length - 1) {
+        // Prepare for the next program.
+        programCount++;
+        //reset errors and warnings for next program.
+        lexErrorCount = 0;
+        lexWarningCount = 0;
+        // Reset the token sequence
+        tokenSequence = [];
+        putMessage("\nLexing program " + programCount + "...");
+    }
 }

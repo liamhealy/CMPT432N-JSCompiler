@@ -43,11 +43,21 @@ function rot13(str)     // An easy-to understand implementation of the famous an
     return retVal;
 }
 
-function match(str) {
+function matchBreak(str) {
     if (str == /[^\n]*\n[^\n]*/gi) {
         return true;
     }
     else {
         return false;
+    }
+}
+
+function breakUp(str) {
+    var key = "$";
+    for (i = 0; i < str.length; i++) {
+        if (str.indexOf(i) == key) {
+            var character = str.split(key);
+            return character;
+        }
     }
 }

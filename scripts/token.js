@@ -1,15 +1,16 @@
 // This function allows us to create usable tokens
-function token (tokenId, value, line, col) {
+function token (tokenId, value, line, col, programNum) {
     this.tokenId = tokenId;
     this.value = value;
     this.line = line;
     this.col = col;
+    this.programNum = programNum;
 }
 
 // We can add our token to the toke sequence
-function addToken (tokenId, value, line, col) {
+function addToken (tokenId, value, line, col, programNum) {
     // Create a token to enter into the token sequence
-    var newToken = new token(tokenId, value, line, col);
+    var newToken = new token(tokenId, value, line, col, programNum);
     // Add our new token
     tokenSequence.push(newToken);
 }
@@ -34,6 +35,7 @@ function tokenToString (tempToken) {
     var tempVal = tempToken.value;
     var tempLine = tempToken.line;
     var tempCol = tempToken.col;
-    var listToken = "\"" + tempId + "\", '" + tempVal + "', " + tempLine + ", " + tempCol;
+    var tempNum = tempToken.programNum
+    var listToken = "\"" + tempId + "\", '" + tempVal + "', " + tempLine + ", " + tempCol + ", " + tempNum;
     return listToken;
 }
