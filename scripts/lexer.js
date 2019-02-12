@@ -175,17 +175,16 @@ function checkToken(currentToken) {
                 tokenIndex = tokenIndex + 2;
                 continue;
             }
-            addToken("T_CHAR", "i", lineNum, lineCol, programCount);
-            putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + lineCol + ".");
-            lineCol++;
-            // Just for debugging:
-            // var iterationNum = tokenIndex;
-            // console.log("iteration number: " + iterationNum + ", tokens: " + tokens.toString());
-            continue;
+            else {
+                addToken("T_ID", "i", lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_CHAR [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol++;
+                continue;
+            }
         }
 
         if (currentToken == "w") {
-            addToken("T_CHAR", "w", lineNum, lineCol, programCount);
+            addToken("T_ID", "w", lineNum, lineCol, programCount);
             putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + lineCol + ".");
             lineCol++;
             // Just for debugging:
@@ -208,7 +207,7 @@ function checkToken(currentToken) {
         // Handle EOP
         if (currentToken == EOP) {
             addToken("T_EOP", "$", lineNum, lineCol, programCount);
-            putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + lineCol + ".");
+            putMessage("DEBUG Lexer - T_EOP [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
             if (tokenIndex < tokens.length - 1) {
                 endOfProgram();
                 continue;
