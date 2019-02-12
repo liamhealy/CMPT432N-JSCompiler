@@ -155,6 +155,8 @@ function checkToken(currentToken) {
         if (currentToken != "\"" && isString == true) {
             // Handle line breaks
             if (currentToken == " ") {
+                addToken("T_CHAR", " ", lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_CHAR [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
                 lineCol++;
                 continue;
             }
@@ -190,8 +192,8 @@ function checkToken(currentToken) {
         // Handle "print" and the "p" identifier
         if (currentToken == "p") {
             if (tokens.charAt(tokenIndex + 1) == "r" && tokens.charAt(tokenIndex + 2) == "i" && tokens.charAt(tokenIndex + 3) == "n" && tokens.charAt(tokenIndex + 4) == "t") {
-                addToken("T_PRINT", "print", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_PRINT [ print ] found at (" + lineNum + "," + lineCol + ")");
+                addToken("T_PRINTSTMT", "print", lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_PRINTSTMT [ print ] found at (" + lineNum + "," + lineCol + ")");
                 lineCol = lineCol + 5;
                 tokenIndex = tokenIndex + 4;
                 continue;
@@ -343,10 +345,47 @@ function checkToken(currentToken) {
             continue;
         }
 
+        // Handle assignment operator '='
+        if (currentToken == '=') {
+            if(tokens.charAt(tokenIndex + 1) != '=') {
+                addToken("T_ASSIGNOP", currentToken, lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_ASSIGNOP [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol++;
+                continue;
+            }
+        }
+
+        // Handle boolean operators '==' and '!='
+        if (currentToken == '=') {
+            if(tokens.charAt(tokenIndex + 1) == '=') {
+                addToken("T_BOOLOP", "==", lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_BOOLOP [ == ] found at (" + lineNum + "," + lineCol + ")");
+                tokenIndex = tokenIndex + 1;
+                lineCol++;
+                continue;
+            }
+        }
+
+        if (currentToken == '!') {
+            if(tokens.charAt(tokenIndex + 1) == '=') {
+                addToken("T_BOOLOP", "!=", lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_BOOLOP [ != ] found at (" + lineNum + "," + lineCol + ")");
+                tokenIndex = tokenIndex + 1;
+                lineCol++;
+                continue;
+            }
+        }
+
+        // Handle int operator '+'
+        if (currentToken == '+') {
+            addToken("T_INTOP", currentToken, lineNum, lineCol, programCount);
+            putMessage("DEBUG Lexer - T_INTOP [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            lineCol++;
+            continue;
+        }
+
         // Handle spaces
         if (currentToken == " ") {
-            addToken("T_SPACE", "[Space]", lineNum, lineCol, programCount);
-            putMessage("New token '[Space]' at line " + lineNum + ", index " + lineCol + ".");
             lineCol++;
             continue;
         }
