@@ -37,24 +37,10 @@ function lex() {
 // var tokenList = tokens.split("$");
 
 function checkToken(currentToken) {
-    // myString = tokens.split(tokens.indexOf("$") + 1);
-    // console.log(myString);
-    // if (myString[1].substr(-1) != "$") {
-    //     console.log(myString[1] + " did not find $");
-    // }
-
     // Initiate line number and column/index number
     // Resets to one after an EOP is reached
     lineNum = 1;
     lineCol = 1;
-
-    // Check for '$' (EOP), if it does not exist return a warning.
-    // if (tokens.substr(-1) != EOP) {
-    //     lexGrammarWarning = true;
-    //     lexWarningCount++;
-    //     tokens += "$";
-    //     putMessage("Warning: Expecting '$' following the end of program " + programCount + ". The lexer has gone ahead and added it.");
-    // }
 
     for (tokenIndex; tokenIndex < tokens.length; tokenIndex++) {
 
@@ -72,45 +58,46 @@ function checkToken(currentToken) {
         }
 
         // Handle Comments
-        if (currentToken == "/") {
-            if (tokens.charAt(tokenIndex + 1) == "*") {
-                console.log("Found where a comment started.");
-                isComment = true;
-                lineCol++;
-                continue;
-            }
+        if (isString == false){
+            if (currentToken == "/") {
+                if (tokens.charAt(tokenIndex + 1) == "*") {
+                    console.log("Found where a comment started.");
+                    isComment = true;
+                    lineCol++;
+                    continue;
+                }
+            }    
         }
 
         // Handle characters within comments
         if (currentToken == "*") {
             if (tokens.charAt(tokenIndex + 1) == "/" && isComment == true) {
-                lineCol = lineCol + 1;
-                tokenIndex = tokenIndex++;
+                lineCol = lineCol + 2;
+                tokenIndex = tokenIndex + 1;
+                isComment = false;
                 continue;
             }
 
             if (tokens.charAt(tokenIndex + 1) == "*" && isComment == true) {
-                console.log("We found another star, but this may mean the end of the comment... " + tokens.charAt(tokenIndex + 1));
                 lineCol++;
                 continue;
             }
             
             if (tokens.charAt(tokenIndex - 1) == "/" && isComment == true) {
-                console.log("Found the * that begins the comment. " + tokens.charAt(tokenIndex - 1));
                 lineCol++;
                 continue;
             }
         }
 
         // Handle the "/" that ends a comment
-        if (currentToken == "/") {
-            if (tokens.charAt(tokenIndex - 1) == "*" && isComment == true) {
-                console.log("Found where a comment ended. " + lineNum + "," + lineCol);
-                lineCol++;
-                isComment = false;
-                continue;
-            }
-        }
+        // if (currentToken == "/") {
+        //     if (tokens.charAt(tokenIndex - 1) == "*" && isComment == true) {
+        //         console.log("Found where a comment ended. " + lineNum + "," + lineCol);
+        //         lineCol++;
+        //         isComment = false;
+        //         continue;
+        //     }
+        // }
 
         // Handle any other characters within a comment
         if (currentToken != "/" && currentToken != "*" && isComment == true) {
@@ -141,7 +128,7 @@ function checkToken(currentToken) {
                 lineCol++;
                 continue;
             }
-            else {
+            else if (isString == true) {
                 console.log("String was either ended here or was not found.");
                 isString = false;
                 addToken("T_CLOSEQUOTE", currentToken, lineNum, lineCol, programCount);
@@ -361,7 +348,7 @@ function checkToken(currentToken) {
                 addToken("T_BOOLOP", "==", lineNum, lineCol, programCount);
                 putMessage("DEBUG Lexer - T_BOOLOP [ == ] found at (" + lineNum + "," + lineCol + ")");
                 tokenIndex = tokenIndex + 1;
-                lineCol++;
+                lineCol = lineCol + 2;
                 continue;
             }
         }
@@ -371,7 +358,7 @@ function checkToken(currentToken) {
                 addToken("T_BOOLOP", "!=", lineNum, lineCol, programCount);
                 putMessage("DEBUG Lexer - T_BOOLOP [ != ] found at (" + lineNum + "," + lineCol + ")");
                 tokenIndex = tokenIndex + 1;
-                lineCol++;
+                lineCol = lineCol + 2;
                 continue;
             }
         }
@@ -422,7 +409,6 @@ function checkToken(currentToken) {
 
 // Return some output when the lexer is finished with a program
 function endOfProgram() {
-    // putMessage("EOP reached.");
     // Count lex errors and add them to total count.
     errorCount += lexErrorCount;
     warningCount += lexWarningCount;
@@ -438,8 +424,6 @@ function endOfProgram() {
     }
     lexErrorCount = 0;
     lexWarningCount = 0;
-    // We can print the token sequence here, but there is no need.
-    // printSequence();
 
     // Move on to the next program if we are not done.
     if (tokenIndex < tokens.length - 1) {
