@@ -68,7 +68,7 @@ function checkToken(currentToken) {
             lexGrammarWarning = true;
             lexWarningCount++;
             tokens += "$";
-            putMessage("Warning: Expecting '$' following the end of program " + programCount + ". The lexer has gone ahead and added it.");
+            putMessage("ALERT Lexer - Warning: Expecting '$' following the end of program " + programCount + ". The lexer has added it.");
         }
 
         // Handle Comments
@@ -166,7 +166,7 @@ function checkToken(currentToken) {
             }
         }
 
-        // Handle "i"
+        // Handle "int", "if", and the "i" identifier
         if (currentToken == "i") {
             if (tokens.charAt(tokenIndex + 1) == "n" && tokens.charAt(tokenIndex + 2) == "t") {
                 addToken("T_TYPE", "int", lineNum, lineCol + 2, programCount);
@@ -175,22 +175,36 @@ function checkToken(currentToken) {
                 tokenIndex = tokenIndex + 2;
                 continue;
             }
+            else if (tokens.charAt(tokenIndex + 1) == "f") {
+                addToken("T_IF", "if", lineNum, lineCol + 2, programCount);
+                putMessage("DEBUG Lexer - T_IF [ if ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol = lineCol + 2;
+                tokenIndex = tokenIndex + 1;
+                continue;
+            }
             else {
                 addToken("T_ID", "i", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_CHAR [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
                 lineCol++;
                 continue;
             }
         }
-
+        
+        // Handle 'while' and the 'w' identifier
         if (currentToken == "w") {
-            addToken("T_ID", "w", lineNum, lineCol, programCount);
-            putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + lineCol + ".");
-            lineCol++;
-            // Just for debugging:
-            // var iterationNum = tokenIndex;
-            // console.log("iteration number: " + iterationNum + ", tokens: " + tokens.toString());
-            continue;
+            if (tokens.charAt(tokenIndex + 1) == "h" && tokens.charAt(tokenIndex + 2) == "i" && tokens.charAt(tokenIndex + 3) == "l" && tokens.charAt(tokenIndex + 4) == "e") {
+                addToken("T_WHILE", "w", lineNum, lineCol + 5, programCount);
+                putMessage("DEBUG Lexer - T_WHILE [ while ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol = lineCol + 5;
+                tokenIndex = tokenIndex + 4;
+                continue;
+            }
+            else {
+                addToken("T_ID", "w", lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_ID [ w ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol++;
+                continue;
+            }
         }
 
         // Handle spaces
@@ -198,16 +212,13 @@ function checkToken(currentToken) {
             addToken("T_SPACE", "[Space]", lineNum, lineCol, programCount);
             putMessage("New token '[Space]' at line " + lineNum + ", index " + lineCol + ".");
             lineCol++;
-            // Just for debugging:
-            // var iterationNum = tokenIndex;
-            // console.log("iteration number: " + iterationNum + ", tokens: " + tokens.toString());
             continue;
         }
 
         // Handle EOP
         if (currentToken == EOP) {
-            addToken("T_EOP", "$", lineNum, lineCol, programCount);
-            putMessage("DEBUG Lexer - T_EOP [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            addToken("EOP", "$", lineNum, lineCol, programCount);
+            putMessage("DEBUG Lexer - EOP [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
             if (tokenIndex < tokens.length - 1) {
                 endOfProgram();
                 continue;
@@ -227,7 +238,7 @@ function checkToken(currentToken) {
 
         else {
             lexErrorCount++;
-            putMessage("ERROR: The input '" + currentToken + "' at line " + lineNum + ", index " + lineCol + " is not valid.");
+            putMessage("ERROR Lexer - Error:(" + lineNum + "," + lineCol + ") Unrecognized token: " + currentToken);
             lineCol++;
         }
     }
@@ -236,7 +247,7 @@ function checkToken(currentToken) {
 
 // Return some output when the lexer is finished with a program
 function endOfProgram() {
-    putMessage("EOP reached.");
+    // putMessage("EOP reached.");
     // Count lex errors and add them to total count.
     errorCount += lexErrorCount;
     warningCount += lexWarningCount;
@@ -245,10 +256,10 @@ function endOfProgram() {
     lineCol = 1;
     // Report the results.
     if (errorCount > 0) {
-        putMessage("Lexer failed with " + lexErrorCount + " error(s) and " + lexWarningCount + " warning(s).");
+        putMessage("INFO Lexer - Lex failed with " + lexErrorCount + " error(s) and " + lexWarningCount + " warning(s).");
     }
     else {
-        putMessage("Lexer completed with " + lexErrorCount + " error(s) and " + lexWarningCount + " warning(s).");
+        putMessage("INFO Lexer - Lex completed with " + lexErrorCount + " error(s) and " + lexWarningCount + " warning(s).");
     }
     lexErrorCount = 0;
     lexWarningCount = 0;
@@ -264,6 +275,6 @@ function endOfProgram() {
         lexWarningCount = 0;
         // Reset the token sequence
         tokenSequence = [];
-        putMessage("\nLexing program " + programCount + "...");
+        putMessage("\nINFO  Lexer - Lexing program " + programCount + "...");
     }
 }

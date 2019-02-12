@@ -38,7 +38,7 @@ function btnCompile_click () {
     }
     else {
         programCount++;
-        putMessage("Lexing program " + programCount + "...");
+        putMessage("INFO Lexer - Lexing program " + programCount + "...");
         // Take the tokens from the lexer
         tokens = lex();
         // putMessage("Lex returned [" + tokens + "]");
