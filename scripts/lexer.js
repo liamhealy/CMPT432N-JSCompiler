@@ -377,6 +377,11 @@ function checkToken(currentToken) {
             continue;
         }
 
+        // Handle tabs (whitespace)
+        if (currentToken == "\f") {
+            continue;
+        }
+
         // Handle EOP
         if (currentToken == EOP) {
             addToken("EOP", "$", lineNum, lineCol, programCount);
