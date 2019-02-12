@@ -51,13 +51,3 @@ function matchBreak(str) {
         return false;
     }
 }
-
-function breakUp(str) {
-    var key = "$";
-    for (i = 0; i < str.length; i++) {
-        if (str.indexOf(i) == key) {
-            var character = str.split(key);
-            return character;
-        }
-    }
-}

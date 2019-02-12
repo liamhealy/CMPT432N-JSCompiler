@@ -19,6 +19,11 @@ var lineNum = 0;
 // order they appear in the source code
 var lineCol = 0;
 
+// Boolean value for determining where comments
+// begin and where they end.
+var isComment = false;
+var isString = false;
+
 function lex() {
     // Grab the "raw" source code.
     var sourceCode = document.getElementById("input").value;
@@ -28,25 +33,100 @@ function lex() {
     return sourceCode;
 }
 
+// var listIndex = 0;
+// var tokenList = tokens.split("$");
+
 function checkToken(currentToken) {
-    console.log(breakUp(tokens));
+    // myString = tokens.split(tokens.indexOf("$") + 1);
+    // console.log(myString);
+    // if (myString[1].substr(-1) != "$") {
+    //     console.log(myString[1] + " did not find $");
+    // }
+
     // Initiate line number and column/index number
     // Resets to one after an EOP is reached
     lineNum = 1;
     lineCol = 1;
 
     // Check for '$' (EOP), if it does not exist return a warning.
-    if (tokens.substr(-1) != EOP) {
-        lexGrammarWarning = true;
-        lexWarningCount++;
-        tokens += "$";
-        putMessage("Warning: Expecting '$' following the end of program " + programCount + ". The lexer has gone ahead and added it.");
-    }
+    // if (tokens.substr(-1) != EOP) {
+    //     lexGrammarWarning = true;
+    //     lexWarningCount++;
+    //     tokens += "$";
+    //     putMessage("Warning: Expecting '$' following the end of program " + programCount + ". The lexer has gone ahead and added it.");
+    // }
 
     for (tokenIndex; tokenIndex < tokens.length; tokenIndex++) {
 
         if (lineCol >= 1) {
             currentToken = getNextToken(currentToken);
+        }
+
+        // If '$' does not sit at the end of the last program, issue a warning
+        // and add it to the input
+        if (currentToken != EOP && tokenIndex == tokens.length - 1) {
+            lexGrammarWarning = true;
+            lexWarningCount++;
+            tokens += "$";
+            putMessage("Warning: Expecting '$' following the end of program " + programCount + ". The lexer has gone ahead and added it.");
+        }
+
+        // Handle Comments
+        if (currentToken == "/") {
+            if (tokens.charAt(tokenIndex + 1) == "*") {
+                console.log("Found where a comment started.");
+                isComment = true;
+                lineCol++;
+                continue;
+            }
+            else {
+            }
+        }
+
+        // Handle characters within comments
+        if (currentToken == "*") {
+            if (tokens.charAt(tokenIndex + 1) == "/" && isComment == true) {
+                lineCol = lineCol + 1;
+                tokenIndex = tokenIndex++;
+                continue;
+            }
+
+            if (tokens.charAt(tokenIndex + 1) == "*" && isComment == true) {
+                console.log("We found another star, but this may mean the end of the comment... " + tokens.charAt(tokenIndex + 1));
+                lineCol++;
+                continue;
+            }
+            
+            if (tokens.charAt(tokenIndex - 1) == "/" && isComment == true) {
+                console.log("Found the * that begins the comment. " + tokens.charAt(tokenIndex - 1));
+                lineCol++;
+                continue;
+            }
+        }
+
+        // Handle the "/" that ends a comment
+        if (currentToken == "/") {
+            if (tokens.charAt(tokenIndex - 1) == "*" && isComment == true) {
+                console.log("Found where a comment ended. " + lineNum + "," + lineCol);
+                lineCol++;
+                isComment = false;
+                continue;
+            }
+        }
+
+        // Handle any other characters within a comment
+        if (currentToken != "/" && currentToken != "*" && isComment == true) {
+            // Handle line breaks
+            if (currentToken == matchBreak(currentToken)) {
+                // Ignore it, but increment line number
+                lineCol = 1;
+                lineNum++;
+                continue;
+            }
+            else {
+                lineCol++;
+                continue;
+            }
         }
 
         // Handle "i"
@@ -127,6 +207,8 @@ function endOfProgram() {
     else {
         putMessage("Lexer completed with " + lexErrorCount + " error(s) and " + lexWarningCount + " warning(s).");
     }
+    lexErrorCount = 0;
+    lexWarningCount = 0;
     // We can print the token sequence here, but there is no need.
     // printSequence();
 
