@@ -372,13 +372,8 @@ function checkToken(currentToken) {
         }
 
         // Handle spaces
-        if (currentToken == " ") {
+        if (currentToken == "\t") {
             lineCol++;
-            continue;
-        }
-
-        // Handle tabs (whitespace)
-        if (currentToken == "\f") {
             continue;
         }
 
