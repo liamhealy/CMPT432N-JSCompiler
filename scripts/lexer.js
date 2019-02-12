@@ -372,6 +372,11 @@ function checkToken(currentToken) {
         }
 
         // Handle spaces
+        if (currentToken == " ") {
+            lineCol++;
+            continue;
+        }
+
         if (currentToken == "\t") {
             lineCol++;
             continue;
