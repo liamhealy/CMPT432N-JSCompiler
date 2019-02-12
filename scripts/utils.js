@@ -52,12 +52,12 @@ function matchBreak(str) {
     }
 }
 
-function matchChar(str) {
-    var alphabet = /[a-z]/i;
-    if (str.match(alphabet)) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
+// function matchChar(str) {
+//     var alphabet = /[a-z]/i;
+//     if (str.match(alphabet)) {
+//         return true;
+//     }
+//     else {
+//         return false;
+//     }
+// }

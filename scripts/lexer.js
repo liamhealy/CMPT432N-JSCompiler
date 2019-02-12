@@ -328,13 +328,20 @@ function checkToken(currentToken) {
         }
 
         // Handle all other acceptable CHAR's
-        if (matchChar(currentToken) == true && currentToken != "i" && currentToken != "w" && currentToken != "s" && currentToken != "b" && currentToken != "t" && currentToken != "f" && currentToken != "p") {
+        if ('acdeghijklmnoqruvxyz'.includes(currentToken)) {
             addToken("T_ID", currentToken, lineNum, lineCol, programCount);
             putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
             lineCol++;
             continue;
         }
+
         // Handle all acceptable numbers (DIGITs)
+        if ('0123456789'.includes(currentToken)) {
+            addToken("T_DIGIT", currentToken, lineNum, lineCol, programCount);
+            putMessage("DEBUG Lexer - T_DIGIT [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            lineCol++;
+            continue;
+        }
 
         // Handle spaces
         if (currentToken == " ") {
