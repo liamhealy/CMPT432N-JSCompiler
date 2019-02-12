@@ -136,12 +136,16 @@ function checkToken(currentToken) {
             if (isString == false) {
                 console.log("found a String.");
                 isString = true;
+                addToken("T_OPENQUOTE", currentToken, lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_OPENQUOTE [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
                 lineCol++;
                 continue;
             }
             else {
                 console.log("String was either ended here or was not found.");
                 isString = false;
+                addToken("T_CLOSEQUOTE", currentToken, lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_CLOSEQUOTE [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
                 lineCol++;
                 continue;
             }
@@ -183,10 +187,10 @@ function checkToken(currentToken) {
             continue;
         }
 
-        // Handle "print( expr )"
+        // Handle "print" and the "p" identifier
         if (currentToken == "p") {
             if (tokens.charAt(tokenIndex + 1) == "r" && tokens.charAt(tokenIndex + 2) == "i" && tokens.charAt(tokenIndex + 3) == "n" && tokens.charAt(tokenIndex + 4) == "t") {
-                addToken("T_PRINT", "print", lineNum, lineCol + 2, programCount);
+                addToken("T_PRINT", "print", lineNum, lineCol, programCount);
                 putMessage("DEBUG Lexer - T_PRINT [ print ] found at (" + lineNum + "," + lineCol + ")");
                 lineCol = lineCol + 5;
                 tokenIndex = tokenIndex + 4;
@@ -200,17 +204,66 @@ function checkToken(currentToken) {
             }
         }
 
+        // Handle left and right parentheses
+        if (currentToken == "(") {
+            addToken("T_LPARENTHESES", "(", lineNum, lineCol, programCount);
+            putMessage("DEBUG Lexer - T_LPARENTHESES [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            lineCol++;
+            continue;
+        }
+
+        if (currentToken == ")") {
+            addToken("T_RPARENTHESES", "(", lineNum, lineCol, programCount);
+            putMessage("DEBUG Lexer - T_RPARENTHESES [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            lineCol++;
+            continue;
+        }
+
+        // Handle "boolean" and the "b" identifier
+        if (currentToken == "b") {
+            if (tokens.charAt(tokenIndex + 1) == "o" && tokens.charAt(tokenIndex + 2) == "o" && tokens.charAt(tokenIndex + 3) == "l" && tokens.charAt(tokenIndex + 4) == "e" && tokens.charAt(tokenIndex + 5) == "a" && tokens.charAt(tokenIndex + 6) == "n") {
+                addToken("T_TYPE", "boolean", lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_TYPE [ boolean ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol = lineCol + 7;
+                tokenIndex = tokenIndex + 6;
+                continue;
+            }
+            else {
+                addToken("T_ID", "b", lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol++;
+                continue;
+            }
+        }
+
+        // Handle "string" and the "s" identifier
+        if (currentToken == "s") {
+            if (tokens.charAt(tokenIndex + 1) == "t" && tokens.charAt(tokenIndex + 2) == "r" && tokens.charAt(tokenIndex + 3) == "i" && tokens.charAt(tokenIndex + 4) == "n" && tokens.charAt(tokenIndex + 5) == "g") {
+                addToken("T_TYPE", "string", lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_TYPE [ string ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol = lineCol + 6;
+                tokenIndex = tokenIndex + 5;
+                continue;
+            }
+            else {
+                addToken("T_ID", "s", lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol++;
+                continue;
+            }
+        }
+
         // Handle "int", "if", and the "i" identifier
         if (currentToken == "i") {
             if (tokens.charAt(tokenIndex + 1) == "n" && tokens.charAt(tokenIndex + 2) == "t") {
-                addToken("T_TYPE", "int", lineNum, lineCol + 2, programCount);
+                addToken("T_TYPE", "int", lineNum, lineCol, programCount);
                 putMessage("DEBUG Lexer - T_TYPE [ int ] found at (" + lineNum + "," + lineCol + ")");
                 lineCol = lineCol + 3;
                 tokenIndex = tokenIndex + 2;
                 continue;
             }
             else if (tokens.charAt(tokenIndex + 1) == "f") {
-                addToken("T_IF", "if", lineNum, lineCol + 2, programCount);
+                addToken("T_IF", "if", lineNum, lineCol, programCount);
                 putMessage("DEBUG Lexer - T_IF [ if ] found at (" + lineNum + "," + lineCol + ")");
                 lineCol = lineCol + 2;
                 tokenIndex = tokenIndex + 1;
@@ -227,7 +280,7 @@ function checkToken(currentToken) {
         // Handle 'while' and the 'w' identifier
         if (currentToken == "w") {
             if (tokens.charAt(tokenIndex + 1) == "h" && tokens.charAt(tokenIndex + 2) == "i" && tokens.charAt(tokenIndex + 3) == "l" && tokens.charAt(tokenIndex + 4) == "e") {
-                addToken("T_WHILE", "w", lineNum, lineCol + 5, programCount);
+                addToken("T_WHILE", "while", lineNum, lineCol + 5, programCount);
                 putMessage("DEBUG Lexer - T_WHILE [ while ] found at (" + lineNum + "," + lineCol + ")");
                 lineCol = lineCol + 5;
                 tokenIndex = tokenIndex + 4;
@@ -235,11 +288,53 @@ function checkToken(currentToken) {
             }
             else {
                 addToken("T_ID", "w", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_ID [ w ] found at (" + lineNum + "," + lineCol + ")");
+                putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
                 lineCol++;
                 continue;
             }
         }
+
+        // Handle boolean values (true | false)
+        if (currentToken == "t") {
+            if (tokens.charAt(tokenIndex + 1) == "r" && tokens.charAt(tokenIndex + 2) == "u" && tokens.charAt(tokenIndex + 3) == "e") {
+                addToken("T_BOOLVAL", "true", lineNum, lineCol + 5, programCount);
+                putMessage("DEBUG Lexer - T_BOOLVAL [ true ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol = lineCol + 4;
+                tokenIndex = tokenIndex + 3;
+                continue;
+            }
+            else {
+                addToken("T_ID", "t", lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_ID [ t ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol++;
+                continue;
+            }
+        }
+
+        if (currentToken == "f") {
+            if (tokens.charAt(tokenIndex + 1) == "a" && tokens.charAt(tokenIndex + 2) == "l" && tokens.charAt(tokenIndex + 3) == "s" && tokens.charAt(tokenIndex + 4) == "e") {
+                addToken("T_BOOLVAL", "false", lineNum, lineCol + 5, programCount);
+                putMessage("DEBUG Lexer - T_BOOLVAL [ false ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol = lineCol + 5;
+                tokenIndex = tokenIndex + 4;
+                continue;
+            }
+            else {
+                addToken("T_ID", "f", lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol++;
+                continue;
+            }
+        }
+
+        // Handle all other acceptable CHAR's
+        if (matchChar(currentToken) == true && currentToken != "i" && currentToken != "w" && currentToken != "s" && currentToken != "b" && currentToken != "t" && currentToken != "f" && currentToken != "p") {
+            addToken("T_ID", currentToken, lineNum, lineCol, programCount);
+            putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            lineCol++;
+            continue;
+        }
+        // Handle all acceptable numbers (DIGITs)
 
         // Handle spaces
         if (currentToken == " ") {

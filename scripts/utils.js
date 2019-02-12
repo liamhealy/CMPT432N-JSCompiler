@@ -51,3 +51,13 @@ function matchBreak(str) {
         return false;
     }
 }
+
+function matchChar(str) {
+    var alphabet = /[a-z]/i;
+    if (str.match(alphabet)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
