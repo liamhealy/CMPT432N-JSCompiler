@@ -166,6 +166,21 @@ function checkToken(currentToken) {
             }
         }
 
+        // Handle left and right braces
+        if (currentToken == "{") {
+            addToken("T_LBRACE", "{", lineNum, lineCol, programCount);
+            putMessage("DEBUG Lexer - T_LBRACE [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            lineCol++;
+            continue;
+        }
+
+        if (currentToken == "}") {
+            addToken("T_RBRACE", "}", lineNum, lineCol, programCount);
+            putMessage("DEBUG Lexer - T_RBRACE [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            lineCol++;
+            continue;
+        }
+
         // Handle "int", "if", and the "i" identifier
         if (currentToken == "i") {
             if (tokens.charAt(tokenIndex + 1) == "n" && tokens.charAt(tokenIndex + 2) == "t") {
