@@ -161,6 +161,8 @@ function checkToken(currentToken) {
                 continue;
             }
             else {
+                addToken("T_CHAR", currentToken, lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_CHAR [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
                 lineCol++;
                 continue;
             }
@@ -179,6 +181,23 @@ function checkToken(currentToken) {
             putMessage("DEBUG Lexer - T_RBRACE [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
             lineCol++;
             continue;
+        }
+
+        // Handle "print( expr )"
+        if (currentToken == "p") {
+            if (tokens.charAt(tokenIndex + 1) == "r" && tokens.charAt(tokenIndex + 2) == "i" && tokens.charAt(tokenIndex + 3) == "n" && tokens.charAt(tokenIndex + 4) == "t") {
+                addToken("T_PRINT", "print", lineNum, lineCol + 2, programCount);
+                putMessage("DEBUG Lexer - T_PRINT [ print ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol = lineCol + 5;
+                tokenIndex = tokenIndex + 4;
+                continue;
+            }
+            else {
+                addToken("T_ID", "p", lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol++;
+                continue;
+            }
         }
 
         // Handle "int", "if", and the "i" identifier
