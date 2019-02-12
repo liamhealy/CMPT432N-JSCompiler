@@ -79,8 +79,6 @@ function checkToken(currentToken) {
                 lineCol++;
                 continue;
             }
-            else {
-            }
         }
 
         // Handle characters within comments
@@ -117,6 +115,45 @@ function checkToken(currentToken) {
         // Handle any other characters within a comment
         if (currentToken != "/" && currentToken != "*" && isComment == true) {
             // Handle line breaks
+            if (currentToken == " ") {
+                lineCol++;
+                continue;
+            }
+            if (currentToken == matchBreak(currentToken)) {
+                // Ignore it, but increment line number
+                lineCol = 1;
+                lineNum++;
+                continue;
+            }
+            else {
+                lineCol++;
+                continue;
+            }
+        }
+
+        // Handle strings
+        if (currentToken == "\"") {
+            if (isString == false) {
+                console.log("found a String.");
+                isString = true;
+                lineCol++;
+                continue;
+            }
+            else {
+                console.log("String was either ended here or was not found.");
+                isString = false;
+                lineCol++;
+                continue;
+            }
+        }
+
+        // Handle any other characters within a string
+        if (currentToken != "\"" && isString == true) {
+            // Handle line breaks
+            if (currentToken == " ") {
+                lineCol++;
+                continue;
+            }
             if (currentToken == matchBreak(currentToken)) {
                 // Ignore it, but increment line number
                 lineCol = 1;
@@ -131,6 +168,13 @@ function checkToken(currentToken) {
 
         // Handle "i"
         if (currentToken == "i") {
+            if (tokens.charAt(tokenIndex + 1) == "n" && tokens.charAt(tokenIndex + 2) == "t") {
+                addToken("T_TYPE", "int", lineNum, lineCol + 2, programCount);
+                putMessage("DEBUG Lexer - T_TYPE [ int ] found at (" + lineNum + "," + lineCol + ")");
+                lineCol = lineCol + 3;
+                tokenIndex = tokenIndex + 2;
+                continue;
+            }
             addToken("T_CHAR", "i", lineNum, lineCol, programCount);
             putMessage("New token '" + currentToken + "' at line " + lineNum + ", index " + lineCol + ".");
             lineCol++;
