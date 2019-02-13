@@ -33,9 +33,6 @@ function lex() {
     return sourceCode;
 }
 
-// var listIndex = 0;
-// var tokenList = tokens.split("$");
-
 function checkToken(currentToken) {
     // Initiate line number and column/index number
     // Resets to one after an EOP is reached
@@ -372,15 +369,15 @@ function checkToken(currentToken) {
         }
 
         // Handle spaces
-        if (currentToken == " ") {
+        if (currentToken == " " || currentToken == "\t") {
             lineCol++;
             continue;
         }
 
-        if (currentToken == "\t") {
-            lineCol++;
-            continue;
-        }
+        // if (currentToken == "\t") {
+        //     lineCol++;
+        //     continue;
+        // }
 
         // Handle EOP
         if (currentToken == EOP) {
@@ -397,7 +394,7 @@ function checkToken(currentToken) {
         }
 
         // Handle line breaks
-        if (currentToken == matchBreak(currentToken)) {
+        if (tokens.charAt(tokenIndex) == matchBreak(currentToken)) {
             // Ignore it, but increment line number
             lineCol = 1;
             lineNum++;
