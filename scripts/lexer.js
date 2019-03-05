@@ -4,6 +4,8 @@
 var lexGrammarWarning = false;
 var lexWarningCount = 0;
 var lexErrorCount = 0;
+var success = false;
+var failure = false;
 var programCount = 0;
 
 // Line number
@@ -148,6 +150,24 @@ function checkToken(currentToken) {
                 // Ignore it, but increment line number
                 lineCol = 1;
                 lineNum++;
+                continue;
+            }
+            if (currentToken == EOP) {
+                lexErrorCount++;
+                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: " + currentToken + " found");
+                endOfProgram();
+                continue;
+            }
+            if (currentToken == '/') {
+                lexErrorCount++;
+                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: " + currentToken + " found");
+                lineCol++;
+                continue;
+            }
+            if (currentToken == '*') {
+                lexErrorCount++;
+                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: " + currentToken + " found");
+                lineCol++;
                 continue;
             }
             else {
@@ -381,15 +401,23 @@ function checkToken(currentToken) {
 
         // Handle EOP
         if (currentToken == EOP) {
-            addToken("EOP", "$", lineNum, lineCol, programCount);
-            putMessage("DEBUG Lexer - EOP [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
-            if (tokenIndex < tokens.length - 1) {
+            if (isString == true) {
+                lexErrorCount++;
+                putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated string found");
                 endOfProgram();
                 continue;
             }
             else {
-                endOfProgram();
-                break;
+                addToken("EOP", "$", lineNum, lineCol, programCount);
+                putMessage("DEBUG Lexer - EOP [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                if (tokenIndex < tokens.length - 1) {
+                    endOfProgram();
+                    continue;
+                }
+                else {
+                    endOfProgram();
+                    break;
+                }
             }
         }
 
@@ -412,6 +440,10 @@ function checkToken(currentToken) {
 // Return some output when the lexer is finished with a program
 function endOfProgram() {
     // Count lex errors and add them to total count.
+    if (isString == true) {
+        lexErrorCount++;
+        putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated string found");
+    }
     errorCount += lexErrorCount;
     warningCount += lexWarningCount;
     // Reset line # and column/index #
@@ -426,6 +458,8 @@ function endOfProgram() {
     }
     lexErrorCount = 0;
     lexWarningCount = 0;
+    isComment = false;
+    isString = false;
 
     // Move on to the next program if we are not done.
     if (tokenIndex < tokens.length - 1) {
