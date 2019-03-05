@@ -146,28 +146,43 @@ function checkToken(currentToken) {
                 lineCol++;
                 continue;
             }
-            if (currentToken == matchBreak(currentToken)) {
-                // Ignore it, but increment line number
-                lineCol = 1;
-                lineNum++;
-                continue;
-            }
             if (currentToken == EOP) {
                 lexErrorCount++;
-                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: " + currentToken + " found");
+                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
                 endOfProgram();
                 continue;
             }
             if (currentToken == '/') {
                 lexErrorCount++;
-                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: " + currentToken + " found");
+                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
                 lineCol++;
                 continue;
             }
             if (currentToken == '*') {
                 lexErrorCount++;
-                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: " + currentToken + " found");
+                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
                 lineCol++;
+                continue;
+            }
+            if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.includes(currentToken)) {
+                lexErrorCount++;
+                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
+                lineCol++;
+                continue;
+            }
+            if ('0123456789'.includes(currentToken)) {
+                lexErrorCount++;
+                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
+                lineCol++;
+                continue;
+            }
+            if (currentToken == matchBreak(currentToken)) {
+                // Ignore it, but increment line number
+                lexErrorCount++;
+                putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated string found");
+                lineCol = 1;
+                lineNum++;
+                isString = false;
                 continue;
             }
             else {
@@ -430,7 +445,7 @@ function checkToken(currentToken) {
 
         else {
             lexErrorCount++;
-            putMessage("ERROR Lexer - Error:(" + lineNum + "," + lineCol + ") Unrecognized token: " + currentToken);
+            putMessage("ERROR Lexer - Error:(" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ]");
             lineCol++;
         }
     }
@@ -444,11 +459,15 @@ function endOfProgram() {
         lexErrorCount++;
         putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated string found");
     }
+    if (isComment == true) {
+        lexErrorCount++;
+        putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated comment found");
+    }
     errorCount += lexErrorCount;
     warningCount += lexWarningCount;
-    // Reset line # and column/index #
-    lineNum = 1;
-    lineCol = 1;
+    // Reset line # and column/index # (No reason to do so as of right now...)
+    // lineNum = 1;
+    // lineCol = 1;
     // Report the results.
     if (errorCount > 0) {
         putMessage("INFO Lexer - Lex failed with " + lexErrorCount + " error(s) and " + lexWarningCount + " warning(s).");
