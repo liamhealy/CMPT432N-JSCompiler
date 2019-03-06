@@ -479,7 +479,9 @@ function endOfProgram() {
     lexWarningCount = 0;
     isComment = false;
     isString = false;
-
+    // Note that after each sequence is displayed, we clear the data
+    // which means we must parse before the if statement below is reached.
+    printSequence();
     // Move on to the next program if we are not done.
     if (tokenIndex < tokens.length - 1) {
         // Prepare for the next program.
