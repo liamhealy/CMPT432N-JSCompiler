@@ -471,10 +471,11 @@ function endOfProgram() {
     // Report the results.
     if (errorCount > 0) {
         putMessage("INFO Lexer - Lex failed with " + lexErrorCount + " error(s) and " + lexWarningCount + " warning(s).");
+        putMessage("\nParser skipped due to LEXER error(s)");
     }
     else {
         putMessage("INFO Lexer - Lex completed with " + lexErrorCount + " error(s) and " + lexWarningCount + " warning(s).");
-        putMessage("\nParsing program " + programCount + "...");
+        putMessage("\nPARSER - Parsing program " + programCount + "...");
         parseStart();
     }
     lexErrorCount = 0;

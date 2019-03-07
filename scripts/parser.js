@@ -25,6 +25,7 @@ function nextToken() {
     thisToken = tokenSequence[sequenceIndex];
 }
 
+// Begin parsing from here
 function parseStart() {
     if (tokenSequence.length == 0) {
         putMessage("Finished parsing.");
@@ -51,7 +52,7 @@ function parseStart() {
 }
 
 function parseBlock() {
-    // Left brace
+    // Handle left brace
     if (thisToken.tokenId == "T_LBRACE") {
         putMessage("-parseBlock()");
         blockLevel++;
@@ -60,7 +61,7 @@ function parseBlock() {
         parseStmtList();
     }
 
-    // Right brace
+    // Handle right brace
     if (thisToken.tokenId == "T_RBRACE") {
         putMessage("-parseBlock()");
         blockLevel--;
@@ -81,9 +82,13 @@ function parseValues() {
 
 function parseStmtList() {
     putMessage("-parseStmtList()")
-    if (thisToken.tokenId == "T_LBRACE" || thisToken.tokenId == "T_RBRACE") {
-        // Let parseBlock() handle the braces
-        parseBlock();
+    // Handle Statement
+    if (thisToken.tokenId == "T_PRINTSTMT" || thisToken.tokenId == "T_ID" ||
+        thisToken.tokenId == "T_TYPE" || thisToken.tokenId == "T_WHILE" ||
+        thisToken.tokenId == "T_IF" || thisToken.tokenId == "T_LBRACE" ||
+        thisToken.tokenId == "T_RBRACE") {
+        
+        parseStatement();
     }
     if (thisToken.tokenId == "EOP") {
         parseEOP();
@@ -91,6 +96,49 @@ function parseStmtList() {
     else {
         // Do nothing for now...
     }
+}
+
+function parseStatement() {
+    putMessage("-parseStatement()");
+    if (thisToken.tokenId == "T_PRINTSTMT") {
+        
+    }
+    if (thisToken.tokenId == "T_ID") {
+        
+    }
+    if (thisToken.tokenId == "T_TYPE") {
+        
+    }
+    if (thisToken.tokenId == "T_WHILE") {
+        
+    }
+    if (thisToken.tokenId == "T_IF") {
+        
+    }
+    if (thisToken.tokenId == "T_LBRACE" || thisToken.tokenId == "T_RBRACE") {
+        // Bring the parser back to parseBlock()
+        parseBlock();
+    }
+}
+
+function parsePrintStmt() {
+
+}
+
+function parseId() {
+
+}
+
+function parseType() {
+
+}
+
+function parseWhile() {
+
+}
+
+function parseIfStmt() {
+
 }
 
 function match(expectedType) {
