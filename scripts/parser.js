@@ -82,8 +82,10 @@ function parseEOP() {
     putMessage("-parseEOP()");
     if (parseErrors > 0) {
         putMessage("Parsing failed with " + parseErrors + " errors and " + parseWarnings + " warnings.");
+        sequenceIndex = 0;
     }
     else {
         putMessage("Parsing completed with " + parseErrors + " errors and " + parseWarnings + " warnings.");
+        sequenceIndex = 0;
     }
 }
