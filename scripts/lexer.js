@@ -474,6 +474,8 @@ function endOfProgram() {
     }
     else {
         putMessage("INFO Lexer - Lex completed with " + lexErrorCount + " error(s) and " + lexWarningCount + " warning(s).");
+        putMessage("\nParsing program " + programCount + "...");
+        parseStart();
     }
     lexErrorCount = 0;
     lexWarningCount = 0;
