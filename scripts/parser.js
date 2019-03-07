@@ -101,19 +101,19 @@ function parseStmtList() {
 function parseStatement() {
     putMessage("-parseStatement()");
     if (thisToken.tokenId == "T_PRINTSTMT") {
-        
+        parsePrintStmt();
     }
     if (thisToken.tokenId == "T_ID") {
-        
+        parseAssignmentStmt();
     }
     if (thisToken.tokenId == "T_TYPE") {
-        
+        parseVarDecl();
     }
     if (thisToken.tokenId == "T_WHILE") {
-        
+        parseWhile();
     }
     if (thisToken.tokenId == "T_IF") {
-        
+        parseIfStmt();
     }
     if (thisToken.tokenId == "T_LBRACE" || thisToken.tokenId == "T_RBRACE") {
         // Bring the parser back to parseBlock()
@@ -129,7 +129,11 @@ function parseId() {
 
 }
 
-function parseType() {
+function parseAssignmentStmt() {
+
+}
+
+function parseVarDecl() {
 
 }
 
