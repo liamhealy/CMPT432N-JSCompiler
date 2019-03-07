@@ -39,6 +39,11 @@ function parseStart() {
     if (thisToken.tokenId == "EOP" && blockLevel == 0) {
         parseEOP();
     }
+    // If the Block(s) are never closed, we have a parse error:
+    if (thisToken.tokenId == "EOP" && blockLevel > 0) {
+        putMessage("-parse failure, unexpected token found");
+    }
+    // parseStart() only accepts <Block> or '$', anything else = parse error.
     else {
         putMessage("-parse failure, unexpected token found");
         parseError++;
@@ -51,14 +56,17 @@ function parseBlock() {
         putMessage("-parseBlock()");
         blockLevel++;
         nextToken();
+        // Opening brace can lead to StmtList or another opening brace.
+        parseStmtList();
     }
-    // <StatementList>
 
     // Right brace
     if (thisToken.tokenId == "T_RBRACE") {
         putMessage("-parseBlock()");
         blockLevel--;
         nextToken();
+        // Same idea shown above in left brace if-stmt
+        parseStmtList();
     }
 
 }
@@ -69,6 +77,20 @@ function parseExpr() {
 
 function parseValues() {
 
+}
+
+function parseStmtList() {
+    putMessage("-parseStmtList()")
+    if (thisToken.tokenId == "T_LBRACE" || thisToken.tokenId == "T_RBRACE") {
+        // Let parseBlock() handle the braces
+        parseBlock();
+    }
+    if (thisToken.tokenId == "EOP") {
+        parseEOP();
+    }
+    else {
+        // Do nothing for now...
+    }
 }
 
 function match(expectedType) {
