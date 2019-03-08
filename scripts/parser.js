@@ -51,7 +51,7 @@ function parseStart() {
     // parseStart() only accepts <Block> or '$', anything else = parse error.
     else {
         putMessage("-parse failure, unexpected token found");
-        parseError++;
+        parseErrors++;
     }
 }
 
@@ -73,63 +73,6 @@ function parseBlock() {
         // Same idea shown above in left brace if-stmt
         parseStmtList();
     }
-
-}
-
-function parseExpr() {
-    // Must handle '(' -> <expr> from PrintStatement
-    // '(' is a terminal term
-    putMessage("-parseExpr()");
-    if (thisToken.tokenId == "T_DIGIT") {
-        // Going to need to call a separate intExpr() function here
-        nextToken();
-        parseIntExpr();
-    }
-    if (thisToken.tokenId == "T_OPENQUOTE") {
-        // Going to need to call a separate stringExpr() function here
-        nextToken();
-        parseStringExpr();
-    }
-    if (thisToken.tokenId == "T_ID") {
-        // Going to need to call a separate foundId() function here
-    }
-    if (thisToken.tokenId == "T_BOOLVAL") {
-        // Going to need to do something else here
-    }
-    // How do we handle booleans?
-}
-
-function parseIntExpr() {
-    // Handle <IntExpr>
-    putMessage("-parseIntExpr()");
-    if (thisToken.tokenId == "T_INTOP") {
-        // Move back to expr - expecting another
-        parseExpr();
-    }
-    // We're done here
-}
-
-function parseStringExpr() {
-    // Handle <StringExpr>
-    putMessage("-parseStringExpr()");
-    if (thisToken.tokenId == "T_CHAR") {
-        // Jump to CharList
-        parseCharList();
-    }
-}
-
-function parseCharList() {
-    putMessage("-parseCharList()");
-    if (thisToken.tokenId == "T_CHAR") {
-        // This function must recursively call itself.
-    }
-}
-
-function parseId() {
-
-}
-
-function booleanExpr() {
 
 }
 
@@ -198,6 +141,15 @@ function parsePrintStmt() {
         // Jump to left paren. function
         leftParen();
     }
+    if (thisToken.tokenId == "T_RPARENTHESES" && printActive == true) {
+        printActive = false;
+        // Jump to right paren. function
+        console.log("heading back out of printstmt");
+        return;
+    }
+    else {
+        parseErrors++;
+    }
 
 }
 
@@ -208,6 +160,8 @@ function leftParen() {
         nextToken();
         parseExpr();
     }
+    console.log("heading out of leftParen");
+    return;
 }
 
 function parseAssignmentStmt() {
@@ -223,6 +177,75 @@ function parseWhileStmt() {
 }
 
 function parseIfStmt() {
+
+}
+
+function parseExpr() {
+    // Must handle '(' -> <expr> from PrintStatement
+    // '(' is a terminal term
+    putMessage("-parseExpr()");
+    if (thisToken.tokenId == "T_DIGIT") {
+        // Going to need to call a separate intExpr() function here
+        nextToken();
+        parseIntExpr();
+    }
+    if (thisToken.tokenId == "T_OPENQUOTE") {
+        // Going to need to call a separate stringExpr() function here
+        nextToken();
+        parseStringExpr();
+    }
+    if (thisToken.tokenId == "T_ID") {
+        // Going to need to call a separate foundId() function here
+    }
+    if (thisToken.tokenId == "T_BOOLVAL") {
+        // Going to need to do something else here
+        // How do we handle booleans?
+    }
+    console.log("heading back out of expr");
+    return;
+}
+
+function parseIntExpr() {
+    // Handle <IntExpr>
+    putMessage("-parseIntExpr()");
+    if (thisToken.tokenId == "T_INTOP") {
+        // Move back to expr - expecting another
+        parseExpr();
+    }
+    else{
+        (console.log("found a 2"))
+        return;
+    }
+    // We're done here
+}
+
+function parseStringExpr() {
+    // Handle <StringExpr>
+    putMessage("-parseStringExpr()");
+    if (thisToken.tokenId == "T_CHAR") {
+        // Jump to CharList
+        parseCharList();
+    }
+}
+
+function parseCharList() {
+    putMessage("-parseCharList()");
+    if (thisToken.tokenId == "T_CHAR") {
+        // This function must recursively call itself.
+        nextToken();
+        parseCharList();
+    }
+    if (thisToken.tokenId == "T_CLOSEQUOTE") {
+        // Need to make sure we don't give an error for closing the string
+        return;
+    }
+}
+
+function parseId() {
+
+}
+
+function booleanExpr() {
 
 }
 
