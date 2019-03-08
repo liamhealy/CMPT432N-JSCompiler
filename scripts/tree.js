@@ -4,6 +4,8 @@
 // By Alan G. Labouseur, based on the 2009
 // work by Michael Ardizzone and Tim Smith.
 //-----------------------------------------
+// Modified by Liam Healy
+//-----------------------------------------
 
 function Tree() {
     // ----------
