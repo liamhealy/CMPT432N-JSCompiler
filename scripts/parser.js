@@ -96,17 +96,26 @@ function parseBlock() {
     if (thisToken.tokenId == "T_LBRACE") {
         // create new branch
         cst.addNode("Block", "branch");
+        
         blockLevel++;
+        
         // display that we found a '{'
         cst.addNode(thisToken.value, "leaf");
+        
         nextToken();
+        
         // Jump to StatementList
         parseStmtList();
     }
     
     if (thisToken.tokenId == "T_RBRACE") {
         cst.addNode(thisToken.value, "leaf");
+        
+        cst.endChildren();
+        
         blockLevel--;
+        
+        
         nextToken();
         // Don't move downward from here
         // Have to somehow return from here if blockLevel = 0
@@ -118,11 +127,12 @@ function parseBlock() {
             parseErrors++;
         }
         else if (thisToken.tokenId == "EOP" && blockLevel == 0) {
-            cst.endChildren();
             parseEOP();
         }
         else {
             // Move back one branch and jump to <StatementList>
+            cst.endChildren();
+            cst.endChildren();
             parseStmtList();
         }
         // returning from here is most likely safe
@@ -158,10 +168,11 @@ function parseValues() {
 
 // Handle <StatementList>
 function parseStmtList() {
-    cst.addNode("StatementList", "branch");
     if (verbose == true) {
         putMessage("PARSER - parseStmtList()");
     }
+
+    cst.addNode("StatementList", "branch");
 
     // Check token obtained from parseBlock()
     if (thisToken.tokenId == "T_RBRACE") {
@@ -174,7 +185,7 @@ function parseStmtList() {
         thisToken.tokenId == "T_IF" || thisToken.tokenId == "T_LBRACE") {
         
         parseStatement();
-        if (thisToken.tokenId != "EOP") {
+        while (thisToken.tokenId != "EOP") {
             // Must call nextToken() from here so that
             // we aren't jumping from token to token
             // in random spots in different functions
@@ -190,7 +201,6 @@ function parseStmtList() {
         parseErrors++;
     }
     cst.endChildren();
-
     return;
     // nextToken();
     // putMessage("-parseStmtList()")
@@ -237,15 +247,27 @@ function parseStatement() {
         parseIfStmt();
     }
     // <Block>
-    if (thisToken.tokenId == "T_LBRACE" || thisToken.tokenId == "T_RBRACE") {
+    if (thisToken.tokenId == "T_LBRACE") {
         // Move back to parseBlock()
-        if (thisToken.tokenId == "T_LBRACE" && blockLevel == 0) {
+        if (blockLevel == 0) {
             if (verbose == true) {
                 putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
             }
             parseErrors++;
         }
         else {
+            parseBlock();
+        }
+    }
+    if (thisToken.tokenId == "T_RBRACE") {
+        if (blockLevel == 0) {
+            if (verbose == true) {
+                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            }
+            parseErrors++;
+        }
+        else {
+            cst.endChildren();
             parseBlock();
         }
     }
@@ -256,11 +278,12 @@ function parseStatement() {
 
 // Begin handling <PrintStatement>
 function parsePrintStmt() {
-    cst.addNode("PrintStatement", "branch");
+    // 1
+    // cst.addNode("PrintStatement", "branch");
     if (verbose == true) {
         putMessage("PARSER - parsePrintStmt()");
     }
-    cst.addNode(thisToken.value, "leaf");
+    // cst.addNode(thisToken.value, "leaf");
 
     // To let the parser know we are in <PrintStatement>
     printActive = true;
@@ -277,7 +300,8 @@ function parsePrintStmt() {
         }
         parseErrors++;
     }
-    cst.endChildren();
+    // 1
+    // cst.endChildren();
     return;
     // // Handle PrintStatement
     // putMessage("-parsePrintStmt()");
@@ -302,12 +326,14 @@ function parsePrintStmt() {
 
 function checkLeftParen() {
     // Display that we found a '('
-    cst.addNode(thisToken.value, "leaf");
+    // cst.addNode(thisToken.value, "leaf");
     // Check if we are printing:
     if (printActive == true) {
         // Look for an expr in parseExpr()
+        // Something must be between '(' and ')'
         nextToken();
         parseExpr();
+        checkRightParen();
     }
     else {
         if (verbose == true) {
@@ -315,7 +341,8 @@ function checkLeftParen() {
         }
         parseErrors++;
     }
-    checkRightParen();
+    // 1
+    // cst.endChildren();
     return;
     // // Handle left parentheses where necessary
     // if (printActive == true) {
@@ -329,13 +356,12 @@ function checkLeftParen() {
 function checkRightParen() {
     // Check for a right parentheses
     nextToken();
-    if (thisToken.tokenId == "T_RPARENTHESES") {
+    if (thisToken.value == ")") {
         // Leave the print statement
         printActive = false;
         // Display that we found a ')'
-        cst.addNode(thisToken.value, "leaf");
-
-        return;
+        // 2
+        // cst.addNode(thisToken.value, "leaf");
     }
     else {
         if (verbose == true) {
@@ -343,6 +369,7 @@ function checkRightParen() {
         }
         parseErrors++;
     }
+    // 1
     return;
 }
 
@@ -363,8 +390,8 @@ function parseIfStmt() {
 }
 
 function parseExpr() {
-    
-    cst.addNode("Expr", "branch");
+    // 2
+    // cst.addNode("Expr", "branch");
     
     if (verbose == true) {
         putMessage("PARSER - parseExpr()");
@@ -383,12 +410,15 @@ function parseExpr() {
     //     parsePrintStmt();
     // }
     else {
-        if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
-        }
-        parseErrors++;
+        return;
+        // if (verbose == true) {
+        //     putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        // }
+        // parseErrors++;
     }
-    cst.endChildren();
+    // 2
+    // cst.endChildren();
+    console.log("returning");
     return;
 
     // // Must handle '(' -> <expr> from PrintStatement
@@ -414,20 +444,32 @@ function parseExpr() {
 }
 
 function parseIntExpr() {
-    cst.addNode("IntExpr", "branch");
-
-    cst.addNode(thisToken.value, "leaf");
+    // 3
+    // cst.addNode("IntExpr", "branch");
+    // 4
+    // cst.addNode(thisToken.value, "leaf");
     
     if (verbose == true) {
         putMessage("PARSER - parseIntExpr()");
     }
 
     // Not sure what to do here as of right now
-    if (tokenSequence[sequenceIndex + 1].thisToken == "T_INTOP") {
+    if (tokenSequence[sequenceIndex + 1].tokenId == "T_INTOP") {
+        // Move to the int operator and store it in CST
+        nextToken();
+
+        // cst.addNode(thisToken.value, "leaf");
         
+        // Move on
+        nextToken();
+        // <Expr> expected, move back out
+        parseExpr();
+        // Not positive wether or not we back out from here...
+        // cst.endChildren();
+        return;
     }
     else {
-        cst.endChildren();
+        // 3
         return;
     }
     // nextToken();
@@ -485,6 +527,7 @@ function match(expectedType) {
 
 function parseEOP() {
     cst.addNode(thisToken.value, "leaf");
+
     if (verbose == true) {
         putMessage("PARSER - parseEOP()");
         programEnded = true;

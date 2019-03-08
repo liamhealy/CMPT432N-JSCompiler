@@ -267,7 +267,7 @@ function checkToken(currentToken) {
         }
 
         if (currentToken == ")") {
-            addToken("T_RPARENTHESES", "(", lineNum, lineCol, programCount);
+            addToken("T_RPARENTHESES", ")", lineNum, lineCol, programCount);
             if (verbose == true) {
                 putMessage("DEBUG Lexer - T_RPARENTHESES [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
             }
