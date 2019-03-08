@@ -38,6 +38,8 @@ function parseStart() {
 
     putMessage("PARSER - parseStart()");
 
+    thisToken = tokenSequence[sequenceIndex];
+
     if (thisToken.tokenId == "T_LBRACE") {
         parseBlock();
     }
@@ -79,18 +81,17 @@ function parseBlock() {
         // Jump to StatementList
         parseStmtList();
     }
+    
     if (thisToken.tokenId == "T_RBRACE") {
         blockLevel--;
         nextToken();
         // Don't move downward from here
         // Have to somehow return from here if blockLevel = 0
-        if (thisToken.tokenId == "EOP") {
-            if (blockLevel != 0) {
-                parseErrors++;
-            }
-            else {
-                parseEOP();
-            }
+        if (thisToken.tokenId == "EOP" && blockLevel > 0) {
+            parseErrors++;
+        }
+        else if (thisToken.tokenId == "EOP" && blockLevel == 0) {
+            parseEOP();
         }
         else {
             parseStmtList();
@@ -98,6 +99,10 @@ function parseBlock() {
         // returning from here is most likely safe
         return;
     }
+    else {
+        parseErrors++;
+    }
+    return;
     // putMessage("-parseBlock()");
     // // Handle left brace
     // if (thisToken.tokenId == "T_LBRACE") {
@@ -122,12 +127,16 @@ function parseStmtList() {
     putMessage("PARSER - parseStmtList()");
 
     // Check token obtained from parseBlock()
+    if (thisToken.tokenId == "T_RBRACE") {
+        parseBlock();
+    }
+
     if (thisToken.tokenId == "T_PRINTSTMT" || thisToken.tokenId == "T_ID" ||
         thisToken.tokenId == "T_TYPE" || thisToken.tokenId == "T_WHILE" || 
         thisToken.tokenId == "T_IF" || thisToken.tokenId == "T_LBRACE") {
         
         parseStatement();
-        if (blockLevel > 0) {
+        if (thisToken.tokenId != "EOP") {
             // Must call nextToken() from here so that
             // we aren't jumping from token to token
             // in random spots in different functions
@@ -135,12 +144,10 @@ function parseStmtList() {
             parseStmtList();
         }
     }
-    if (thisToken.tokenId == "R_BRACE") {
-        parseBlock();
-    }
     else {
         parseErrors++;
     }
+    return;
     // nextToken();
     // putMessage("-parseStmtList()")
     // // Handle Statement
@@ -156,39 +163,42 @@ function parseStmtList() {
     // else {
     //     // Do nothing for now...
     // }
-    return;
 }
 
 function parseStatement() {
     putMessage("PARSER - parseStatement()");
-    // putMessage("-parseStatement()");
     
-    // // <PrintStatement>
-    // if (thisToken.tokenId == "T_PRINTSTMT") {
-    //     parsePrintStmt();
-    // }
-    // // <AssignmentStatement>
-    // if (thisToken.tokenId == "T_ID") {
-    //     parseAssignmentStmt();
-    // }
-    // // <VarDecl>
-    // if (thisToken.tokenId == "T_TYPE") {
-    //     parseVarDecl();
-    // }
-    // // <WhileStatement>
-    // if (thisToken.tokenId == "T_WHILE") {
-    //     parseWhileStmt();
-    // }
-    // // <IfStatement>
-    // if (thisToken.tokenId == "T_IF") {
-    //     parseIfStmt();
-    // }
-    // // <Block>
-    // if (thisToken.tokenId == "T_LBRACE" || thisToken.tokenId == "T_RBRACE") {
-    //     // Bring the parser back to parseBlock()
-    //     parseBlock();
-    // }
-    // return;
+    // <PrintStatement>
+    if (thisToken.tokenId == "T_PRINTSTMT") {
+        parsePrintStmt();
+    }
+    // <AssignmentStatement>
+    if (thisToken.tokenId == "T_ID") {
+        parseAssignmentStmt();
+    }
+    // <VarDecl>
+    if (thisToken.tokenId == "T_TYPE") {
+        parseVarDecl();
+    }
+    // <WhileStatement>
+    if (thisToken.tokenId == "T_WHILE") {
+        parseWhileStmt();
+    }
+    // <IfStatement>
+    if (thisToken.tokenId == "T_IF") {
+        parseIfStmt();
+    }
+    // <Block>
+    if (thisToken.tokenId == "T_LBRACE" || thisToken.tokenId == "T_RBRACE") {
+        // Move back to parseBlock()
+        if (thisToken.tokenId == "T_LBRACE" && blockLevel == 0) {
+            parseErrors++;
+        }
+        else {
+            parseBlock();
+        }
+    }
+    return;
 }
 
 function parsePrintStmt() {
@@ -318,13 +328,33 @@ function match(expectedType) {
 }
 
 function parseEOP() {
-    putMessage("-parseEOP()");
+    putMessage("PARSER - parseEOP()");
     if (parseErrors > 0) {
         putMessage("PARSER - Parsing failed with " + parseErrors + " errors and " + parseWarnings + " warnings.");
-        sequenceIndex = 0;
     }
     else {
         putMessage("PARSER - Parsing completed with " + parseErrors + " errors and " + parseWarnings + " warnings.");
-        sequenceIndex = 0;
     }
+    return;
+}
+
+function resetAll() {
+    parseErrors = 0;
+
+    parseWarnings = 0;
+
+    expectedType = "";
+
+    expectedFound = false;
+
+    sequenceIndex = 0;
+
+    thisToken;
+    thisToken = tokenSequence[sequenceIndex];
+
+    blockLevel = 0;
+
+    printActive = false;
+
+    stringActive = false;
 }
