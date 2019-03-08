@@ -422,9 +422,7 @@ function parseIntExpr() {
         putMessage("PARSER - parseIntExpr()");
     }
 
-    // Not sure what to do here as of right now b/c
-    // returning to parseExpr() will crash the parser
-    // parseExpr();
+    // Not sure what to do here as of right now
     if (tokenSequence[sequenceIndex + 1].thisToken == "T_INTOP") {
         
     }
@@ -531,7 +529,7 @@ function resetAll() {
 
     programEnded = false;
 
-    var cst = new Tree();
+    cst = new Tree();
 
     cst.addNode("Root", "branch");
 }
