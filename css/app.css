@@ -1,0 +1,18 @@
+/*
+.navbar {
+	font-family: 'Roboto', sans-serif;
+}
+*/
+
+.ubuntuFont {
+	font-family: 'Ubuntu', sans-serif;
+}
+
+textarea {
+	width: 600px;
+	height:250px;
+	font-family: 'Ubuntu', sans-serif;
+}
+/* {
+	font-family: 'Ubuntu', sans-serif;
+}

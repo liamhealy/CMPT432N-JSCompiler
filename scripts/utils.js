@@ -66,7 +66,6 @@ function matchBreak(str) {
 // }
 
 //  The File Reader API https://developer.mozilla.org/en-US/docs/Web/API/FileReader
-
 function getFile(event) {
     // fileReader.onload = 
     const uploadedFile = event.target;

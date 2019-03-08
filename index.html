@@ -6,7 +6,10 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400" rel="stylesheet">
         <link rel="stylesheet" href="css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="css/app.css"/>
         <title>JavaScript Compiler</title>
     </head>
     <body onload="init();" style="background-color: rgb(75, 74, 74);">
@@ -15,28 +18,29 @@
         </nav>
         <div class="container" style="padding-left: 60px; padding-top: 20px; align-self: center;">
             <!-- Here is where we will be able to upload files to compile -->
-            <h2>Upload files from workspace</h2>
+            <h2 class="ubuntuFont">Upload files from workspace</h2>
             <div class="container" style="display: flex; align-items: center; border-style: solid; border-radius: 5px; border-color: limegreen; width: 400px; height: 60px; float: left;">
-                <input type="file" id="upload" style="display: flex;">
+                <input type="file" class="ubuntuFont" id="upload" style="display: flex; color:silver;">
             </div>
             <div class="container" style="display: flex; float: right;">
-                <p style="align-self: center; color: crimson;">Warning: </p>
-                <p style="align-self: center; color: silver; padding-left: 5px;"> Uploading files will overwrite anything currently entered in 'Source Code'.</p>
+                <p class="ubuntuFont" style="align-self: center; color:red;">Warning: </p>
+                <p class="ubuntuFont" style="align-self: center; color: silver; padding-left: 5px;"> Uploading files will overwrite anything currently entered in 'Source Code'.</p>
             </div>
         </div>
         <div class="container" style="padding-top: 50px; padding-left: 60px;">
             <br>
-            <label for="form1" style="color:silver;">Source Code:</label>
+            <label class="ubuntuFont" for="form1" style="color:silver;">Source Code:</label>
             <br>
             <textarea type="text" id="input" rows="10" cols="100" style="color:gainsboro; background-color:dimgray; border-color: black;" placeholder="Input source code or upload a file above"></textarea>   
             <br>
-            <button type="button" class="btn btn-sm" id="btnCompile" style="background-color: limegreen; border: limegreen;" onclick="btnCompile_click();">Run Lexer</button>
-            <button type="button" class="btn btn-sm" id="btnVerbose" style="background-color: darkolivegreen; border: darkolivegreen;" onclick="setVerbose();">Verbose Mode [off]</button>       
+            <button type="button" class="btn btn-sm ubuntuFont" id="btnCompile" style="background-color: limegreen; border: limegreen;" onclick="btnCompile_click();">Run Lexer</button>
+            <button type="button" class="btn btn-sm ubuntuFont" id="btnVerbose" style="background-color: darkolivegreen; border: darkolivegreen;" onclick="setVerbose();">Verbose Mode [off]</button>       
             <br>
-            <label for="form2" style="color:silver;">Output:</label>
+            <label class="ubuntuFont" for="form2" style="color:silver;">Output:</label>
             <br>
-            <textarea type="text" id="output" rows="10" cols="100" style="background-color:dimgray; border-color: black;" disabled></textarea>
+            <textarea type="text" id="output" rows="10" cols="100" style="color:gainsboro; background-color:dimgray; border-color: black;" disabled></textarea>
         </div>
+        <script type="text/javascript" src="scripts/tree.js"></script>
         <script type="text/javascript" src="scripts/lexer.js"></script>
         <script type="text/javascript" src="scripts/utils.js"></script>
         <script type="text/javascript" src="scripts/global.js"></script>

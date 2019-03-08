@@ -62,7 +62,7 @@ function btnCompile_click () {
 }
 
 function putMessage (msg) {
-    document.getElementById("output").style.color = "#000000";
+    // document.getElementById("output").style.color = "#000000";
     document.getElementById("output").value += msg + "\n";
 }
 
