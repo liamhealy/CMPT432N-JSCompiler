@@ -119,6 +119,28 @@ function parseValues() {
 }
 
 function parseStmtList() {
+    putMessage("PARSER - parseStmtList()");
+
+    // Check token obtained from parseBlock()
+    if (thisToken.tokenId == "T_PRINTSTMT" || thisToken.tokenId == "T_ID" ||
+        thisToken.tokenId == "T_TYPE" || thisToken.tokenId == "T_WHILE" || 
+        thisToken.tokenId == "T_IF" || thisToken.tokenId == "T_LBRACE") {
+        
+        parseStatement();
+        if (blockLevel > 0) {
+            // Must call nextToken() from here so that
+            // we aren't jumping from token to token
+            // in random spots in different functions
+            nextToken();
+            parseStmtList();
+        }
+    }
+    if (thisToken.tokenId == "R_BRACE") {
+        parseBlock();
+    }
+    else {
+        parseErrors++;
+    }
     // nextToken();
     // putMessage("-parseStmtList()")
     // // Handle Statement
@@ -134,9 +156,11 @@ function parseStmtList() {
     // else {
     //     // Do nothing for now...
     // }
+    return;
 }
 
 function parseStatement() {
+    putMessage("PARSER - parseStatement()");
     // putMessage("-parseStatement()");
     
     // // <PrintStatement>
