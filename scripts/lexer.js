@@ -476,6 +476,7 @@ function endOfProgram() {
     else {
         putMessage("INFO Lexer - Lex completed with " + lexErrorCount + " error(s) and " + lexWarningCount + " warning(s).");
         putMessage("\nPARSER - Parsing program " + programCount + "...");
+        resetAll();
         parseStart();
     }
     lexErrorCount = 0;
@@ -484,7 +485,7 @@ function endOfProgram() {
     isString = false;
     // Note that after each sequence is displayed, we clear the data
     // which means we must parse before the if statement below is reached.
-    printSequence();
+    // printSequence();
     // Move on to the next program if we are not done.
     if (tokenIndex < tokens.length - 1) {
         // Prepare for the next program.
