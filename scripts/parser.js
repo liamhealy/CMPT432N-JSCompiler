@@ -449,10 +449,15 @@ function parseEOP() {
         programEnded = true;
     }
     if (parseErrors > 0) {
-        putMessage("PARSER - Parsing failed with " + parseErrors + " errors and " + parseWarnings + " warnings.");
+        if (parseErrors > 1) {
+            putMessage("PARSER - Parse failed with " + parseErrors + " errors");
+        }
+        else {
+            putMessage("PARSER - Parse failed with " + parseErrors + " error");
+        }
     }
     else {
-        putMessage("PARSER - Parsing completed with " + parseErrors + " errors and " + parseWarnings + " warnings.");
+        putMessage("PARSER - Parsing completed successfully");
     }
     return;
 }
