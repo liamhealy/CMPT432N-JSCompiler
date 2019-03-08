@@ -94,20 +94,24 @@ function parseBlock() {
     }
 
     if (thisToken.tokenId == "T_LBRACE") {
+        // create new branch
         cst.addNode("Block", "branch");
         blockLevel++;
+        // display that we found a '{'
+        cst.addNode(thisToken.value, "leaf");
         nextToken();
         // Jump to StatementList
         parseStmtList();
     }
     
     if (thisToken.tokenId == "T_RBRACE") {
+        cst.addNode(thisToken.value, "leaf");
         blockLevel--;
         nextToken();
         // Don't move downward from here
         // Have to somehow return from here if blockLevel = 0
         if (thisToken.tokenId == "EOP" && blockLevel > 0) {
-            console.log("getting an error here line 107");
+            console.log("error line 107");
             if (verbose == true) {
                 putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
             }
@@ -119,14 +123,14 @@ function parseBlock() {
         }
         else {
             // Move back one branch and jump to <StatementList>
-            cst.endChildren();
             parseStmtList();
         }
         // returning from here is most likely safe
         return;
     }
     else {
-        if (verbose == true) {
+        if (verbose == true && programEnded == false) {
+            console.log("Error line 130");
             putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
         }
         parseErrors++;
@@ -179,12 +183,14 @@ function parseStmtList() {
         }
     }
     else {
-        if (verbose == true) {
+        if (verbose == true && programEnded == false) {
+            console.log("Error at 184");
             putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
         }
         parseErrors++;
-        cst.endChildren();
     }
+    cst.endChildren();
+
     return;
     // nextToken();
     // putMessage("-parseStmtList()")
@@ -243,6 +249,8 @@ function parseStatement() {
             parseBlock();
         }
     }
+    cst.endChildren();
+    cst.endChildren();
     return;
 }
 
@@ -252,6 +260,7 @@ function parsePrintStmt() {
     if (verbose == true) {
         putMessage("PARSER - parsePrintStmt()");
     }
+    cst.addNode(thisToken.value, "leaf");
 
     // To let the parser know we are in <PrintStatement>
     printActive = true;
@@ -268,6 +277,7 @@ function parsePrintStmt() {
         }
         parseErrors++;
     }
+    cst.endChildren();
     return;
     // // Handle PrintStatement
     // putMessage("-parsePrintStmt()");
@@ -291,6 +301,8 @@ function parsePrintStmt() {
 }
 
 function checkLeftParen() {
+    // Display that we found a '('
+    cst.addNode(thisToken.value, "leaf");
     // Check if we are printing:
     if (printActive == true) {
         // Look for an expr in parseExpr()
@@ -320,6 +332,10 @@ function checkRightParen() {
     if (thisToken.tokenId == "T_RPARENTHESES") {
         // Leave the print statement
         printActive = false;
+        // Display that we found a ')'
+        cst.addNode(thisToken.value, "leaf");
+
+        return;
     }
     else {
         if (verbose == true) {
@@ -347,7 +363,9 @@ function parseIfStmt() {
 }
 
 function parseExpr() {
+    
     cst.addNode("Expr", "branch");
+    
     if (verbose == true) {
         putMessage("PARSER - parseExpr()");
     }
@@ -397,6 +415,9 @@ function parseExpr() {
 
 function parseIntExpr() {
     cst.addNode("IntExpr", "branch");
+
+    cst.addNode(thisToken.value, "leaf");
+    
     if (verbose == true) {
         putMessage("PARSER - parseIntExpr()");
     }
@@ -405,9 +426,12 @@ function parseIntExpr() {
     // returning to parseExpr() will crash the parser
     // parseExpr();
     if (tokenSequence[sequenceIndex + 1].thisToken == "T_INTOP") {
+        
     }
-
-    return;
+    else {
+        cst.endChildren();
+        return;
+    }
     // nextToken();
     // // Handle <IntExpr>
     // putMessage("-parseIntExpr()");
@@ -462,21 +486,25 @@ function match(expectedType) {
 }
 
 function parseEOP() {
+    cst.addNode(thisToken.value, "leaf");
     if (verbose == true) {
         putMessage("PARSER - parseEOP()");
         programEnded = true;
     }
+
     if (parseErrors > 0) {
         if (parseErrors > 1) {
             putMessage("PARSER - Parse failed with " + parseErrors + " errors");
+            putMessage("\nNo CST displayed due to Parse errors");
         }
         else {
             putMessage("PARSER - Parse failed with " + parseErrors + " error");
+            putMessage("\nNo CST displayed due to Parse error");
         }
     }
     else {
         putMessage("PARSER - Parsing completed successfully");
-        cst.toString();
+        putMessage("\nCST for program " + programCount + "\n" + cst.toString());
     }
     return;
 }
@@ -502,4 +530,8 @@ function resetAll() {
     stringActive = false;
 
     programEnded = false;
+
+    var cst = new Tree();
+
+    cst.addNode("Root", "branch");
 }

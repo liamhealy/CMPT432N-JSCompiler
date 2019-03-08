@@ -29,13 +29,11 @@ function Tree() {
                    };
 
         // Check to see if it needs to be the root node.
-        if ( (this.root == null) || (!this.root) )
-        {
+        if ( (this.root == null) || (!this.root) ) {
             // We are the root node.
             this.root = node;
         }
-        else
-        {
+        else {
             // We are the children.
             // Make our parent the CURrent node...
             node.parent = this.cur;
@@ -44,8 +42,7 @@ function Tree() {
             this.cur.children.push(node);
         }
         // If we are an interior/branch node, then...
-        if (kind == "branch")
-        {
+        if (kind == "branch") {
             // ... update the CURrent node pointer to ourselves.
             this.cur = node;
         }
@@ -54,12 +51,10 @@ function Tree() {
     // Note that we're done with this branch of the tree...
     this.endChildren = function() {
         // ... by moving "up" to our parent node (if possible).
-        if ((this.cur.parent !== null) && (this.cur.parent.name !== undefined))
-        {
+        if ((this.cur.parent !== null) && (this.cur.parent.name !== undefined)) {
             this.cur = this.cur.parent;
         }
-        else
-        {
+        else {
             // TODO: Some sort of error logging.
             // This really should not happen, but it will, of course.
         }
@@ -71,29 +66,24 @@ function Tree() {
         var traversalResult = "";
 
         // Recursive function to handle the expansion of the nodes.
-        function expand(node, depth)
-        {
+        function expand(node, depth) {
             // Space out based on the current depth so
             // this looks at least a little tree-like.
-            for (var i = 0; i < depth; i++)
-            {
+            for (var i = 0; i < depth; i++) {
                 traversalResult += "-";
             }
 
             // If there are no children (i.e., leaf nodes)...
-            if (!node.children || node.children.length === 0)
-            {
+            if (!node.children || node.children.length === 0) {
                 // ... note the leaf node.
                 traversalResult += "[" + node.name + "]";
                 traversalResult += "\n";
             }
-            else
-            {
+            else {
                 // There are children, so note these interior/branch nodes and ...
                 traversalResult += "<" + node.name + "> \n";
                 // .. recursively expand them.
-                for (var i = 0; i < node.children.length; i++)
-                {
+                for (var i = 0; i < node.children.length; i++) {
                     expand(node.children[i], depth + 1);
                 }
             }
