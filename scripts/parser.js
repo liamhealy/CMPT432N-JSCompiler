@@ -71,6 +71,7 @@ function parseStart() {
     // // }
 }
 
+// Handle <Block>
 function parseBlock() {
     // Handle left and right braces
     putMessage("PARSER - parseBlock()");
@@ -123,6 +124,7 @@ function parseValues() {
 
 }
 
+// Handle <StatementList>
 function parseStmtList() {
     putMessage("PARSER - parseStmtList()");
 
@@ -165,6 +167,7 @@ function parseStmtList() {
     // }
 }
 
+// Handle <Statement>
 function parseStatement() {
     putMessage("PARSER - parseStatement()");
     
@@ -201,8 +204,23 @@ function parseStatement() {
     return;
 }
 
+// Begin handling <PrintStatement>
 function parsePrintStmt() {
-    // nextToken();
+    putMessage("PARSER - parsePrintStmt()");
+
+    // To let the parser know we are in <PrintStatement>
+    printActive = true;
+
+    nextToken();
+
+    // We need a left parentheses or we have an error:
+    if (thisToken.tokenId == "T_LPARENTHESES") {
+        checkLeftParen();
+    }
+    else {
+        parseErrors++;
+    }
+    return;
     // // Handle PrintStatement
     // putMessage("-parsePrintStmt()");
     // if (thisToken.tokenId == "T_LPARENTHESES" && printActive == false) {
@@ -224,7 +242,18 @@ function parsePrintStmt() {
 
 }
 
-function leftParen() {
+function checkLeftParen() {
+    // Check if we are printing:
+    if (printActive == true) {
+        // Look for an expr in parseExpr()
+        nextToken();
+        parseExpr();
+    }
+    else {
+        parseErrors++;
+    }
+    checkRightParen();
+    return;
     // // Handle left parentheses where necessary
     // if (printActive == true) {
     //     // Jump to the next token and move to parseExpr()
@@ -232,6 +261,19 @@ function leftParen() {
     //     parseExpr();
     // }
     // return;
+}
+
+function checkRightParen() {
+    // Check for a right parentheses
+    nextToken();
+    if (thisToken.tokenId == "T_RPARENTHESES") {
+        // Leave the print statement
+        printActive = false;
+    }
+    else {
+        parseErrors++;
+    }
+    return;
 }
 
 function parseAssignmentStmt() {
@@ -251,6 +293,17 @@ function parseIfStmt() {
 }
 
 function parseExpr() {
+    putMessage("PARSER - parseExpr()");
+
+    //For now, I will only set it up for Digits
+    if (thisToken.tokenId == "T_DIGIT") {
+        parseIntExpr();
+    }
+    else {
+        parseErrors++;
+    }
+    return;
+
     // // Must handle '(' -> <expr> from PrintStatement
     // // '(' is a terminal term
     // putMessage("-parseExpr()");
@@ -274,6 +327,13 @@ function parseExpr() {
 }
 
 function parseIntExpr() {
+    putMessage("PARSER - parseIntExpr()");
+
+    // Not sure what to do here as of right now b/c
+    // returning to parseExpr() will crash the parser
+    // parseExpr();
+
+    return;
     // nextToken();
     // // Handle <IntExpr>
     // putMessage("-parseIntExpr()");
