@@ -19,6 +19,8 @@ var printActive = false;
 
 var stringActive = false;
 
+var programEnded = false;  
+
 // function getToken() {
 //     currentToken = tokenSequence[sequenceIndex];
 // }
@@ -32,11 +34,15 @@ function nextToken() {
 // Begin parsing from here
 function parseStart() {
     if (tokenSequence.length == 0) {
-        putMessage("-parsing finished");
+        if (verbose == true) {
+            putMessage("PARSER - parsing finished");
+        }
         return;
     }
 
-    putMessage("PARSER - parseStart()");
+    if (verbose == true) {
+        putMessage("PARSER - parseStart()");
+    }
 
     thisToken = tokenSequence[sequenceIndex];
 
@@ -44,6 +50,9 @@ function parseStart() {
         parseBlock();
     }
     else {
+        if (verbose == true) {
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        }
         parseErrors++;
     }
     return;
@@ -74,7 +83,9 @@ function parseStart() {
 // Handle <Block>
 function parseBlock() {
     // Handle left and right braces
-    putMessage("PARSER - parseBlock()");
+    if (verbose == true) {
+        putMessage("PARSER - parseBlock()");
+    }
 
     if (thisToken.tokenId == "T_LBRACE") {
         blockLevel++;
@@ -89,6 +100,9 @@ function parseBlock() {
         // Don't move downward from here
         // Have to somehow return from here if blockLevel = 0
         if (thisToken.tokenId == "EOP" && blockLevel > 0) {
+            if (verbose == true) {
+                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            }
             parseErrors++;
         }
         else if (thisToken.tokenId == "EOP" && blockLevel == 0) {
@@ -101,6 +115,9 @@ function parseBlock() {
         return;
     }
     else {
+        if (verbose == true) {
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        }
         parseErrors++;
     }
     return;
@@ -126,7 +143,9 @@ function parseValues() {
 
 // Handle <StatementList>
 function parseStmtList() {
-    putMessage("PARSER - parseStmtList()");
+    if (verbose == true) {
+        putMessage("PARSER - parseStmtList()");
+    }
 
     // Check token obtained from parseBlock()
     if (thisToken.tokenId == "T_RBRACE") {
@@ -147,6 +166,9 @@ function parseStmtList() {
         }
     }
     else {
+        if (verbose == true) {
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        }
         parseErrors++;
     }
     return;
@@ -169,7 +191,9 @@ function parseStmtList() {
 
 // Handle <Statement>
 function parseStatement() {
-    putMessage("PARSER - parseStatement()");
+    if (verbose == true) {
+        putMessage("PARSER - parseStatement()");
+    }
     
     // <PrintStatement>
     if (thisToken.tokenId == "T_PRINTSTMT") {
@@ -195,6 +219,9 @@ function parseStatement() {
     if (thisToken.tokenId == "T_LBRACE" || thisToken.tokenId == "T_RBRACE") {
         // Move back to parseBlock()
         if (thisToken.tokenId == "T_LBRACE" && blockLevel == 0) {
+            if (verbose == true) {
+                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            }
             parseErrors++;
         }
         else {
@@ -206,7 +233,9 @@ function parseStatement() {
 
 // Begin handling <PrintStatement>
 function parsePrintStmt() {
-    putMessage("PARSER - parsePrintStmt()");
+    if (verbose == true) {
+        putMessage("PARSER - parsePrintStmt()");
+    }
 
     // To let the parser know we are in <PrintStatement>
     printActive = true;
@@ -218,6 +247,9 @@ function parsePrintStmt() {
         checkLeftParen();
     }
     else {
+        if (verbose == true) {
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        }
         parseErrors++;
     }
     return;
@@ -250,6 +282,9 @@ function checkLeftParen() {
         parseExpr();
     }
     else {
+        if (verbose == true) {
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        }
         parseErrors++;
     }
     checkRightParen();
@@ -271,6 +306,9 @@ function checkRightParen() {
         printActive = false;
     }
     else {
+        if (verbose == true) {
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        }
         parseErrors++;
     }
     return;
@@ -293,13 +331,26 @@ function parseIfStmt() {
 }
 
 function parseExpr() {
-    putMessage("PARSER - parseExpr()");
+    if (verbose == true) {
+        putMessage("PARSER - parseExpr()");
+    }
 
     //For now, I will only set it up for Digits
     if (thisToken.tokenId == "T_DIGIT") {
         parseIntExpr();
     }
+    // if (thisToken.value == "\"") {
+    //     // Do nothing
+    //     parsePrintStmt();
+    // }
+    // if (thisToken.value == " ") {
+    //     // Do nothing
+    //     parsePrintStmt();
+    // }
     else {
+        if (verbose == true) {
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        }
         parseErrors++;
     }
     return;
@@ -327,11 +378,16 @@ function parseExpr() {
 }
 
 function parseIntExpr() {
-    putMessage("PARSER - parseIntExpr()");
+    if (verbose == true) {
+        putMessage("PARSER - parseIntExpr()");
+    }
 
     // Not sure what to do here as of right now b/c
     // returning to parseExpr() will crash the parser
     // parseExpr();
+    if (tokenSequence[sequenceIndex + 1].thisToken == "T_INTOP") {
+        
+    }
 
     return;
     // nextToken();
@@ -388,7 +444,10 @@ function match(expectedType) {
 }
 
 function parseEOP() {
-    putMessage("PARSER - parseEOP()");
+    if (verbose == true) {
+        putMessage("PARSER - parseEOP()");
+        programEnded = true;
+    }
     if (parseErrors > 0) {
         putMessage("PARSER - Parsing failed with " + parseErrors + " errors and " + parseWarnings + " warnings.");
     }
@@ -417,4 +476,6 @@ function resetAll() {
     printActive = false;
 
     stringActive = false;
+
+    programEnded = false;
 }

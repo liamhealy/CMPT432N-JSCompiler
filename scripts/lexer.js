@@ -53,7 +53,9 @@ function checkToken(currentToken) {
             lexGrammarWarning = true;
             lexWarningCount++;
             tokens += "$";
-            putMessage("ALERT Lexer - Warning: Expecting '$' following the end of program " + programCount + ". The lexer has added it.");
+            if (verbose == true) {
+                putMessage("ALERT Lexer - Warning: Expecting '$' following the end of program " + programCount + ". The lexer has added it.");
+            }
         }
 
         // Handle Comments
@@ -123,7 +125,9 @@ function checkToken(currentToken) {
                 console.log("found a String.");
                 isString = true;
                 addToken("T_OPENQUOTE", currentToken, lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_OPENQUOTE [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_OPENQUOTE [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol++;
                 continue;
             }
@@ -131,7 +135,9 @@ function checkToken(currentToken) {
                 console.log("String was either ended here or was not found.");
                 isString = false;
                 addToken("T_CLOSEQUOTE", currentToken, lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_CLOSEQUOTE [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_CLOSEQUOTE [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol++;
                 continue;
             }
@@ -142,44 +148,58 @@ function checkToken(currentToken) {
             // Handle line breaks
             if (currentToken == " ") {
                 addToken("T_CHAR", " ", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_CHAR [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_CHAR [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol++;
                 continue;
             }
             if (currentToken == EOP) {
                 lexErrorCount++;
-                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
+                if (verbose == true) {
+                    putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
+                }
                 endOfProgram();
                 continue;
             }
             if (currentToken == '/') {
                 lexErrorCount++;
-                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
+                if (verbose == true) {
+                    putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
+                }
                 lineCol++;
                 continue;
             }
             if (currentToken == '*') {
                 lexErrorCount++;
-                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
+                if (verbose == true) {
+                    putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
+                }
                 lineCol++;
                 continue;
             }
             if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.includes(currentToken)) {
                 lexErrorCount++;
-                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
+                if (verbose == true) {
+                    putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
+                }
                 lineCol++;
                 continue;
             }
             if ('0123456789'.includes(currentToken)) {
                 lexErrorCount++;
-                putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
+                if (verbose == true) {
+                    putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
+                }
                 lineCol++;
                 continue;
             }
             if (currentToken == matchBreak(currentToken)) {
                 // Ignore it, but increment line number
                 lexErrorCount++;
-                putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated string found");
+                if (verbose == true) {
+                    putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated string found");
+                }
                 lineCol = 1;
                 lineNum++;
                 isString = false;
@@ -187,7 +207,9 @@ function checkToken(currentToken) {
             }
             else {
                 addToken("T_CHAR", currentToken, lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_CHAR [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_CHAR [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol++;
                 continue;
             }
@@ -196,14 +218,18 @@ function checkToken(currentToken) {
         // Handle left and right braces
         if (currentToken == "{") {
             addToken("T_LBRACE", "{", lineNum, lineCol, programCount);
-            putMessage("DEBUG Lexer - T_LBRACE [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            if (verbose == true) {
+                putMessage("DEBUG Lexer - T_LBRACE [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            }
             lineCol++;
             continue;
         }
 
         if (currentToken == "}") {
             addToken("T_RBRACE", "}", lineNum, lineCol, programCount);
-            putMessage("DEBUG Lexer - T_RBRACE [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            if (verbose == true) {
+                putMessage("DEBUG Lexer - T_RBRACE [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            }
             lineCol++;
             continue;
         }
@@ -212,14 +238,19 @@ function checkToken(currentToken) {
         if (currentToken == "p") {
             if (tokens.charAt(tokenIndex + 1) == "r" && tokens.charAt(tokenIndex + 2) == "i" && tokens.charAt(tokenIndex + 3) == "n" && tokens.charAt(tokenIndex + 4) == "t") {
                 addToken("T_PRINTSTMT", "print", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_PRINTSTMT [ print ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_PRINTSTMT [ print ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol = lineCol + 5;
                 tokenIndex = tokenIndex + 4;
                 continue;
             }
             else {
+                if (verbose = true) {}
                 addToken("T_ID", "p", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol++;
                 continue;
             }
@@ -228,14 +259,18 @@ function checkToken(currentToken) {
         // Handle left and right parentheses
         if (currentToken == "(") {
             addToken("T_LPARENTHESES", "(", lineNum, lineCol, programCount);
-            putMessage("DEBUG Lexer - T_LPARENTHESES [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            if (verbose == true) {
+                putMessage("DEBUG Lexer - T_LPARENTHESES [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            }
             lineCol++;
             continue;
         }
 
         if (currentToken == ")") {
             addToken("T_RPARENTHESES", "(", lineNum, lineCol, programCount);
-            putMessage("DEBUG Lexer - T_RPARENTHESES [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            if (verbose == true) {
+                putMessage("DEBUG Lexer - T_RPARENTHESES [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            }
             lineCol++;
             continue;
         }
@@ -244,14 +279,18 @@ function checkToken(currentToken) {
         if (currentToken == "b") {
             if (tokens.charAt(tokenIndex + 1) == "o" && tokens.charAt(tokenIndex + 2) == "o" && tokens.charAt(tokenIndex + 3) == "l" && tokens.charAt(tokenIndex + 4) == "e" && tokens.charAt(tokenIndex + 5) == "a" && tokens.charAt(tokenIndex + 6) == "n") {
                 addToken("T_TYPE", "boolean", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_TYPE [ boolean ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_TYPE [ boolean ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol = lineCol + 7;
                 tokenIndex = tokenIndex + 6;
                 continue;
             }
             else {
                 addToken("T_ID", "b", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol++;
                 continue;
             }
@@ -261,14 +300,18 @@ function checkToken(currentToken) {
         if (currentToken == "s") {
             if (tokens.charAt(tokenIndex + 1) == "t" && tokens.charAt(tokenIndex + 2) == "r" && tokens.charAt(tokenIndex + 3) == "i" && tokens.charAt(tokenIndex + 4) == "n" && tokens.charAt(tokenIndex + 5) == "g") {
                 addToken("T_TYPE", "string", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_TYPE [ string ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_TYPE [ string ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol = lineCol + 6;
                 tokenIndex = tokenIndex + 5;
                 continue;
             }
             else {
                 addToken("T_ID", "s", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol++;
                 continue;
             }
@@ -278,21 +321,27 @@ function checkToken(currentToken) {
         if (currentToken == "i") {
             if (tokens.charAt(tokenIndex + 1) == "n" && tokens.charAt(tokenIndex + 2) == "t") {
                 addToken("T_TYPE", "int", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_TYPE [ int ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_TYPE [ int ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol = lineCol + 3;
                 tokenIndex = tokenIndex + 2;
                 continue;
             }
             else if (tokens.charAt(tokenIndex + 1) == "f") {
                 addToken("T_IF", "if", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_IF [ if ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_IF [ if ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol = lineCol + 2;
                 tokenIndex = tokenIndex + 1;
                 continue;
             }
             else {
                 addToken("T_ID", "i", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol++;
                 continue;
             }
@@ -302,14 +351,18 @@ function checkToken(currentToken) {
         if (currentToken == "w") {
             if (tokens.charAt(tokenIndex + 1) == "h" && tokens.charAt(tokenIndex + 2) == "i" && tokens.charAt(tokenIndex + 3) == "l" && tokens.charAt(tokenIndex + 4) == "e") {
                 addToken("T_WHILE", "while", lineNum, lineCol + 5, programCount);
-                putMessage("DEBUG Lexer - T_WHILE [ while ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_WHILE [ while ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol = lineCol + 5;
                 tokenIndex = tokenIndex + 4;
                 continue;
             }
             else {
                 addToken("T_ID", "w", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol++;
                 continue;
             }
@@ -319,14 +372,18 @@ function checkToken(currentToken) {
         if (currentToken == "t") {
             if (tokens.charAt(tokenIndex + 1) == "r" && tokens.charAt(tokenIndex + 2) == "u" && tokens.charAt(tokenIndex + 3) == "e") {
                 addToken("T_BOOLVAL", "true", lineNum, lineCol + 5, programCount);
-                putMessage("DEBUG Lexer - T_BOOLVAL [ true ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_BOOLVAL [ true ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol = lineCol + 4;
                 tokenIndex = tokenIndex + 3;
                 continue;
             }
             else {
                 addToken("T_ID", "t", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_ID [ t ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_ID [ t ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol++;
                 continue;
             }
@@ -335,14 +392,18 @@ function checkToken(currentToken) {
         if (currentToken == "f") {
             if (tokens.charAt(tokenIndex + 1) == "a" && tokens.charAt(tokenIndex + 2) == "l" && tokens.charAt(tokenIndex + 3) == "s" && tokens.charAt(tokenIndex + 4) == "e") {
                 addToken("T_BOOLVAL", "false", lineNum, lineCol + 5, programCount);
-                putMessage("DEBUG Lexer - T_BOOLVAL [ false ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_BOOLVAL [ false ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol = lineCol + 5;
                 tokenIndex = tokenIndex + 4;
                 continue;
             }
             else {
                 addToken("T_ID", "f", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol++;
                 continue;
             }
@@ -351,7 +412,9 @@ function checkToken(currentToken) {
         // Handle all other acceptable CHAR's
         if ('acdeghijklmnoqruvxyz'.includes(currentToken)) {
             addToken("T_ID", currentToken, lineNum, lineCol, programCount);
-            putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            if (verbose == true) {
+                putMessage("DEBUG Lexer - T_ID [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            }
             lineCol++;
             continue;
         }
@@ -359,7 +422,9 @@ function checkToken(currentToken) {
         // Handle all acceptable numbers (DIGITs)
         if ('0123456789'.includes(currentToken)) {
             addToken("T_DIGIT", currentToken, lineNum, lineCol, programCount);
-            putMessage("DEBUG Lexer - T_DIGIT [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            if (verbose == true) {
+                putMessage("DEBUG Lexer - T_DIGIT [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            }
             lineCol++;
             continue;
         }
@@ -368,7 +433,9 @@ function checkToken(currentToken) {
         if (currentToken == '=') {
             if(tokens.charAt(tokenIndex + 1) != '=') {
                 addToken("T_ASSIGNOP", currentToken, lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_ASSIGNOP [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_ASSIGNOP [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 lineCol++;
                 continue;
             }
@@ -378,7 +445,9 @@ function checkToken(currentToken) {
         if (currentToken == '=') {
             if(tokens.charAt(tokenIndex + 1) == '=') {
                 addToken("T_BOOLOP", "==", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_BOOLOP [ == ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_BOOLOP [ == ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 tokenIndex = tokenIndex + 1;
                 lineCol = lineCol + 2;
                 continue;
@@ -388,7 +457,9 @@ function checkToken(currentToken) {
         if (currentToken == '!') {
             if(tokens.charAt(tokenIndex + 1) == '=') {
                 addToken("T_BOOLOP", "!=", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - T_BOOLOP [ != ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - T_BOOLOP [ != ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 tokenIndex = tokenIndex + 1;
                 lineCol = lineCol + 2;
                 continue;
@@ -398,7 +469,9 @@ function checkToken(currentToken) {
         // Handle int operator '+'
         if (currentToken == '+') {
             addToken("T_INTOP", currentToken, lineNum, lineCol, programCount);
-            putMessage("DEBUG Lexer - T_INTOP [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            if (verbose == true) {
+                putMessage("DEBUG Lexer - T_INTOP [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+            }
             lineCol++;
             continue;
         }
@@ -418,13 +491,17 @@ function checkToken(currentToken) {
         if (currentToken == EOP) {
             if (isString == true) {
                 lexErrorCount++;
-                putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated string found");
+                if (verbose == true) {
+                    putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated string found");
+                }
                 endOfProgram();
                 continue;
             }
             else {
                 addToken("EOP", "$", lineNum, lineCol, programCount);
-                putMessage("DEBUG Lexer - EOP [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                if (verbose == true) {
+                    putMessage("DEBUG Lexer - EOP [ " + currentToken + " ] found at (" + lineNum + "," + lineCol + ")");
+                }
                 if (tokenIndex < tokens.length - 1) {
                     endOfProgram();
                     continue;
@@ -445,7 +522,9 @@ function checkToken(currentToken) {
 
         else {
             lexErrorCount++;
-            putMessage("ERROR Lexer - Error:(" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ]");
+            if (verbose == true) {
+                putMessage("ERROR Lexer - Error:(" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ]");
+            }
             lineCol++;
         }
     }
@@ -457,11 +536,15 @@ function endOfProgram() {
     // Count lex errors and add them to total count.
     if (isString == true) {
         lexErrorCount++;
-        putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated string found");
+        if (verbose == true) {
+            putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated string found");
+        }
     }
     if (isComment == true) {
         lexErrorCount++;
-        putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated comment found");
+        if (verbose == true) {
+            putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated comment found");
+        }
     }
     errorCount += lexErrorCount;
     warningCount += lexWarningCount;

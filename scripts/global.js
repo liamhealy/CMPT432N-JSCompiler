@@ -13,6 +13,7 @@ var warningCount = 0;       // Total count of warnings
 var EOP = "$";              // Denotes the end of a program/file
 var tokenSequence = [];     // Hold all valid tokens
 var ongoing = false;        // False = lexer is done, True = more prorgrams to lex
+var verbose = false;        // False = Minimal output, True = specific, detailed output
 
 function init () {
     // Clear the output box when loading in
@@ -27,6 +28,19 @@ function init () {
     tokenSequence = [];
     lexErrors = 0;
     programCount = 0;
+}
+
+function setVerbose () {
+    if (verbose == false) {
+        document.getElementById("btnVerbose").setAttribute("style", "background-color:limegreen; border:limegreen;");
+        document.getElementById("btnVerbose").textContent = "Verbose Mode [on]";
+        verbose = true;
+    }
+    else if (verbose == true) {
+        document.getElementById("btnVerbose").setAttribute("style", "background-color:darkolivegreen; border:darkolivegreen;");
+        document.getElementById("btnVerbose").textContent = "Verbose Mode [off]";
+        verbose = false;
+    }
 }
 
 function btnCompile_click () {
