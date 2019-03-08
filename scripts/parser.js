@@ -70,19 +70,33 @@ function parseStart() {
 }
 
 function parseBlock() {
+    // Handle left and right braces
     putMessage("PARSER - parseBlock()");
 
     if (thisToken.tokenId == "T_LBRACE") {
         blockLevel++;
         nextToken();
+        // Jump to StatementList
         parseStmtList();
     }
     if (thisToken.tokenId == "T_RBRACE") {
         blockLevel--;
         nextToken();
-    }
-    if (thisToken.tokenId == "EOP" && blockLevel != 0) {
-        parseErrors++;
+        // Don't move downward from here
+        // Have to somehow return from here if blockLevel = 0
+        if (thisToken.tokenId == "EOP") {
+            if (blockLevel != 0) {
+                parseErrors++;
+            }
+            else {
+                parseEOP();
+            }
+        }
+        else {
+            parseStmtList();
+        }
+        // returning from here is most likely safe
+        return;
     }
     // putMessage("-parseBlock()");
     // // Handle left brace
@@ -280,13 +294,13 @@ function match(expectedType) {
 }
 
 function parseEOP() {
-    // putMessage("-parseEOP()");
-    // if (parseErrors > 0) {
-    //     putMessage("Parsing failed with " + parseErrors + " errors and " + parseWarnings + " warnings.");
-    //     sequenceIndex = 0;
-    // }
-    // else {
-    //     putMessage("Parsing completed with " + parseErrors + " errors and " + parseWarnings + " warnings.");
-    //     sequenceIndex = 0;
-    // }
+    putMessage("-parseEOP()");
+    if (parseErrors > 0) {
+        putMessage("PARSER - Parsing failed with " + parseErrors + " errors and " + parseWarnings + " warnings.");
+        sequenceIndex = 0;
+    }
+    else {
+        putMessage("PARSER - Parsing completed with " + parseErrors + " errors and " + parseWarnings + " warnings.");
+        sequenceIndex = 0;
+    }
 }
