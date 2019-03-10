@@ -113,6 +113,10 @@ function checkToken(currentToken) {
                 lineNum++;
                 continue;
             }
+            if (currentToken == EOP) {
+                endOfProgram();
+                continue;
+            }
             else {
                 lineCol++;
                 continue;
@@ -155,10 +159,9 @@ function checkToken(currentToken) {
                 continue;
             }
             if (currentToken == EOP) {
-                lexErrorCount++;
-                if (verbose == true) {
-                    putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
-                }
+                // if (verbose == true) {
+                //     putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
+                // }
                 endOfProgram();
                 continue;
             }
@@ -543,7 +546,7 @@ function endOfProgram() {
     if (isComment == true) {
         lexErrorCount++;
         if (verbose == true) {
-            putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated comment found");
+            putMessage("ERROR Lexer - Error: Unterminated comment found in program " + programCount);
         }
     }
     errorCount += lexErrorCount;
@@ -552,7 +555,7 @@ function endOfProgram() {
     // lineNum = 1;
     // lineCol = 1;
     // Report the results.
-    if (errorCount > 0) {
+    if (lexErrorCount > 0) {
         putMessage("INFO Lexer - Lex failed with " + lexErrorCount + " error(s) and " + lexWarningCount + " warning(s).");
         putMessage("\nParser skipped due to LEXER error(s)");
     }
