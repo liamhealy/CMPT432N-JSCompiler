@@ -405,6 +405,9 @@ function parseExpr() {
     if (thisToken.tokenId == "T_DIGIT") {
         parseIntExpr();
     }
+    if (thisToken.tokenId == "T_OPENQUOTE") {
+        parseStringExpr();
+    }
     // if (thisToken.value == "\"") {
     //     // Do nothing
     //     parsePrintStmt();
@@ -493,6 +496,28 @@ function parseIntExpr() {
 }
 
 function parseStringExpr() {
+    cst.addNode("StringExpr", "branch");
+    // 4
+
+    if (verbose == true) {
+        putMessage("PARSER - parseStringExpr()");
+    }
+
+    // Check if we have T_OPENQUOTE vs. T_CLOSEQUOTE
+    if (thisToken.tokenId == "T_OPENQUOTE") {
+        // Display the current token on the CST
+        cst.addNode(thisToken.value, "leaf");
+        
+        // Move to <CharList>
+        parseCharList();
+    }
+    if (thisToken.tokenId == "T_CLOSEQUOTE") {
+        // display on CST
+        cst.addNode(thisToken.value, "leaf");
+        
+        // Move back on the CST
+        cst.endChildren();
+    }
     // nextToken();
     // // Handle <StringExpr>
     // putMessage("-parseStringExpr()");
@@ -500,9 +525,44 @@ function parseStringExpr() {
     //     // Jump to CharList
     //     parseCharList();
     // }
+
+    // Move back on the CST
+    cst.endChildren();
+
+    return;
 }
 
 function parseCharList() {
+    cst.addNode("CharList", "branch");
+
+    // Look at the next token
+    nextToken();
+
+    if (thisToken.tokenId == "T_CHAR") {
+        // display the current token on the CST
+        cst.addNode(thisToken.value, "leaf");
+
+        // recursively call this function until we find the next quote
+        parseCharList();
+    }
+    if (thisToken.tokenId == "T_CLOSEQUOTE") {
+        // display the current token on the CST
+        cst.addNode(thisToken.value, "leaf");
+        
+        // Move back out of CharList on the CST
+        cst.endChildren();
+        // leave <CharList>
+        return;
+    }
+    else {
+        // Anything besides a T_CHAR and T_CLOSEQUOTE is an error
+        if (verbose == true) {
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        }
+        parseErrors++;
+
+    }
+    return;
     // putMessage("-parseCharList()");
     // if (thisToken.tokenId == "T_CHAR") {
     //     // This function must recursively call itself.
