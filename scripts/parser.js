@@ -346,8 +346,18 @@ function checkLeftParen() {
         // checkRightParen();
     }
     else if (booleanActive == true) {
+        // Check for an expr
         nextToken();
         parseExpr();
+
+        // If we get an expr, move on to look for boolop
+        nextToken();
+        if (thisToken.tokenId == "T_BOOLOP") {
+            // If we get a boolop, add it and move on to look for a trailing expr
+            cst.addNode(thisToken.value, "leaf");
+            nextToken();
+            parseExpr();
+        }
     }
     else {
         if (verbose == true) {
@@ -417,15 +427,76 @@ function parseAssignmentStmt() {
 }
 
 function parseVarDecl() {
+    cst.addNode("VarDecl", "branch");
+    if (verbose == true) {
+        putMessage("PARSER - parseVarDecl()");
+    }
+    cst.addNode(thisToken.value, "leaf");
 
+    nextToken();
+
+    // We need an Id or we have an error:
+    if (thisToken.tokenId == "T_ID") {
+        parseExpr();
+    }
+    else {
+        if (verbose == true) {
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        }
+        parseErrors++;
+    }
+    // 1
+    cst.endChildren();
+    return;
 }
 
 function parseWhileStmt() {
+    cst.addNode("WhileStatement", "branch");
+    if (verbose == true) {
+        putMessage("PARSER - parseWhileStmt()");
+    }
+    cst.addNode(thisToken.value, "leaf");
 
+    nextToken();
+
+    // We need a BooleanExpr or we have an error:
+    if (thisToken.tokenId == "T_LPARENTHESES" || thisToken.tokenId == "T_BOOLVAL") {
+        parseExpr();
+    }
+    else {
+        console.log("error 457");
+        if (verbose == true) {
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        }
+        parseErrors++;
+    }
+    // 1
+    cst.endChildren();
+    return;
 }
 
 function parseIfStmt() {
+    cst.addNode("IfStatement", "branch");
+    if (verbose == true) {
+        putMessage("PARSER - parseIfStmt()");
+    }
+    cst.addNode(thisToken.value, "leaf");
 
+    nextToken();
+
+    // We need a BooleanExpr or we have an error:
+    if (thisToken.tokenId == "T_LPARENTHESES" || thisToken.tokenId == "T_BOOLVAL") {
+        parseExpr();
+    }
+    else {
+        if (verbose == true) {
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        }
+        parseErrors++;
+    }
+    // 1
+    cst.endChildren();
+    return;
 }
 
 function parseExpr() {
@@ -436,7 +507,6 @@ function parseExpr() {
         putMessage("PARSER - parseExpr()");
     }
 
-    //For now, I will only set it up for Digits
     if (thisToken.tokenId == "T_DIGIT") {
         parseIntExpr();
     }
@@ -638,7 +708,7 @@ function parseBooleanExpr() {
     cst.addNode("BooleanExpr", "branch");
     
     if (verbose == true) {
-        putMessage("PARSER - parseStringExpr()");
+        putMessage("PARSER - parseBooleanExpr()");
     }
 
     if (thisToken.tokenId == "T_LPARENTHESES") {
@@ -648,15 +718,18 @@ function parseBooleanExpr() {
     if (thisToken.tokenId == "T_BOOLVAL") {
         cst.addNode(thisToken.value, "leaf");
     }
-    if (thisToken.tokenId == "T_BOOLOP") {
-        cst.addNode(thisToken.value)
-    }
+    // if (tokenSequence[sequenceIndex + 1].tokenId == "T_BOOLOP") {
+    //     nextToken();
+    //     cst.addNode(thisToken.value);
+    //     nextToken();
+    //     parseExpr();
+    // }
     cst.endChildren();
     return;
 }
 
 function match(expectedType) {
-    // if (currentToken != expectedType) {
+    // if (thisToken.tokenId != expectedType) {
     //     // Ultimately, parsing failure will occur.
     //     expectedFound = false;
     // }

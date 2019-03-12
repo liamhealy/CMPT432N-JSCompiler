@@ -43,8 +43,26 @@ $
 
 /* Test Cases for Project Two */
 
-/* 1. (should lex and parse successfully */
+/* 1. (should lex and parse successfully) */
 {{{print(true)}}print(a)}${{print("liam")}}$
 
 /* 2. ugly AssignmentStatement (should lex, but not parse) */
 {{aa = true}}$
+
+/* 3. basic AssignmentStatement (should lex and parse successfully) */
+{{a = 3 + 2}}$
+
+/* 4. (should lex and parse successfully) */
+{
+    {int    a}
+a = false
+}$
+
+/* 5. (should lex and parse successfully) */
+{
+    {
+        while (a == 5) {
+            print(a)
+        }
+    }
+}$
