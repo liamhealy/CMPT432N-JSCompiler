@@ -279,7 +279,7 @@ function parseStatement() {
 // Begin handling <PrintStatement>
 function parsePrintStmt() {
     // 1
-    // cst.addNode("PrintStatement", "branch");
+    cst.addNode("PrintStatement", "branch");
     if (verbose == true) {
         putMessage("PARSER - parsePrintStmt()");
     }
@@ -301,7 +301,7 @@ function parsePrintStmt() {
         parseErrors++;
     }
     // 1
-    // cst.endChildren();
+    cst.endChildren();
     return;
     // // Handle PrintStatement
     // putMessage("-parsePrintStmt()");
@@ -326,14 +326,16 @@ function parsePrintStmt() {
 
 function checkLeftParen() {
     // Display that we found a '('
-    // cst.addNode(thisToken.value, "leaf");
+    cst.addNode(thisToken.value, "leaf");
     // Check if we are printing:
     if (printActive == true) {
         // Look for an expr in parseExpr()
         // Something must be between '(' and ')'
         nextToken();
         parseExpr();
-        checkRightParen();
+        // Move on
+        // nextToken();
+        // checkRightParen();
     }
     else {
         if (verbose == true) {
@@ -341,6 +343,8 @@ function checkLeftParen() {
         }
         parseErrors++;
     }
+    nextToken();
+    checkRightParen();
     // 1
     // cst.endChildren();
     return;
@@ -355,13 +359,13 @@ function checkLeftParen() {
 
 function checkRightParen() {
     // Check for a right parentheses
-    nextToken();
-    if (thisToken.value == ")") {
+    if (thisToken.tokenId == "T_RPARENTHESES") {
+        // 2
+        cst.addNode(thisToken.value, "leaf");
         // Leave the print statement
         printActive = false;
         // Display that we found a ')'
-        // 2
-        // cst.addNode(thisToken.value, "leaf");
+        return;
     }
     else {
         if (verbose == true) {
@@ -391,7 +395,7 @@ function parseIfStmt() {
 
 function parseExpr() {
     // 2
-    // cst.addNode("Expr", "branch");
+    cst.addNode("Expr", "branch");
     
     if (verbose == true) {
         putMessage("PARSER - parseExpr()");
@@ -417,7 +421,7 @@ function parseExpr() {
         // parseErrors++;
     }
     // 2
-    // cst.endChildren();
+    cst.endChildren();
     console.log("returning");
     return;
 
@@ -445,9 +449,9 @@ function parseExpr() {
 
 function parseIntExpr() {
     // 3
-    // cst.addNode("IntExpr", "branch");
+    cst.addNode("IntExpr", "branch");
     // 4
-    // cst.addNode(thisToken.value, "leaf");
+    cst.addNode(thisToken.value, "leaf");
     
     if (verbose == true) {
         putMessage("PARSER - parseIntExpr()");
@@ -458,18 +462,19 @@ function parseIntExpr() {
         // Move to the int operator and store it in CST
         nextToken();
 
-        // cst.addNode(thisToken.value, "leaf");
+        cst.addNode(thisToken.value, "leaf");
         
         // Move on
         nextToken();
         // <Expr> expected, move back out
         parseExpr();
         // Not positive wether or not we back out from here...
-        // cst.endChildren();
+        cst.endChildren();
         return;
     }
     else {
         // 3
+        cst.endChildren();
         return;
     }
     // nextToken();
