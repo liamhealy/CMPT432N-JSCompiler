@@ -13,7 +13,7 @@ var warningCount = 0;       // Total count of warnings
 var EOP = "$";              // Denotes the end of a program/file
 var tokenSequence = [];     // Hold all valid tokens
 var ongoing = false;        // False = lexer is done, True = more prorgrams to lex
-var verbose = false;        // False = Minimal output, True = specific, detailed output
+var verbose = true;        // False = Minimal output, True = specific, detailed output
 
 function init () {
     // Clear the output box when loading in

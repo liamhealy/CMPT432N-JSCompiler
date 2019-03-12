@@ -141,11 +141,14 @@ function parseBlock() {
         return;
     }
     else {
-        if (verbose == true && programEnded == false) {
-            console.log("Error line 130");
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        if (programEnded == false) {
+            parseStmtList();
         }
-        parseErrors++;
+        // if (verbose == true && programEnded == false) {
+        //     console.log("Error line 130");
+        //     putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        // }
+        // parseErrors++;
     }
     return;
     // putMessage("-parseBlock()");
@@ -194,6 +197,9 @@ function parseStmtList() {
             nextToken();
             parseStmtList();
         }
+    }
+    else if(programEnded == true) {
+        return;
     }
     else {
         if (verbose == true && programEnded == false) {
@@ -639,8 +645,8 @@ function parseEOP() {
 
     if (verbose == true) {
         putMessage("PARSER - parseEOP()");
-        programEnded = true;
     }
+    programEnded = true;
 
     if (parseErrors > 0) {
         if (parseErrors > 1) {
