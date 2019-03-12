@@ -39,6 +39,7 @@ function nextToken() {
 
 // Begin parsing from here
 function parseStart() {
+    // Do we need this if we aren't calling this to finish?
     if (tokenSequence.length == 0) {
         if (verbose == true) {
             putMessage("PARSER - parsing finished");
@@ -58,10 +59,23 @@ function parseStart() {
         parseBlock();
     }
     else {
-        if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        if (thisToken.tokenId == "EOP") {
+            if (verbose == true) {
+                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            }
+            parseErrors++;
+            parseEOP();
         }
-        parseErrors++;
+        else {
+            if (verbose == true) {
+                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            }
+            parseErrors++;
+        }
+        // if (verbose == true) {
+        //     putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        // }
+        // parseErrors++;
     }
     return;
     // if (tokenSequence.length == 0) {
@@ -111,22 +125,30 @@ function parseBlock() {
     }
     
     if (thisToken.tokenId == "T_RBRACE") {
+        // Display this on the CST and move backwards
         cst.addNode(thisToken.value, "leaf");
-        
         cst.endChildren();
         
         blockLevel--;
         
-        
         nextToken();
+        // cst.addNode(thisToken.value, "leaf");
+        
+        // cst.endChildren();
+        
+        // blockLevel--;
+        
+        
+        // nextToken();
         // Don't move downward from here
         // Have to somehow return from here if blockLevel = 0
         if (thisToken.tokenId == "EOP" && blockLevel > 0) {
-            console.log("error line 107");
-            if (verbose == true) {
-                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
-            }
-            parseErrors++;
+            parseStmtList();
+            // console.log("error line 107");
+            // if (verbose == true) {
+            //     putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            // }
+            // parseErrors++;
         }
         else if (thisToken.tokenId == "EOP" && blockLevel == 0) {
             parseEOP();
@@ -135,7 +157,7 @@ function parseBlock() {
             // Move back one branch and jump to <StatementList>
             cst.endChildren();
             cst.endChildren();
-            parseBlock();
+            parseStmtList();
         }
         
         // returning from here is most likely safe
@@ -150,6 +172,7 @@ function parseBlock() {
     // }
     else {
         if (programEnded == false) {
+            // Handle this error in StatementList to prevent it from repeating in output
             parseStmtList();
         }
         // if (verbose == true && programEnded == false) {
@@ -212,7 +235,7 @@ function parseStmtList() {
     else {
         if (verbose == true && programEnded == false) {
             console.log("Error at 184");
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ { ], [ } ] or some Statement");
         }
         parseErrors++;
         if (thisToken.tokenId == "EOP") {
@@ -271,7 +294,7 @@ function parseStatement() {
         // Move back to parseBlock()
         if (blockLevel == 0) {
             if (verbose == true) {
-                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ $ ]");
             }
             parseErrors++;
         }
@@ -280,9 +303,10 @@ function parseStatement() {
         }
     }
     if (thisToken.tokenId == "T_RBRACE") {
+        // Move back to parseBlock()
         if (blockLevel == 0) {
             if (verbose == true) {
-                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ $ ]");
             }
             parseErrors++;
         }
@@ -316,7 +340,7 @@ function parsePrintStmt() {
     }
     else {
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ ( ]");
         }
         parseErrors++;
     }
@@ -373,7 +397,7 @@ function checkLeftParen() {
     }
     else {
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting <PrintStatement> or <BooleanExpr>");
         }
         parseErrors++;
     }
@@ -404,7 +428,7 @@ function checkRightParen() {
     else {
         console.log("error 371");
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ ) ]");
         }
         parseErrors++;
     }
@@ -413,6 +437,7 @@ function checkRightParen() {
 }
 
 function parseAssignmentStmt() {
+    // Alert that we are in an <AssignmentStatement> and add to CST
     cst.addNode("AssignmentStatement", "branch");
     if (verbose == true) {
         putMessage("PARSER - parseAssignmentStmt()");
@@ -429,7 +454,7 @@ function parseAssignmentStmt() {
     }
     else {
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ = ]");
         }
         parseErrors++;
     }
@@ -439,6 +464,7 @@ function parseAssignmentStmt() {
 }
 
 function parseVarDecl() {
+    // Alert that we are in a VarDecl and add to CST
     cst.addNode("VarDecl", "branch");
     if (verbose == true) {
         putMessage("PARSER - parseVarDecl()");
@@ -453,7 +479,7 @@ function parseVarDecl() {
     }
     else {
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting an ID");
         }
         parseErrors++;
     }
@@ -463,6 +489,7 @@ function parseVarDecl() {
 }
 
 function parseWhileStmt() {
+    // Alert that we are in <WhileStatement> and add to CST
     cst.addNode("WhileStatement", "branch");
     if (verbose == true) {
         putMessage("PARSER - parseWhileStmt()");
@@ -476,9 +503,8 @@ function parseWhileStmt() {
         parseExpr();
     }
     else {
-        console.log("error 457");
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ ( ] or a boolean value");
         }
         parseErrors++;
     }
@@ -488,6 +514,7 @@ function parseWhileStmt() {
 }
 
 function parseIfStmt() {
+    // Alert that we are in an <IfStatement> and add to CST
     cst.addNode("IfStatement", "branch");
     if (verbose == true) {
         putMessage("PARSER - parseIfStmt()");
@@ -502,7 +529,7 @@ function parseIfStmt() {
     }
     else {
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ ( ] or a boolean value");
         }
         parseErrors++;
     }
@@ -537,7 +564,7 @@ function parseExpr() {
     else {
         //return;
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting a valid expression");
         }
         parseErrors++;
     }
@@ -689,7 +716,7 @@ function parseCharList() {
     else {
         // Anything besides a T_CHAR and T_CLOSEQUOTE is an error
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting a 'char' or [ \" ]");
         }
         parseErrors++;
 
@@ -729,6 +756,12 @@ function parseBooleanExpr() {
     }
     if (thisToken.tokenId == "T_BOOLVAL") {
         cst.addNode(thisToken.value, "leaf");
+    }
+    else {
+        if (verbose == true) {
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ ( ] or boolean value");
+        }
+        parseErrors++;
     }
     // if (tokenSequence[sequenceIndex + 1].tokenId == "T_BOOLOP") {
     //     nextToken();

@@ -93,7 +93,7 @@ function parseE () {
     // checkToken(currentToken);
     // Look ahead 1 char (which is now in currentToken because checkToken.
     // consumes another one) and see which E production to follow.
-    if (currentToken != EOP && tokenIndex < tokens.length) {
+    if (tokenIndex < tokens.length) {
         // We're not done, we might have another program to lex.
         // checkToken(currentToken);
         checkToken(currentToken);
