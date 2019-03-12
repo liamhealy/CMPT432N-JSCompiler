@@ -137,9 +137,17 @@ function parseBlock() {
             cst.endChildren();
             parseBlock();
         }
+        
         // returning from here is most likely safe
         return;
     }
+    // else if (blockLevel == 0) {
+    //     if (verbose == true) {
+    //         putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ $ ]");
+    //     }
+    //     parseErrors++;
+    //     return;
+    // }
     else {
         if (programEnded == false) {
             parseStmtList();
@@ -207,6 +215,10 @@ function parseStmtList() {
             putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
         }
         parseErrors++;
+        if (thisToken.tokenId == "EOP") {
+            parseEOP();
+        }
+        return;
     }
     cst.endChildren();
     return;
