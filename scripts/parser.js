@@ -39,14 +39,6 @@ function nextToken() {
 
 // Begin parsing from here
 function parseStart() {
-    // Do we need this if we aren't calling this to finish?
-    if (tokenSequence.length == 0) {
-        if (verbose == true) {
-            putMessage("PARSER - parsing finished");
-        }
-        return;
-    }
-
     if (verbose == true) {
         putMessage("PARSER - parseStart()");
     }
@@ -109,6 +101,7 @@ function parseBlock() {
         putMessage("PARSER - parseBlock()");
     }
 
+    // Match and consume braces
     if (thisToken.tokenId == "T_LBRACE") {
         // create new branch
         cst.addNode("Block", "branch");
@@ -315,6 +308,7 @@ function parseStatement() {
             parseBlock();
         }
     }
+    // Jump back twice so that CST matches the parser in parseBlock()
     cst.endChildren();
     cst.endChildren();
     return;
@@ -369,6 +363,7 @@ function parsePrintStmt() {
 }
 
 function checkLeftParen() {
+    // Match and consume
     // Display that we found a '('
     cst.addNode(thisToken.value, "leaf");
     // Check if we are printing:
@@ -419,6 +414,7 @@ function checkRightParen() {
     // Check for a right parentheses
     if (thisToken.tokenId == "T_RPARENTHESES") {
         // 2
+        // Match and consume
         cst.addNode(thisToken.value, "leaf");
         // Leave the print statement
         printActive = false;
@@ -446,6 +442,7 @@ function parseAssignmentStmt() {
 
     nextToken();
 
+    // Match and consume
     // We need an assignment operator or we have an error:
     if (thisToken.tokenId == "T_ASSIGNOP") {
         cst.addNode(thisToken.value, "leaf");
@@ -473,6 +470,7 @@ function parseVarDecl() {
 
     nextToken();
 
+    // Match and consume
     // We need an Id or we have an error:
     if (thisToken.tokenId == "T_ID") {
         parseExpr();
@@ -618,6 +616,7 @@ function parseIntExpr() {
         // Move to the int operator and store it in CST
         nextToken();
 
+        // Match and consume
         cst.addNode(thisToken.value, "leaf");
         
         // Move on
@@ -661,7 +660,7 @@ function parseStringExpr() {
         // Display the current token on the CST
         cst.addNode(thisToken.value, "leaf");
         
-        // Move to <CharList>
+        // Move to <CharList> for our string
         cst.addNode("CharList", "branch");
 
         parseCharList();
@@ -696,6 +695,7 @@ function parseCharList() {
     nextToken();
 
     if (thisToken.tokenId == "T_CHAR") {
+        // Match and consume
         // display the current token on the CST
         cst.addNode(thisToken.value, "leaf");
 
@@ -710,6 +710,7 @@ function parseCharList() {
         // Move back out of CharList on the CST
         // Leaving too many endChildren() calls around, getting bad CST's...
         // cst.endChildren();
+
         // leave <CharList>
         return;
     }
@@ -735,6 +736,7 @@ function parseCharList() {
 }
 
 function parseId() {
+    // Match and consume
     // Id is fairly simple, we just add the nodes to the CST
     // and return immediately after
     cst.addNode("Id", "branch");
@@ -755,6 +757,7 @@ function parseBooleanExpr() {
         checkLeftParen();
     }
     if (thisToken.tokenId == "T_BOOLVAL") {
+        // Match and consume
         cst.addNode(thisToken.value, "leaf");
     }
     else {
@@ -773,14 +776,15 @@ function parseBooleanExpr() {
     return;
 }
 
-function match(expectedType) {
-    // if (thisToken.tokenId != expectedType) {
-    //     // Ultimately, parsing failure will occur.
-    //     expectedFound = false;
-    // }
-}
+// function match(expectedType) {
+//     if (thisToken.tokenId != expectedType) {
+//         // Ultimately, parsing failure will occur.
+//         expectedFound = false;
+//     }
+// }
 
 function parseEOP() {
+    // Match and consume
     cst.addNode(thisToken.value, "leaf");
 
     if (verbose == true) {
