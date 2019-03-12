@@ -61,14 +61,14 @@ function parseStart() {
     else {
         if (thisToken.tokenId == "EOP") {
             if (verbose == true) {
-                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + ")");
             }
             parseErrors++;
             parseEOP();
         }
         else {
             if (verbose == true) {
-                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + ")");
             }
             parseErrors++;
         }
@@ -235,7 +235,7 @@ function parseStmtList() {
     else {
         if (verbose == true && programEnded == false) {
             console.log("Error at 184");
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ { ], [ } ] or some Statement");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ { ], [ } ] or some Statement");
         }
         parseErrors++;
         if (thisToken.tokenId == "EOP") {
@@ -294,7 +294,7 @@ function parseStatement() {
         // Move back to parseBlock()
         if (blockLevel == 0) {
             if (verbose == true) {
-                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ $ ]");
+                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ $ ]");
             }
             parseErrors++;
         }
@@ -306,7 +306,7 @@ function parseStatement() {
         // Move back to parseBlock()
         if (blockLevel == 0) {
             if (verbose == true) {
-                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ $ ]");
+                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ $ ]");
             }
             parseErrors++;
         }
@@ -340,7 +340,7 @@ function parsePrintStmt() {
     }
     else {
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ ( ]");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ ( ]");
         }
         parseErrors++;
     }
@@ -397,7 +397,7 @@ function checkLeftParen() {
     }
     else {
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting <PrintStatement> or <BooleanExpr>");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting <PrintStatement> or <BooleanExpr>");
         }
         parseErrors++;
     }
@@ -428,7 +428,7 @@ function checkRightParen() {
     else {
         console.log("error 371");
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ ) ]");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ ) ]");
         }
         parseErrors++;
     }
@@ -454,7 +454,7 @@ function parseAssignmentStmt() {
     }
     else {
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ = ]");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ = ]");
         }
         parseErrors++;
     }
@@ -479,7 +479,7 @@ function parseVarDecl() {
     }
     else {
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting an ID");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting an ID");
         }
         parseErrors++;
     }
@@ -504,7 +504,7 @@ function parseWhileStmt() {
     }
     else {
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ ( ] or a boolean value");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ ( ] or a boolean value");
         }
         parseErrors++;
     }
@@ -529,7 +529,7 @@ function parseIfStmt() {
     }
     else {
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ ( ] or a boolean value");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ ( ] or a boolean value");
         }
         parseErrors++;
     }
@@ -564,7 +564,7 @@ function parseExpr() {
     else {
         //return;
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting a valid expression");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting a valid expression");
         }
         parseErrors++;
     }
@@ -716,7 +716,7 @@ function parseCharList() {
     else {
         // Anything besides a T_CHAR and T_CLOSEQUOTE is an error
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting a 'char' or [ \" ]");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting a 'char' or [ \" ]");
         }
         parseErrors++;
 
@@ -759,7 +759,7 @@ function parseBooleanExpr() {
     }
     else {
         if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ], expecting [ ( ] or boolean value");
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ ( ] or boolean value");
         }
         parseErrors++;
     }
