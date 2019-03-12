@@ -135,7 +135,7 @@ function parseBlock() {
             // Move back one branch and jump to <StatementList>
             cst.endChildren();
             cst.endChildren();
-            parseStmtList();
+            parseBlock();
         }
         // returning from here is most likely safe
         return;
@@ -421,6 +421,9 @@ function parseExpr() {
     else if (thisToken.tokenId == "T_BOOLVAL") {
         parseBooleanExpr();
     }
+    else if (thisToken.tokenId == "T_ID") {
+        parseId();
+    }
     else {
         //return;
         if (verbose == true) {
@@ -595,7 +598,12 @@ function parseCharList() {
 }
 
 function parseId() {
-
+    // Id is fairly simple, we just add the nodes to the CST
+    // and return immediately after
+    cst.addNode("Id", "branch");
+    cst.addNode(thisToken.value, "leaf");
+    cst.endChildren();
+    return;
 }
 
 function parseBooleanExpr() {
