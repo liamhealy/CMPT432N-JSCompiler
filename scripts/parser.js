@@ -412,14 +412,21 @@ function parseExpr() {
     if (thisToken.tokenId == "T_DIGIT") {
         parseIntExpr();
     }
-    if (thisToken.tokenId == "T_OPENQUOTE") {
+    else if (thisToken.tokenId == "T_OPENQUOTE") {
         parseStringExpr();
     }
-    if (thisToken.tokenId == "T_LPARENTHESES") {
+    else if (thisToken.tokenId == "T_LPARENTHESES") {
         parseBooleanExpr();
     }
-    if (thisToken.tokenId == "T_BOOLVAL") {
+    else if (thisToken.tokenId == "T_BOOLVAL") {
         parseBooleanExpr();
+    }
+    else {
+        //return;
+        if (verbose == true) {
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        }
+        parseErrors++;
     }
     // // if (thisToken.value == "\"") {
     //     // Do nothing
@@ -429,13 +436,6 @@ function parseExpr() {
     //     // Do nothing
     //     parsePrintStmt();
     // }
-    else {
-        //return;
-        // if (verbose == true) {
-        //     putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
-        // }
-        // parseErrors++;
-    }
     // 2
     cst.endChildren();
     console.log("returning");
@@ -611,6 +611,9 @@ function parseBooleanExpr() {
     }
     if (thisToken.tokenId == "T_BOOLVAL") {
         cst.addNode(thisToken.value, "leaf");
+    }
+    if (thisToken.tokenId == "T_BOOLOP") {
+        cst.addNode(thisToken.value)
     }
     cst.endChildren();
     return;
