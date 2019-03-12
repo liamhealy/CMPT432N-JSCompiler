@@ -19,6 +19,8 @@ var printActive = false;
 
 var stringActive = false;
 
+var booleanActive = false;
+
 var programEnded = false;  
 
 var cst = new Tree();
@@ -337,6 +339,10 @@ function checkLeftParen() {
         // nextToken();
         // checkRightParen();
     }
+    if (booleanActive == true) {
+        nextToken();
+        parseExpr();
+    }
     else {
         if (verbose == true) {
             putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
@@ -408,6 +414,12 @@ function parseExpr() {
     }
     if (thisToken.tokenId == "T_OPENQUOTE") {
         parseStringExpr();
+    }
+    if (thisToken.tokenId == "T_LPARENTHESES") {
+        parseBooleanExpr();
+    }
+    if (thisToken.tokenId == "T_BOOLVAL") {
+        parseBooleanExpr();
     }
     // if (thisToken.value == "\"") {
     //     // Do nothing
@@ -587,7 +599,23 @@ function parseId() {
 }
 
 function booleanExpr() {
+    cst.addNode("BooleanExpr", "branch");
+    
+    if (verbose == true) {
+        putMessage("PARSER - parseStringExpr()");
+    }
 
+    if (thisToken.tokenId == "T_LPARENTHESES") {
+        booleanActive = true;
+        checkLeftParen();
+    }
+    if (thisToken.tokenId == "T_BOOLVAL") {
+        cst.addNode(thisToken.tokenId, "leaf");
+        nextToken();
+        parseExpr();
+    }
+    cst.endChildren();
+    return;
 }
 
 function match(expectedType) {
@@ -641,6 +669,8 @@ function resetAll() {
     printActive = false;
 
     stringActive = false;
+
+    booleanActive = false;
 
     programEnded = false;
 
