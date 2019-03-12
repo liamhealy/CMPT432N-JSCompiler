@@ -339,7 +339,7 @@ function checkLeftParen() {
         // nextToken();
         // checkRightParen();
     }
-    if (booleanActive == true) {
+    else if (booleanActive == true) {
         nextToken();
         parseExpr();
     }
@@ -421,7 +421,7 @@ function parseExpr() {
     if (thisToken.tokenId == "T_BOOLVAL") {
         parseBooleanExpr();
     }
-    // if (thisToken.value == "\"") {
+    // // if (thisToken.value == "\"") {
     //     // Do nothing
     //     parsePrintStmt();
     // }
@@ -598,7 +598,7 @@ function parseId() {
 
 }
 
-function booleanExpr() {
+function parseBooleanExpr() {
     cst.addNode("BooleanExpr", "branch");
     
     if (verbose == true) {
@@ -610,9 +610,7 @@ function booleanExpr() {
         checkLeftParen();
     }
     if (thisToken.tokenId == "T_BOOLVAL") {
-        cst.addNode(thisToken.tokenId, "leaf");
-        nextToken();
-        parseExpr();
+        cst.addNode(thisToken.value, "leaf");
     }
     cst.endChildren();
     return;
