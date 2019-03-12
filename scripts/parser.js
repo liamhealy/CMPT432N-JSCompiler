@@ -391,7 +391,29 @@ function checkRightParen() {
 }
 
 function parseAssignmentStmt() {
+    cst.addNode("AssignmentStatement", "branch");
+    if (verbose == true) {
+        putMessage("PARSER - parseAssignmentStmt()");
+    }
+    cst.addNode(thisToken.value, "leaf");
 
+    nextToken();
+
+    // We need an assignment operator or we have an error:
+    if (thisToken.tokenId == "T_ASSIGNOP") {
+        cst.addNode(thisToken.value, "leaf");
+        nextToken();
+        parseExpr();
+    }
+    else {
+        if (verbose == true) {
+            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
+        }
+        parseErrors++;
+    }
+    // 1
+    cst.endChildren();
+    return;
 }
 
 function parseVarDecl() {
