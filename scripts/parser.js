@@ -368,6 +368,7 @@ function checkRightParen() {
         return;
     }
     else {
+        console.log("error 371");
         if (verbose == true) {
             putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
         }
@@ -417,7 +418,7 @@ function parseExpr() {
     //     parsePrintStmt();
     // }
     else {
-        return;
+        //return;
         // if (verbose == true) {
         //     putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
         // }
