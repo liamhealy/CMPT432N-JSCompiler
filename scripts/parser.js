@@ -509,6 +509,8 @@ function parseStringExpr() {
         cst.addNode(thisToken.value, "leaf");
         
         // Move to <CharList>
+        cst.addNode("CharList", "branch");
+
         parseCharList();
     }
     if (thisToken.tokenId == "T_CLOSEQUOTE") {
@@ -533,7 +535,9 @@ function parseStringExpr() {
 }
 
 function parseCharList() {
-    cst.addNode("CharList", "branch");
+    // Pretty sure if we leave this here its gonna mess the CST up
+    // will test this shortly
+    // cst.addNode("CharList", "branch");
 
     // Look at the next token
     nextToken();
@@ -547,10 +551,12 @@ function parseCharList() {
     }
     if (thisToken.tokenId == "T_CLOSEQUOTE") {
         // display the current token on the CST
-        cst.addNode(thisToken.value, "leaf");
+        // this is also throwing off the CST
+        // cst.addNode(thisToken.value, "leaf");
         
         // Move back out of CharList on the CST
-        cst.endChildren();
+        // Leaving too many endChildren() calls around, getting bad CST's...
+        // cst.endChildren();
         // leave <CharList>
         return;
     }
