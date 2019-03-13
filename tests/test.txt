@@ -1,6 +1,6 @@
 /* Test Cases for Project Two */
 
-/* 1. (should lex and parse successfully) */
+/* 1. (both programs should lex and parse successfully) */
 {{{print(true)}}print(a)}${{print("liam")}}$
 
 /* 2. ugly AssignmentStatement (should lex, but not parse) */
@@ -43,3 +43,15 @@ a = false
     if (b == true)
 }
 int a}$
+
+/* 10. should lex successfully but fail in parser */
+{{
+    {{
+        }
+    }
+    {
+    }}
+    }
+    }}
+}}
+$
