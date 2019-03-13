@@ -388,6 +388,8 @@ function checkLeftParen() {
             cst.addNode(thisToken.value, "leaf");
             nextToken();
             parseExpr();
+
+            // nextToken();
         }
     }
     else {
@@ -760,12 +762,13 @@ function parseBooleanExpr() {
         // Match and consume
         cst.addNode(thisToken.value, "leaf");
     }
-    else {
-        if (verbose == true) {
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ ( ] or boolean value");
-        }
-        parseErrors++;
-    }
+    // Is this else{} statement unnecessarily throwing errors?
+    // else {
+    //     if (verbose == true) {
+    //         putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ ( ] or boolean value");
+    //     }
+    //     parseErrors++;
+    // }
     // if (tokenSequence[sequenceIndex + 1].tokenId == "T_BOOLOP") {
     //     nextToken();
     //     cst.addNode(thisToken.value);

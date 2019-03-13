@@ -32,3 +32,14 @@ a = false
 
 /* 8. Expecting [ ) ] following 0 */
 {print(007)}$
+
+/* 9. Mess of Statements */
+{{
+    {
+        {
+            print(a)
+        }
+    }
+    if (b == true)
+}
+int a}$
