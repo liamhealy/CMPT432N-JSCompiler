@@ -554,6 +554,7 @@ function endOfProgram() {
     }
     if (isComment == true) {
         lexErrorCount++;
+        isComment = false;
         if (verbose == true) {
             putMessage("ERROR Lexer - Error: Unterminated comment found in program " + programCount);
         }
