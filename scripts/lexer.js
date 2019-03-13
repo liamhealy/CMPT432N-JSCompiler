@@ -41,7 +41,7 @@ function checkToken(currentToken) {
     lineNum = 1;
     lineCol = 1;
 
-    for (tokenIndex; tokenIndex <= tokens.length; tokenIndex++) {
+    for (tokenIndex; tokenIndex < tokens.length; tokenIndex++) {
 
         if (lineCol >= 1) {
             currentToken = getNextToken(currentToken);
@@ -206,6 +206,14 @@ function checkToken(currentToken) {
                 lineCol = 1;
                 lineNum++;
                 isString = false;
+                continue;
+            }
+            if (currentToken == "{" || currentToken == "}") {
+                lexErrorCount++;
+                if (verbose == true) {
+                    putMessage("ERROR Lexer - Error: (" + lineNum + "," + lineCol + ") Unrecognized token: [ " + currentToken + " ] found");
+                }
+                lineCol++;
                 continue;
             }
             else {
@@ -542,6 +550,7 @@ function endOfProgram() {
         if (verbose == true) {
             putMessage("ERROR Lexer - Error: Line (" + lineNum + ") Unterminated string found");
         }
+        // isString = false;
     }
     if (isComment == true) {
         lexErrorCount++;
