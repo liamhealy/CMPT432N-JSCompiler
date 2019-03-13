@@ -228,14 +228,25 @@ function parseStmtList() {
         return;
     }
     else {
-        if (verbose == true && programEnded == false) {
+        if (programEnded == false) {
             // console.log("Error at 184");
-            putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ { ], [ } ] or some Statement");
+            if (thisToken.tokenId == "EOP" && programEnded == false) {
+                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ { ], [ } ] or some Statement");
+                parseErrors++;
+                parseEOP();
+            }
+            else {
+                if (verbose == true && programEnded == false) {
+                    putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ { ], [ } ] or some Statement");
+                }
+                parseErrors++;
+            }
         }
+        nextToken();
         parseErrors++;
-        if (thisToken.tokenId == "EOP") {
-            parseEOP();
-        }
+        // if (thisToken.tokenId == "EOP" && programEnded == false) {
+        //     parseEOP();
+        // }
         return;
     }
     cst.endChildren();
