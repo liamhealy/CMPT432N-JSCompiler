@@ -41,7 +41,7 @@ function checkToken(currentToken) {
     lineNum = 1;
     lineCol = 1;
 
-    for (tokenIndex; tokenIndex < tokens.length; tokenIndex++) {
+    for (tokenIndex; tokenIndex <= tokens.length; tokenIndex++) {
 
         if (lineCol >= 1) {
             currentToken = getNextToken(currentToken);

@@ -33,7 +33,7 @@ a = false
 /* 8. Expecting [ ) ] following 0 */
 {print(007)}$
 
-/* 9. Mess of Statements */
+/* 9. Mess of Statements (should lex and parse successfully) */
 {{
     {
         {

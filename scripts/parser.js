@@ -53,16 +53,18 @@ function parseStart() {
     else {
         if (thisToken.tokenId == "EOP") {
             if (verbose == true) {
-                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + ")");
+                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ { ]");
             }
             parseErrors++;
             parseEOP();
         }
         else {
             if (verbose == true) {
-                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + ")");
+                putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ { ]");
             }
             parseErrors++;
+            nextToken();
+            parseStart();
         }
         // if (verbose == true) {
         //     putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ]");
@@ -424,7 +426,7 @@ function checkRightParen() {
         return;
     }
     else {
-        console.log("error 371");
+        // console.log("error 371");
         if (verbose == true) {
             putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ ) ]");
         }
@@ -578,7 +580,7 @@ function parseExpr() {
     // }
     // 2
     cst.endChildren();
-    console.log("returning");
+    // console.log("returning");
     return;
 
     // // Must handle '(' -> <expr> from PrintStatement
