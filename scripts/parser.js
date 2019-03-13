@@ -147,7 +147,7 @@ function parseBlock() {
             parseEOP();
         }
         else {
-            // Move back one branch and jump to <StatementList>
+            // Move back two branches and jump to <StatementList>
             cst.endChildren();
             cst.endChildren();
             parseStmtList();
@@ -227,7 +227,7 @@ function parseStmtList() {
     }
     else {
         if (verbose == true && programEnded == false) {
-            console.log("Error at 184");
+            // console.log("Error at 184");
             putMessage("PARSER - ERROR - unexpected token [ " + thisToken.value + " ] at (" + thisToken.line + ", " + thisToken.col + "), expecting [ { ], [ } ] or some Statement");
         }
         parseErrors++;
