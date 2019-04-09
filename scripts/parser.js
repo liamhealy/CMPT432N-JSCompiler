@@ -1,4 +1,4 @@
-// parser.js -- where parsing and tree creation will take place
+// parser.js -- where parsing and cst creation will take place
 
 var parseErrors = 0;
 
