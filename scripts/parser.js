@@ -820,6 +820,8 @@ function parseEOP() {
     }
     else {
         putMessage("PARSER - Parsing completed successfully");
+        analysis();
+        // This might have to be moved in correspondence with Dr. Labouseur's desired output
         putMessage("\nCST for program " + programCount + "\n" + cst.toString());
     }
     return;

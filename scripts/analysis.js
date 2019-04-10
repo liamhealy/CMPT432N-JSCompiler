@@ -4,3 +4,7 @@
  * symbol table creation may be here as well,
  * will update when I decide.
  */
+
+ function analysis() {
+    putMessage("\nSemantic analysis + symbol table display will occur here...");
+ }
