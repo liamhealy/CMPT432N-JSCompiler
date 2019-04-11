@@ -820,9 +820,17 @@ function parseEOP() {
     }
     else {
         putMessage("PARSER - Parsing completed successfully");
-        analysis();
         // This might have to be moved in correspondence with Dr. Labouseur's desired output
+        analysis();
         putMessage("\nCST for program " + programCount + "\n" + cst.toString());
+        // Check analysis errors and warnings here so that the order of the output is consistent
+        if (semErrors == 0) {
+            putMessage("AST for program " + programCount + "\n" + ast.toString());
+        }
+        else {
+            putMessage("AST for program " + programCount + "\n" + ast.toString())
+            putMessage("Symbol table not displayed due to error(s) detected during semantic analysis")
+        }
     }
     return;
 }
