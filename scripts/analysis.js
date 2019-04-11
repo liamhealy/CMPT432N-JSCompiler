@@ -25,7 +25,7 @@ var semSequenceIndex = 0;
 function nextSemToken() {
    // Move to the next token
    semSequenceIndex = semSequenceIndex + 1;
-   
+
    thisToken = tokenSequence[semSequenceIndex];
 }
 
@@ -67,6 +67,7 @@ function analyzeBlock() {
    }
 
    // We'll have to move to StatementList from here
+   analyzeStmtList();
 
    if (thisToken.tokenId == "T_RBRACE") {
       // Don't display in the AST, just move on.
@@ -76,4 +77,8 @@ function analyzeBlock() {
    }
 
    ast.endChildren();
+}
+
+function analyzeStmtList() {
+   // Here is where we will continue from analyzeBlock()
 }
