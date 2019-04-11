@@ -20,17 +20,22 @@ ast.addNode("Root", "branch");
 
 // Reset the sequence index and current token indicator
 // using the variables from parser.js
-sequenceIndex = 0;
+var semSequenceIndex = 0;
 
-thisToken = tokenSequence[sequenceIndex];
+function nextSemToken() {
+   // Move to the next token
+   semSequenceIndex = semSequenceIndex + 1;
+   
+   thisToken = tokenSequence[semSequenceIndex];
+}
 
 // Need to keep track of the scope
 var scopeLevel = 0;
 
 function analysis() {
-   thisToken = tokenSequence[0];
+   thisToken = tokenSequence[semSequenceIndex];
 
-   putMessage("\nSEMANTIC ANALYSIS - Analyzing program " + programCount + " " + thisToken.tokenId);
+   putMessage("\nSEMANTIC ANALYSIS - Analyzing program " + programCount + " " + thisToken.tokenId + " " + semSequenceIndex);
    ast.addNode("Program", "branch");
 
    // We wouldn't be here if parse failed so lets
@@ -57,6 +62,8 @@ function analyzeBlock() {
       scopeLevel++;
 
       ast.addNode("Block", "branch");
+      
+      nextSemToken();
    }
 
    // We'll have to move to StatementList from here
@@ -64,6 +71,8 @@ function analyzeBlock() {
    if (thisToken.tokenId == "T_RBRACE") {
       // Don't display in the AST, just move on.
       scopeLevel--;
+
+      nextSemToken();
    }
 
    ast.endChildren();
