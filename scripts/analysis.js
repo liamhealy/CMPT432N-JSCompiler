@@ -57,6 +57,10 @@ function analysis() {
 
 function analyzeBlock() {
 
+   if (verbose == true) {
+      putMessage("SEMANTIC ANALYSIS - Analyzing <Block>");
+   }
+   
    if (thisToken.tokenId == "T_LBRACE") {
       // Don't display in the AST, just move on.   
       scopeLevel++;
@@ -81,4 +85,56 @@ function analyzeBlock() {
 
 function analyzeStmtList() {
    // Here is where we will continue from analyzeBlock()
+   // Might look familiar as it is somewhat similar to parseStmtList()
+
+   if (verbose == true) {
+      putMessage("SEMANTIC ANALYSIS - Analyzing <StatementList>");
+   }
+   
+   if (thisToken.tokenId == "T_RBRACE") {
+      // We would end up returning to analyzeBlock() here
+      // Not sure whether any expression is necessary
+  }
+
+  if (thisToken.tokenId == "T_PRINTSTMT" || thisToken.tokenId == "T_ID" ||
+      thisToken.tokenId == "T_TYPE" || thisToken.tokenId == "T_WHILE" ||
+      thisToken.tokenId == "T_IF" || thisToken.tokenId == "T_LBRACE") {
+      
+      // Move to analyzeStmt
+      analyzeStmt();
+  }
 }
+
+function analyzeStmt() {
+   
+   if (verbose == true) {
+      putMessage("SEMANTIC ANALYSIS - Analyzing <Statement>");
+   }
+    
+   // <PrintStatement>
+   if (thisToken.tokenId == "T_PRINTSTMT") {
+      
+   }
+   // <AssignmentStatement>
+   if (thisToken.tokenId == "T_ID") {
+      
+   }
+   // <VarDecl>
+   if (thisToken.tokenId == "T_TYPE") {
+      
+   }
+   // <WhileStatement>
+   if (thisToken.tokenId == "T_WHILE") {
+
+   }
+   // <IfStatement>
+   if (thisToken.tokenId == "T_IF") {
+      
+   }
+   // <Block>
+   if (thisToken.tokenId == "T_LBRACE") {
+      // Move back to analyzeBlock();
+   }
+}
+
+
