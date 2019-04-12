@@ -113,28 +113,69 @@ function analyzeStmt() {
     
    // <PrintStatement>
    if (thisToken.tokenId == "T_PRINTSTMT") {
-      
+      analyzePrint();
    }
    // <AssignmentStatement>
    if (thisToken.tokenId == "T_ID") {
-      
+      analyzeId();
    }
    // <VarDecl>
    if (thisToken.tokenId == "T_TYPE") {
-      
+      analyzeType();
    }
    // <WhileStatement>
    if (thisToken.tokenId == "T_WHILE") {
-
+      analyzeWhile();
    }
    // <IfStatement>
    if (thisToken.tokenId == "T_IF") {
-      
+      analyzeIf();
    }
    // <Block>
    if (thisToken.tokenId == "T_LBRACE") {
       // Move back to analyzeBlock();
+      analyzeBlock();
    }
 }
 
+function analyzePrint() {
+
+   if (verbose == true) {
+      putMessage("SEMANTIC ANALYSIS - Analyzing <PrintStatement>");
+   }
+
+   // Add this as a branch to the AST
+   ast.addNode("PrintStatement", "branch");
+
+   // Move to the left parenthesis
+   nextSemToken();
+   if (thisToken.tokenId == "T_LPARENTHESES") {
+      // Move to the expression or right parenthesis
+      nextSemToken();
+
+      // Expression analysis will be here.
+   }
+
+   ast.endChildren();
+}
+
+function analyzeId() {
+
+}
+
+function analyzeType() {
+
+}
+
+function analyzeWhile() {
+
+}
+
+function analyzeIf() {
+
+}
+
+function analyzeExpr() {
+   
+}
 
