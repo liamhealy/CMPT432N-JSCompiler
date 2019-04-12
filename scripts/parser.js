@@ -811,11 +811,11 @@ function parseEOP() {
     if (parseErrors > 0) {
         if (parseErrors > 1) {
             putMessage("PARSER - Parse failed with " + parseErrors + " errors");
-            putMessage("\nNo CST displayed due to Parse errors");
+            putMessage("\nNo CST displayed or Semantic Analysis due to Parse errors...");
         }
         else {
             putMessage("PARSER - Parse failed with " + parseErrors + " error");
-            putMessage("\nNo CST displayed due to Parse error");
+            putMessage("\nNo CST displayed or Semantic Analysis due to Parse error...");
         }
     }
     else {

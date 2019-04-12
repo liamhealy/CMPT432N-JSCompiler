@@ -33,9 +33,12 @@ function nextSemToken() {
 var scopeLevel = 0;
 
 function analysis() {
+   // Reset global variables used here
+   resetVals();
+
    thisToken = tokenSequence[semSequenceIndex];
 
-   putMessage("\nSEMANTIC ANALYSIS - Analyzing program " + programCount + " " + thisToken.tokenId + " " + semSequenceIndex);
+   putMessage("\nSEMANTIC ANALYSIS - Analyzing program " + programCount);
    ast.addNode("Program", "branch");
 
    // We wouldn't be here if parse failed so lets
@@ -51,6 +54,8 @@ function analysis() {
          putMessage("SEMANTIC ANALYSIS - Analysis finished with " + semErrors + " error(s) and " + semWarnings + " warnings");
       }
    }
+
+   ast.endChildren();
 }
 
 // Non-terminals and terminals will be handled down here
@@ -154,13 +159,20 @@ function analyzePrint() {
       nextSemToken();
 
       // Expression analysis will be here.
+      analyzeExpr();
+   }
+
+   if (thisToken.tokenId == "T_RPARENTHESES") {
+      nextSemToken();
    }
 
    ast.endChildren();
 }
 
 function analyzeId() {
-
+   // For now, just add the leaf node and move on
+   ast.addNode(thisToken.value, "leaf");
+   nextSemToken();
 }
 
 function analyzeType() {
@@ -175,7 +187,86 @@ function analyzeIf() {
 
 }
 
+// Branch out to different <Expr>'s
 function analyzeExpr() {
    
+   if (verbose == true) {
+      putMessage("SEMANTIC ANALYSIS - Analyzing <Expr>");
+   }
+
+   // Digits
+   if (thisToken.tokenId == "T_DIGIT") {
+      // We'll change this to analyze an int
+      analyzeInt();
+   }
+
+   // Opening quotes
+   else if (thisToken.tokenId == "T_OPENQUOTE") {
+      // We'll change this to analyze an opening quote
+      nextSemToken();
+   }
+
+   // A left parenthesis
+   else if (thisToken.tokenId == "T_LPARENTHESES") {
+      // We'll change this to analyze a parenthesis
+      analyzeLeftParen();
+   }
+
+   // Booleans
+   else if (thisToken.tokenId == "T_BOOLVAL") {
+      // We'll change this to analyze a boolean
+      nextSemToken();
+   }
+
+   // ID
+   else if (thisToken.tokenId == "T_ID") {
+      // We'll change this to analyze an ID
+      analyzeId();
+   }
 }
 
+function analyzeInt() {
+
+   if (verbose == true) {
+      putMessage("SEMANTIC ANALYSIS - Analyzing <IntExpr>");
+   }
+
+   // Handle digits through analysizeId() for now
+   analyzeId();
+
+   if (thisToken.tokenId == "T_INTOP") {
+      // Might need to do something else for addition...
+      nextSemToken();
+
+      // Move back to analyzeExpr() for the second <Expr> for addition
+      analyzeExpr();
+   }
+
+}
+
+// function analyzeLeftParen() {
+//    nextSemToken();
+
+//    ast.addNode("(", "branch");
+
+//    if (thisToken.tokenId == "T_RPARENTHESES") {
+//       nextSemToken();
+//    }
+
+//    ast.endChildren();
+// }
+
+function resetVals() {
+
+   semErrors = 0;
+
+   semWarnings = 0;
+
+   ast = new Tree();
+
+   ast.addNode("Root", "branch");
+
+   semSequenceIndex = 0;
+
+   scopeLevel = 0;
+}
