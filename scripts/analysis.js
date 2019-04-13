@@ -5,7 +5,7 @@
  * will update when I decide.
  */
 
-// Some functions/variables will just reused from parser.js
+// Some functions/variables may just be reused from parser.js
 // because they would be the same here anyway...
 
 // Set up error and warning counters
@@ -126,7 +126,7 @@ function analyzeStmt() {
    }
    // <VarDecl>
    if (thisToken.tokenId == "T_TYPE") {
-      analyzeType();
+      analyzeVarDecl();
    }
    // <WhileStatement>
    if (thisToken.tokenId == "T_WHILE") {
@@ -150,7 +150,7 @@ function analyzePrint() {
    }
 
    // Add this as a branch to the AST
-   ast.addNode("PrintStatement", "branch");
+   ast.addNode("Print Statement", "branch");
 
    // Move to the left parenthesis
    nextSemToken();
@@ -175,7 +175,31 @@ function analyzeId() {
    nextSemToken();
 }
 
-function analyzeType() {
+function analyzeVarDecl() {
+   /* TODO:
+   *  - check if the variable exists already
+   *  - add as a new entry to the symbol table
+   */
+
+   // Add a branch to the AST
+   ast.addNode("Variable Declaration", "branch");
+
+   if (verbose == true) {
+      putMessage("SEMANTIC ANALYSIS - Analyzing <VarDecl>");
+   }
+
+   // Analyze the type for the declaration
+   if (thisToken.value == "int" || thisToken.value == "string" || thisToken.value == "boolean") {
+      ast.addNode(thisToken.value, "leaf");
+   }
+
+   nextSemToken();
+
+   if (thisToken.tokenId == "T_ID") {
+      analyzeId();
+   }
+
+   ast.endChildren();
 
 }
 
