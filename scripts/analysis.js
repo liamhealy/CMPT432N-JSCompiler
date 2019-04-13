@@ -80,7 +80,8 @@ function analyzeBlock() {
    if (thisToken.tokenId != "T_RBRACE") {
       analyzeStmtList();
    }
-   else if (thisToken.tokenId == "T_RBRACE") {
+   
+   if (thisToken.tokenId == "T_RBRACE") {
       // Don't display in the AST, just move on.
       scopeLevel--;
 
@@ -101,15 +102,20 @@ function analyzeStmtList() {
    if (thisToken.tokenId == "T_RBRACE") {
       // We would end up returning to analyzeBlock() here
       // Not sure whether any expression is necessary
-  }
+   }
 
-  if (thisToken.tokenId == "T_PRINTSTMT" || thisToken.tokenId == "T_ID" ||
+   if (thisToken.tokenId == "T_PRINTSTMT" || thisToken.tokenId == "T_ID" ||
       thisToken.tokenId == "T_TYPE" || thisToken.tokenId == "T_WHILE" ||
       thisToken.tokenId == "T_IF" || thisToken.tokenId == "T_LBRACE") {
       
       // Move to analyzeStmt
       analyzeStmt();
-  }
+
+      // Not sure if we call analyzeStmtList() again from here
+      // or if it must be done somehow from analyzeStmt() without
+      // exceeding maximum stack size...
+      analyzeStmtList();
+   }
 }
 
 function analyzeStmt() {
@@ -124,7 +130,7 @@ function analyzeStmt() {
    }
    // <AssignmentStatement>
    if (thisToken.tokenId == "T_ID") {
-      analyzeId();
+      analyzeAssignStmt();
    }
    // <VarDecl>
    if (thisToken.tokenId == "T_TYPE") {
@@ -173,15 +179,8 @@ function analyzePrint() {
 
 function analyzeId() {
    // For now, just add the leaf node and move on
-   if (tokenSequence[semSequenceIndex + 1].tokenId == "T_ASSIGNOP") {
-      analyzeAssignStmt();
-   }
-   else {
-      ast.addNode(thisToken.value, "leaf");
-      nextSemToken();
-   }
-   // ast.addNode(thisToken.value, "leaf");
-   // nextSemToken();
+   ast.addNode(thisToken.value, "leaf");
+   nextSemToken();
 }
 
 function analyzeAssignStmt() {
@@ -193,8 +192,7 @@ function analyzeAssignStmt() {
    ast.addNode("AssignmentStatement", "branch");
  
    if (thisToken.tokenId == "T_ID") {
-      ast.addNode(thisToken.value, "leaf");
-      nextSemToken();
+      analyzeId();
    }
 
    if (thisToken.tokenId == "T_ASSIGNOP") {
@@ -202,6 +200,8 @@ function analyzeAssignStmt() {
       nextSemToken();
       analyzeExpr();
    }
+
+   ast.endChildren();
 
 }
 
