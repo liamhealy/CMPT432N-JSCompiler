@@ -76,9 +76,11 @@ function analyzeBlock() {
    }
 
    // We'll have to move to StatementList from here
-   analyzeStmtList();
-
-   if (thisToken.tokenId == "T_RBRACE") {
+   // as long as we dont see a right brace (})
+   if (thisToken.tokenId != "T_RBRACE") {
+      analyzeStmtList();
+   }
+   else if (thisToken.tokenId == "T_RBRACE") {
       // Don't display in the AST, just move on.
       scopeLevel--;
 
@@ -214,7 +216,7 @@ function analyzeWhile() {
    // Look for the parenthesis/boolean
    nextSemToken();
 
-   if (thisToken.tokenId == "T_BOOLVAL") {
+   if (thisToken.tokenId == "T_BOOLVAL" || thisToken.tokenId == "T_LPARENTHESES") {
       // analyze boolean
       analyzeBoolExpr();
 
@@ -288,9 +290,32 @@ function analyzeInt() {
 }
 
 function analyzeBoolExpr() {
-
+   /*
+   *  TODO:
+   *  - Check the types of the two tokens in a token1 == token2 situation
+   * 
+   */
    if (verbose == true) {
       putMessage("SEMANTIC ANALYSIS - Analyzing <BoolExpr>");
+   }
+
+   if (thisToken.tokenId == "T_LPARENTHESES") {
+      // Analyze the following expression
+      nextSemToken();
+      analyzeExpr();
+   }
+
+   if (thisToken.tokenId == "T_ID" || thisToken.tokenId == "T_BOOLVAL") {
+      // Move to analyzeId() so we can put it in the AST
+      analyzeId();
+   }
+
+   // Check if we have a 
+   if (thisToken.tokenId == "T_BOOLOP") {
+      // Move to analyzeExpr() to check the following token
+      nextSemToken();
+      analyzeExpr();
+      console.log(thisToken.value);
    }
 
    if (thisToken.tokenId == "T_RPARENTHESES") {
