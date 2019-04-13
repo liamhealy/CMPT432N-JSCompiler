@@ -173,8 +173,36 @@ function analyzePrint() {
 
 function analyzeId() {
    // For now, just add the leaf node and move on
-   ast.addNode(thisToken.value, "leaf");
-   nextSemToken();
+   if (tokenSequence[semSequenceIndex + 1].tokenId == "T_ASSIGNOP") {
+      analyzeAssignStmt();
+   }
+   else {
+      ast.addNode(thisToken.value, "leaf");
+      nextSemToken();
+   }
+   // ast.addNode(thisToken.value, "leaf");
+   // nextSemToken();
+}
+
+function analyzeAssignStmt() {
+
+   if (verbose == true) {
+      putMessage("SEMANTIC ANALYSIS - Analyzing <AssignmentStatement>");
+   }
+
+   ast.addNode("AssignmentStatement", "branch");
+ 
+   if (thisToken.tokenId == "T_ID") {
+      ast.addNode(thisToken.value, "leaf");
+      nextSemToken();
+   }
+
+   if (thisToken.tokenId == "T_ASSIGNOP") {
+      // Analyze the following expression
+      nextSemToken();
+      analyzeExpr();
+   }
+
 }
 
 function analyzeVarDecl() {
@@ -211,7 +239,7 @@ function analyzeWhile() {
       putMessage("SEMANTIC ANALYSIS - Analyzing <WhileStatement>");
    }
 
-   ast.addNode("While Statement", "branch");
+   ast.addNode("WhileStatement", "branch");
 
    // Look for the parenthesis/boolean
    nextSemToken();
@@ -315,7 +343,6 @@ function analyzeBoolExpr() {
       // Move to analyzeExpr() to check the following token
       nextSemToken();
       analyzeExpr();
-      console.log(thisToken.value);
    }
 
    if (thisToken.tokenId == "T_RPARENTHESES") {
