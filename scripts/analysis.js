@@ -150,7 +150,7 @@ function analyzePrint() {
    }
 
    // Add this as a branch to the AST
-   ast.addNode("Print Statement", "branch");
+   ast.addNode("PrintStatement", "branch");
 
    // Move to the left parenthesis
    nextSemToken();
@@ -181,12 +181,12 @@ function analyzeVarDecl() {
    *  - add as a new entry to the symbol table
    */
 
-   // Add a branch to the AST
-   ast.addNode("Variable Declaration", "branch");
-
    if (verbose == true) {
       putMessage("SEMANTIC ANALYSIS - Analyzing <VarDecl>");
    }
+
+   // Add a branch to the AST
+   ast.addNode("VarDecl", "branch");
 
    // Analyze the type for the declaration
    if (thisToken.value == "int" || thisToken.value == "string" || thisToken.value == "boolean") {
@@ -204,6 +204,25 @@ function analyzeVarDecl() {
 }
 
 function analyzeWhile() {
+
+   if (verbose == true) {
+      putMessage("SEMANTIC ANALYSIS - Analyzing <WhileStatement>");
+   }
+
+   ast.addNode("While Statement", "branch");
+
+   // Look for the parenthesis/boolean
+   nextSemToken();
+
+   if (thisToken.tokenId == "T_BOOLVAL") {
+      // analyze boolean
+      analyzeBoolExpr();
+
+      // when returning from analyzeBoolExpr(), look for brackets
+      nextSemToken();
+
+      analyzeBlock();
+   }
 
 }
 
@@ -239,7 +258,7 @@ function analyzeExpr() {
    // Booleans
    else if (thisToken.tokenId == "T_BOOLVAL") {
       // We'll change this to analyze a boolean
-      nextSemToken();
+      analyzeBoolExpr();
    }
 
    // ID
@@ -264,6 +283,18 @@ function analyzeInt() {
 
       // Move back to analyzeExpr() for the second <Expr> for addition
       analyzeExpr();
+   }
+
+}
+
+function analyzeBoolExpr() {
+
+   if (verbose == true) {
+      putMessage("SEMANTIC ANALYSIS - Analyzing <BoolExpr>");
+   }
+
+   if (thisToken.tokenId == "T_RPARENTHESES") {
+      nextSemToken();
    }
 
 }
