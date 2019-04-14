@@ -61,7 +61,7 @@ function analysis() {
 // Non-terminals and terminals will be handled down here
 
 function analyzeBlock() {
-
+   console.log(thisToken.tokenId);
    if (verbose == true) {
       putMessage("SEMANTIC ANALYSIS - Analyzing <Block>");
    }
@@ -274,7 +274,7 @@ function analyzeIf() {
       // and then move to the new scope for the <IfStatement>
       analyzeBoolExpr();
 
-      nextSemToken();
+      // nextSemToken();
       console.log(thisToken.value);
       analyzeBlock();
 
@@ -347,6 +347,7 @@ function analyzeBoolExpr() {
    *  - Check the types of the two tokens in a token1 == token2 situation
    * 
    */
+  console.log(thisToken.value);
    if (verbose == true) {
       putMessage("SEMANTIC ANALYSIS - Analyzing <BoolExpr>");
    }
