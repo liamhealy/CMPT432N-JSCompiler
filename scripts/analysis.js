@@ -269,6 +269,8 @@ function analyzeIf() {
    // Check the following tokens
    nextSemToken();
 
+   // This is basically a combination of the 
+   // two if-statements from analyzeExpr()
    if (thisToken.tokenId == "T_BOOLVAL" || thisToken.tokenId == "T_LPARENTHESES") {
       // Analyze the boolean expression and what follows
       // and then move to the new scope for the <IfStatement>
