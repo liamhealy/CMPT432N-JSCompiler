@@ -275,7 +275,7 @@ function analyzeIf() {
       analyzeBoolExpr();
 
       nextSemToken();
-
+      console.log(thisToken.value);
       analyzeBlock();
 
    }
@@ -300,7 +300,7 @@ function analyzeExpr() {
    // Opening quotes
    else if (thisToken.tokenId == "T_OPENQUOTE") {
       // We'll change this to analyze an opening quote
-      nextSemToken();
+      analyzeStringExpr();
    }
 
    // A left parenthesis
@@ -365,6 +365,7 @@ function analyzeBoolExpr() {
    // Check if we have a 
    if (thisToken.tokenId == "T_BOOLOP") {
       // Move to analyzeExpr() to check the following token
+      // ast.addNode(thisToken.value, "branch");
       nextSemToken();
       analyzeExpr();
    }
@@ -373,6 +374,41 @@ function analyzeBoolExpr() {
       nextSemToken();
    }
 
+}
+
+function analyzeStringExpr() {
+   // We are gonna need a variable to hold the CharList
+   var thisString = thisToken.value;
+
+   if (verbose == true) {
+      putMessage("SEMANTIC ANALYSIS - Analyzing <StringExpr>");
+   }
+
+   if (thisToken.tokenId == "T_OPENQUOTE") {
+      // If coming from analyzeExpr(), move on and analyze <CharList>
+      nextSemToken();
+
+      // Maybe a while loop can be used to store the string?
+      while(thisToken.tokenId != "T_CLOSEQUOTE") {
+         if (thisToken.tokenId == "T_CHAR") {
+            thisString += thisToken.value;
+         }
+         nextSemToken();
+      }
+
+      // nextSemToken();
+      console.log(thisToken.value);
+
+      if (thisToken.tokenId == "T_CLOSEQUOTE") {
+         thisString += thisToken.value;
+      }
+
+   }
+
+   ast.addNode(thisString, "leaf");
+   nextSemToken();
+
+   // Not sure if I am storing CharList efficiently and safely
 }
 
 // function analyzeLeftParen() {
