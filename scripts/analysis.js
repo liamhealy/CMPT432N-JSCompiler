@@ -254,9 +254,33 @@ function analyzeWhile() {
       analyzeBlock();
    }
 
+   ast.endChildren();
+
 }
 
 function analyzeIf() {
+
+   if (verbose == true) {
+      putMessage("SEMANTIC ANALYSIS - Analyzing <IfStatement>");
+   }
+
+   ast.addNode("IfStatement", "branch");
+
+   // Check the following tokens
+   nextSemToken();
+
+   if (thisToken.tokenId == "T_BOOLVAL" || thisToken.tokenId == "T_LPARENTHESES") {
+      // Analyze the boolean expression and what follows
+      // and then move to the new scope for the <IfStatement>
+      analyzeBoolExpr();
+
+      nextSemToken();
+
+      analyzeBlock();
+
+   }
+
+   ast.endChildren();
 
 }
 
