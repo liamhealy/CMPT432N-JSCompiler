@@ -305,8 +305,8 @@ function analyzeExpr() {
 
    // A left parenthesis
    else if (thisToken.tokenId == "T_LPARENTHESES") {
-      // We'll change this to analyze a parenthesis
-      analyzeLeftParen();
+      // Changed to analyze the expected boolean statement
+      analyzeBoolExpr();
    }
 
    // Booleans
