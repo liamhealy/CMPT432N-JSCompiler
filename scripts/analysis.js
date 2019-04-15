@@ -223,6 +223,8 @@ function analyzeVarDecl() {
       ast.addNode(thisToken.value, "leaf");
    }
 
+   // Maybe create a separate ID function for assignments
+   // that will help with building the symbol table?
    nextSemToken();
 
    if (thisToken.tokenId == "T_ID") {
