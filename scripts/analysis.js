@@ -13,10 +13,12 @@ var semErrors = 0;
 
 var semWarnings = 0;
 
-// Need to build an AST before a symbol table
+// Need to build an AST and scope tree before a symbol table
 var ast = new Tree();
 
 ast.addNode("Root", "branch");
+
+var scopeMap = new ScopeTree();
 
 // Reset the sequence index and current token indicator
 // using the variables from parser.js
@@ -64,7 +66,6 @@ function analysis() {
 // Non-terminals and terminals will be handled down here
 
 function analyzeBlock() {
-   console.log(thisToken.tokenId);
    if (verbose == true) {
       putMessage("SEMANTIC ANALYSIS - Analyzing <Block>");
    }
@@ -83,7 +84,7 @@ function analyzeBlock() {
    if (thisToken.tokenId != "T_RBRACE") {
       analyzeStmtList();
    }
-   
+
    if (thisToken.tokenId == "T_RBRACE") {
       // Don't display in the AST, just move on.
       scopeLevel--;
@@ -213,7 +214,6 @@ function analyzeVarDecl() {
    *  - check if the variable exists already
    *  - add as a new entry to the symbol table
    */
-   var newSymbolType;
 
    if (verbose == true) {
       putMessage("SEMANTIC ANALYSIS - Analyzing <VarDecl>");
@@ -225,7 +225,6 @@ function analyzeVarDecl() {
    // Analyze the type for the declaration
    if (thisToken.value == "int" || thisToken.value == "string" || thisToken.value == "boolean") {
       ast.addNode(thisToken.value, "leaf");
-      newSymbolType = thisToken.value;
    }
 
    // Maybe create a separate ID function for assignments
@@ -235,7 +234,23 @@ function analyzeVarDecl() {
    if (thisToken.tokenId == "T_ID") {
       // Don't go to analyzeId() from here,
       // we need to check for errors in this case
-      var redeclared = checkIfRedeclared(thisToken.value, scopeLevel);
+      var redeclared = false;
+
+      if (scopeMap.cur.symbolMap.length != null) {
+         var i = 0;
+         var tempSymbol = scopeMap.cur.symbolMap[i];
+         while (i < scopeMap.cur.symbolMap.length) {
+            tempSymbol = scopeMap.cur.symbolMap[i];
+            if (tempSymbol.symbolId == thisToken.value && tempSymbol.symbolScope == scopeLevel) {
+               redeclared = true;
+            }
+            else {
+               i++;
+            }
+         }
+      }
+
+      // checkIfRedeclared(scopeMap, thisToken.value, scopeLevel);
       if (redeclared == true) {
          semErrors++;
          if (verbose == true) {
@@ -245,9 +260,13 @@ function analyzeVarDecl() {
          nextSemToken();
       }
       else {
-         addSymbol(tokenSequence[semSequenceIndex - 1].value, thisToken.value, thisToken.line, thisToken.col, scopeLevel, true, false);
+         // We first initialize a temporary symbol
+         // and then we push that to the array
+         // that holds the symbols for the current scope.
+         var tempSymbol = new symbol(thisToken.value, tokenSequence[semSequenceIndex - 1].value, null, thisToken.line, thisToken.col, thisToken.programNum, scopeLevel, true, false);
+         scopeMap.cur.symbolMap.push(tempSymbol);
          if (verbose == true) {
-            putMessage("SEMANTIC ANALYSIS - New symbol [" + thisToken.value + "] of type [" + tokenSequence[semSequenceIndex - 1].value + "] found at (" + thisToken.line + "," + thisToken.col + ")");
+            putMessage("SEMANTIC ANALYSIS - New symbol [" + thisToken.value + "] of type [" + tokenSequence[semSequenceIndex - 1].value + "] found at (" + thisToken.line + "," + thisToken.col + ") in scope " + scopeLevel);
          }
          ast.addNode(thisToken.value, "leaf");
          nextSemToken();
@@ -302,7 +321,6 @@ function analyzeIf() {
       analyzeBoolExpr();
 
       // nextSemToken();
-      console.log(thisToken.value);
       analyzeBlock();
 
    }
@@ -374,7 +392,6 @@ function analyzeBoolExpr() {
    *  - Check the types of the two tokens in a token1 == token2 situation
    * 
    */
-  console.log(thisToken.value);
    if (verbose == true) {
       putMessage("SEMANTIC ANALYSIS - Analyzing <BoolExpr>");
    }
@@ -425,7 +442,6 @@ function analyzeStringExpr() {
       }
 
       // nextSemToken();
-      console.log(thisToken.value);
 
       if (thisToken.tokenId == "T_CLOSEQUOTE") {
          thisString += thisToken.value;

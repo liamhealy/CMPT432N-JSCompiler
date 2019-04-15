@@ -48,7 +48,7 @@ function btnCompile_click () {
     // the text areas.
     init();
     if (trim(document.getElementById("input").value) == "") {
-        putMessage("Nothing to lex...");
+        putMessage("Nothing to compile...");
     }
     else {
         programCount++;
