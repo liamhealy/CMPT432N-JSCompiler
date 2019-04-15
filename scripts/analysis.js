@@ -236,12 +236,12 @@ function analyzeVarDecl() {
       // Don't go to analyzeId() from here,
       // we need to check for errors in this case
       var redeclared = checkIfRedeclared(thisToken.value, scopeLevel);
-      console.log(redeclared, scopeLevel);
       if (redeclared == true) {
          semErrors++;
          if (verbose == true) {
-            putMessage("SEMANTIC ANALYSIS - ERROR: Variable " + thisToken.value + " at (" + thisToken.line + "," + thisToken.col + ") was declared more than once in the same scope");
+            putMessage("SEMANTIC ANALYSIS - ERROR: Variable [" + thisToken.value + "] at (" + thisToken.line + "," + thisToken.col + ") was declared more than once in the same scope");
          }
+         ast.addNode(thisToken.value, "leaf");
          nextSemToken();
       }
       else {

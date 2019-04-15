@@ -30,9 +30,25 @@ function checkIfRedeclared(tempId, tempScope) {
     var tempSymbol = symbolSequence[i];
     while (i < symbolSequence.length) {
         tempSymbol = symbolSequence[i];
-        console.log(tempSymbol.symbolId, tempId, tempSymbol.symbolScope, tempScope);
         if (tempSymbol.symbolId == tempId && tempSymbol.symbolScope == tempScope) {
             return true;
+        }
+        else {
+            i++;
+        }
+    }
+    return false;
+}
+
+function checkIfInit(tempId, tempScope) {
+    var i = 0;
+    var tempSymbol = symbolSequence[i];
+    while (i < symbolSequence.length) {
+        tempSymbol = symbolSequence[i];
+        if (tempSymbol.symbolId == tempId) {
+            if (tempSymbol.symbolScope > tempScope) {
+                return false;
+            }
         }
         else {
             i++;
