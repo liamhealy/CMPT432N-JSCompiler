@@ -3,10 +3,12 @@
 *   Contains a constructor function for generating symbols
 *   Also contains all other functions related to symbols
 */
-function symbol (symbolType, symbolId, symbolValue, symbolLine, symbolCol, symbolScope, isInit, isUsed) {
+function symbol (symbolType, symbolId, symbolLine, symbolCol, symbolScope, isInit, isUsed) {
+    // int, string or boolean
     this.symbolType = symbolType;
+    // the symbol's id
     this.symbolId = symbolId;
-    this.symbolValue = symbolValue;
+    
     this.symbolLine = symbolLine;
     this.symbolCol = symbolCol;
     this.symbolScope = symbolScope;
@@ -15,20 +17,21 @@ function symbol (symbolType, symbolId, symbolValue, symbolLine, symbolCol, symbo
 }
 
 // We can add our token to the toke sequence
-function addSymbol (symbolType, symbolId, symbolValue, symbolLine, symbolCol, symbolScope, isInit, isUsed) {
+function addSymbol (symbolType, symbolId, symbolLine, symbolCol, symbolScope, isInit, isUsed) {
     // Create a token to enter into the token sequence
-    var newSymbol = new token(symbolType, symbolId, symbolValue, symbolLine, symbolCol, symbolScope, isInit, isUsed);
+    var newSymbol = new symbol(symbolType, symbolId, symbolLine, symbolCol, symbolScope, isInit, isUsed);
     // Add our new token
     symbolSequence.push(newSymbol);
 }
 
-// Check if a symbol is initialized
-function checkInit(tempId) {
+// Check if a symbol is being redeclared
+function checkIfRedeclared(tempId, tempScope) {
     var i = 0;
     var tempSymbol = symbolSequence[i];
     while (i < symbolSequence.length) {
         tempSymbol = symbolSequence[i];
-        if (tempSymbol.symbolId == tempId) {
+        console.log(tempSymbol.symbolId, tempId, tempSymbol.symbolScope, tempScope);
+        if (tempSymbol.symbolId == tempId && tempSymbol.symbolScope == tempScope) {
             return true;
         }
         else {

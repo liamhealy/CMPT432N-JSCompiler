@@ -233,7 +233,25 @@ function analyzeVarDecl() {
    nextSemToken();
 
    if (thisToken.tokenId == "T_ID") {
-      analyzeId();
+      // Don't go to analyzeId() from here,
+      // we need to check for errors in this case
+      var redeclared = checkIfRedeclared(thisToken.value, scopeLevel);
+      console.log(redeclared, scopeLevel);
+      if (redeclared == true) {
+         semErrors++;
+         if (verbose == true) {
+            putMessage("SEMANTIC ANALYSIS - ERROR: Variable " + thisToken.value + " at (" + thisToken.line + "," + thisToken.col + ") was declared more than once in the same scope");
+         }
+         nextSemToken();
+      }
+      else {
+         addSymbol(tokenSequence[semSequenceIndex - 1].value, thisToken.value, thisToken.line, thisToken.col, scopeLevel, true, false);
+         if (verbose == true) {
+            putMessage("SEMANTIC ANALYSIS - New symbol [" + thisToken.value + "] of type [" + tokenSequence[semSequenceIndex - 1].value + "] found at (" + thisToken.line + "," + thisToken.col + ")");
+         }
+         ast.addNode(thisToken.value, "leaf");
+         nextSemToken();
+      }
    }
 
    ast.endChildren();
