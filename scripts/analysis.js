@@ -29,6 +29,9 @@ function nextSemToken() {
    thisToken = tokenSequence[semSequenceIndex];
 }
 
+// Holds all generated symbols
+var symbolSequence = [];
+
 // Need to keep track of the scope
 var scopeLevel = 0;
 
@@ -210,6 +213,7 @@ function analyzeVarDecl() {
    *  - check if the variable exists already
    *  - add as a new entry to the symbol table
    */
+   var newSymbolType;
 
    if (verbose == true) {
       putMessage("SEMANTIC ANALYSIS - Analyzing <VarDecl>");
@@ -221,6 +225,7 @@ function analyzeVarDecl() {
    // Analyze the type for the declaration
    if (thisToken.value == "int" || thisToken.value == "string" || thisToken.value == "boolean") {
       ast.addNode(thisToken.value, "leaf");
+      newSymbolType = thisToken.value;
    }
 
    // Maybe create a separate ID function for assignments
@@ -441,4 +446,6 @@ function resetVals() {
    semSequenceIndex = 0;
 
    scopeLevel = 0;
+
+   symbolSequence = [];
 }
