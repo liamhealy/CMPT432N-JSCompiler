@@ -46,6 +46,10 @@ var tempSecondType = "";
 var tempFirstVal = null;
 var tempSecondVal = null;
 
+// Keep a variable ready to hold an id so we can
+// set a symbol's value to it's own.
+var setId;
+
 function analysis() {
    // Reset global variables used here
    resetVals();
@@ -273,7 +277,7 @@ function getSymbolValue(tempNode, tempId) {
    if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
       for (var i = 0; i < tempNode.symbolMap.length; i++) {
          if (tempId == tempNode.symbolMap[i].getId()) {
-            return tempNode.symbolMap[i].getId();
+            return tempNode.symbolMap[i].value;
          }
       }
    }
@@ -341,12 +345,14 @@ function analyzeAssignStmt() {
          // Check the type of the first var here
          // and store it as firstType before moving
          // to the next token.
+         setId = thisToken.value;
          tempFirstType = checkType(scopeMap.cur, thisToken.value);
-         tempValue = getSymbolValue(scopeMap.cur, thisToken.value);
+         tempValue = thisToken.value;
       }
       analyzeId();
    }
 
+   // Setting of all values will occur after this
    if (thisToken.tokenId == "T_ASSIGNOP") {
       // Analyze the following expression
       nextSemToken();
@@ -359,9 +365,11 @@ function analyzeAssignStmt() {
             else {
                tempFirstVal = Number(tempFirstVal) + Number(thisToken.value);
             }
-            setSymbolValue(scopeMap.cur, thisToken.value, tempFirstVal);
          }
+         // console.log("at least raching this");
+         // setSymbolValue(scopeMap.cur, tempValue, tempFirstVal);
       }
+      // setSymbolValue(scopeMap.cur, tempValue, tempFirstVal);
 
       analyzeExpr();
    }
@@ -556,7 +564,6 @@ function analyzeInt() {
       // Set it so that the next var/digit/expression
       // is analyzed in addition with the previous one
       // addition = true;
-
    }
 
    if (addition == true) {
@@ -565,7 +572,12 @@ function analyzeInt() {
       }
       else {
          tempSecondVal = Number(thisToken.value) + Number(tempFirstVal);
+         // setSymbolValue(scopeMap.cur, thisToken.value, tempSecondVal);
+
          console.log(tempSecondVal);
+         // currently working
+         setSymbolValue(scopeMap.cur, setId, tempSecondVal);
+
          // Make sure we don't continue to add
          addition = false;
       }
@@ -583,7 +595,6 @@ function analyzeInt() {
       // Might need to do something else for addition...
       nextSemToken();
 
-
       // Move back to analyzeExpr() for the second <Expr> for addition
       analyzeExpr();
    }
@@ -592,12 +603,6 @@ function analyzeInt() {
       tempSecondVal = Number(thisToken.value) + Number(tempFirstVal);
       console.log(tempSecondVal);
    }
-
-   // if (addition == true) {
-   //    tempSecondVal = Number(thisToken.value) + Number(tempFirstVal);
-   //    console.log(tempSecondVal);
-   //    addition = false;
-   // }
 
 }
 
@@ -642,6 +647,13 @@ function analyzeStringExpr() {
 
    if (verbose == true) {
       putMessage("SEMANTIC ANALYSIS - Analyzing <StringExpr>");
+   }
+
+   if (tempFirstType != "string") {
+      semErrors++;
+      if (verbose == true) {
+         putMessage("SEMANTIC ANALYSIS - ERROR: variable ");
+      }
    }
 
    if (thisToken.tokenId == "T_OPENQUOTE") {

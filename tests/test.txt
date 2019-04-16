@@ -60,3 +60,6 @@ $
 
 /* 11. should lex and parse succefully but fail semantic analysis */
 {{{{{{a = 5}int a}}}}}$
+
+/* 12. successfully sets int a to 9 */
+{int a a = 5 + 4}$
