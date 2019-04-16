@@ -191,34 +191,57 @@ function analyzeId() {
 }
 
 function checkParentScopes(tempNode, tempId) {
-   var tempBool;
-   if (tempNode.parent.symbolMap.length > 0) {
-      for (var i = 0; i < tempNode.parent.symbolMap.length; i++) {
-         console.log(tempNode.parent.symbolMap[i].getId());
-         if (tempId == tempNode.parent.symbolMap[i].getId()) {
-            console.log("time to return");
-            tempBool = true;
-            return;
+   if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
+      for (var i = 0; i < tempNode.symbolMap.length; i++) {
+         if (tempId == tempNode.symbolMap[i].getId()) {
+            return true;
          }
       }
    }
-   else {
-      tempBool = false;
+   if (tempNode.parent != undefined || tempNode.parent != null) {
+      return checkParentScopes(tempNode.parent, tempId);
    }
-   // tempNode = tempNode.parent;
-   if (tempBool == true) {
-      return true;
-   }
-   if (tempNode.parent.name !== undefined || tempNode.parent !== null) {
-      checkParentScopes(tempNode.parent, tempId);
-   }
-   // else if (tempNode.cur.symbolMap.length > 0) {
-   //    if (tempId == tempNode.cur.parent.symbolMap[i].getId()) {
-   //       return true;
+   return false;
+   // if (tempNode.symbolMap.length > 0) {
+   //    for (var i = 0; i < tempNode.symbolMap.length; i++) {
+   //       if (tempId == tempNode.symbolMap[i].getId()) {
+   //          tempBool = true;
+   //          break;
+   //       }
    //    }
    // }
-   // tempNode.cur = tempNode.cur.parent;
-   return false;
+
+   // if (tempBool == false) {
+   //    tempBool = checkParentScopes(tempNode, thisToken.value);
+   //    console.log(checkParentScopes(tempNode, thisToken.value));
+   //    console.log(tempBool);
+   // }
+
+   // if (tempNode.parent.symbolMap.length > 0) {
+   //    for (var i = 0; i < tempNode.parent.symbolMap.length; i++) {
+   //       console.log(tempNode.parent.symbolMap[i].getId());
+   //       if (tempId === tempNode.parent.symbolMap[i].getId()) {
+   //          console.log("time to return");
+   //          tempBool = true;
+   //          break;
+   //       }
+   //    }
+   // }
+   // // tempNode = tempNode.parent;
+   // if (tempBool == true) {
+   //    return tempBool;
+   // }
+
+   // if (tempNode.parent.name !== undefined || tempNode.parent !== null && tempBool != true) {
+   //    checkParentScopes(tempNode.parent, tempId);
+   // }
+   // // else if (tempNode.cur.symbolMap.length > 0) {
+   // //    if (tempId == tempNode.cur.parent.symbolMap[i].getId()) {
+   // //       return true;
+   // //    }
+   // // }
+   // // tempNode.cur = tempNode.cur.parent;
+   // return tempBool;
 }
 
 function analyzeAssignStmt() {
@@ -228,10 +251,11 @@ function analyzeAssignStmt() {
    }
 
    ast.addNode("AssignmentStatement", "branch");
- 
+   
+   var declared = false;
+
    if (thisToken.tokenId == "T_ID") {
       // Check to see if the variable was declared
-      var declared = false;
       if (scopeMap.cur.symbolMap.length > 0) {
          for (var i = 0; i < scopeMap.cur.symbolMap.length; i++) {
             if (thisToken.value == scopeMap.cur.symbolMap[i].getId()) {
@@ -242,14 +266,15 @@ function analyzeAssignStmt() {
       }
       if (declared == false) {
          declared = checkParentScopes(scopeMap.cur, thisToken.value);
-         console.log(checkParentScopes(scopeMap.cur, thisToken.value));
-         console.log(declared);
+         // console.log(checkParentScopes(scopeMap.cur, thisToken.value));
+         // console.log(declared);
       }
       // console.log(scopeMap.cur.parent.symbolMap);
       // console.log(scopeMap.cur.parent.name);
       // console.log(scopeMap.cur.parent.symbolMap[0].getId());
       // If we didn't find it in this scope check
       // all of the parent scopes
+      // declare = checkParentScopes(scopeMap.cur, thisToken.value)
       if (declared == false) {
          semErrors++;
          if (verbose == true) {
