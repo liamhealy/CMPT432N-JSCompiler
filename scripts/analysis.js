@@ -56,7 +56,7 @@ function analysis() {
          putMessage("SEMANTIC ANALYSIS - Analysis finished with " + semErrors + " errors and " + semWarnings + " warnings.");
       }
       else {
-         putMessage("SEMANTIC ANALYSIS - Analysis finished with " + semErrors + " error(s) and " + semWarnings + " warnings");
+         putMessage("SEMANTIC ANALYSIS - Analysis failed with " + semErrors + " error(s) and " + semWarnings + " warnings");
       }
    }
 
@@ -95,6 +95,7 @@ function analyzeBlock() {
    }
 
    ast.endChildren();
+
 }
 
 function analyzeStmtList() {
@@ -189,6 +190,12 @@ function analyzeId() {
    nextSemToken();
 }
 
+function checkParent(tempNode, tempId) {
+   if ((tempNode.cur.parent !== null) && (tempNode.cur.parent.name !== undefined)) {
+      
+   }
+}
+
 function analyzeAssignStmt() {
 
    if (verbose == true) {
@@ -198,6 +205,21 @@ function analyzeAssignStmt() {
    ast.addNode("AssignmentStatement", "branch");
  
    if (thisToken.tokenId == "T_ID") {
+      // Check to see if the variable was declared
+      var declared = false;
+      if (scopeMap.cur.symbolMap.length > 0) {
+         for (var i = 0; i < scopeMap.cur.symbolMap.length; i++) {
+            if (thisToken.value == scopeMap.cur.symbolMap[i].getId()) {
+               declared = true;
+               break;
+            }
+         }
+      }
+      // If we didn't find it in this scope check 
+      // all of the parent scopes
+      if (declared == false) {
+         declared = checkParent(scopeMap, thisToken.value);
+      }
       analyzeId();
    }
 
@@ -249,14 +271,19 @@ function analyzeVarDecl() {
    nextSemToken();
 
    if (thisToken.tokenId == "T_ID") {
+
       // Don't go to analyzeId() from here,
       // we need to check for errors in this case
+      
+      // Is the variable being declared a second
+      // time illegaly? Check for that here:
       var redeclared = false;
       var i = 0;
 
       while (i < scopeMap.cur.symbolMap.length) {
          if (scopeMap.cur.symbolMap[i].getId() == thisToken.value) {
             redeclared = true;
+            console.log(scopeMap.cur.symbolMap[i]);
             break;
          }
          else {
@@ -277,7 +304,7 @@ function analyzeVarDecl() {
          // We first initialize a temporary symbol
          // and then we push that to the array
          // that holds the symbols for the current scope.
-         var tempSymbol = new Symbol(thisToken.value, tokenSequence[semSequenceIndex - 1].value, null, thisToken.line, thisToken.col, thisToken.programNum, scopeLevel, true, false);
+         var tempSymbol = new Symbol(thisToken.value, tokenSequence[semSequenceIndex - 1].value, null, thisToken.line, thisToken.col, programCount, scopeLevel, true, false);
          scopeMap.cur.symbolMap.push(tempSymbol);
          if (verbose == true) {
             putMessage("SEMANTIC ANALYSIS - New symbol [" + thisToken.value + "] of type [" + tokenSequence[semSequenceIndex - 1].value + "] found at (" + thisToken.line + "," + thisToken.col + ") in scope " + scopeLevel);
@@ -492,6 +519,8 @@ function resetVals() {
    ast.addNode("Root", "branch");
 
    semSequenceIndex = 0;
+
+   thisToken = tokenSequence[semSequenceIndex];
 
    scopeLevel = 0;
 

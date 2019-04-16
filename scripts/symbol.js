@@ -9,6 +9,8 @@ class Symbol {
     constructor(symbolId, symbolType, symbolValue, symbolLine, symbolCol, programNum, symbolScope, isInit, isUsed){
         this.symbolId = symbolId;
         this.symbolType = symbolType;
+        // symbolValue is null until the symbol
+        // is passed through <AssignmentStatement>
         this.symbolValue = symbolValue;
         this.symbolLine = symbolLine;
         this.symbolCol = symbolCol;
