@@ -75,7 +75,7 @@ function ScopeTree() {
     this.toString = function() {
         // Initialize the result string.
         var traversalResult = "";
-
+        
         // Recursive function to handle the expansion of the nodes.
         function expand(node, depth) {
             // Space out based on the current depth so

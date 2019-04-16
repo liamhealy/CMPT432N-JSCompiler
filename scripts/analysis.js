@@ -74,6 +74,8 @@ function analyzeBlock() {
       // Don't display in the AST, just move on.   
       scopeLevel++;
 
+      scopeMap.addNode("Scope " + scopeLevel, "branch", scopeLevel);
+
       ast.addNode("Block", "branch");
       
       nextSemToken();
@@ -209,6 +211,21 @@ function analyzeAssignStmt() {
 
 }
 
+// function checkIfRedeclared(tempNode, tempToken, tempScope) {
+//    var i = 0;
+//    var tempSymbol = tempNode.cur.symbolMap[i];
+//    while (i < tempNode.cur.symbolMap.length) {
+//       tempSymbol = tempNode.cur.symbolMap[i];
+//       if (tempSymbol.symbolId == tempToken.value && tempSymbol.symbolScope == tempScope) {
+//          return true;
+//       }
+//       else {
+//          i++;
+//       }
+//    }
+//    return false;
+// }
+
 function analyzeVarDecl() {
    /* TODO:
    *  - check if the variable exists already
@@ -235,22 +252,19 @@ function analyzeVarDecl() {
       // Don't go to analyzeId() from here,
       // we need to check for errors in this case
       var redeclared = false;
+      var i = 0;
 
-      if (scopeMap.cur.symbolMap.length != null) {
-         var i = 0;
-         var tempSymbol = scopeMap.cur.symbolMap[i];
-         while (i < scopeMap.cur.symbolMap.length) {
-            tempSymbol = scopeMap.cur.symbolMap[i];
-            if (tempSymbol.symbolId == thisToken.value && tempSymbol.symbolScope == scopeLevel) {
-               redeclared = true;
-            }
-            else {
-               i++;
-            }
+      while (i < scopeMap.cur.symbolMap.length) {
+         if (scopeMap.cur.symbolMap[i].getId() == thisToken.value) {
+            redeclared = true;
+            break;
+         }
+         else {
+            i++;
          }
       }
 
-      // checkIfRedeclared(scopeMap, thisToken.value, scopeLevel);
+      // checkIfRedeclared(scopeMap.cur.symbolMap, thisToken.value, scopeLevel);
       if (redeclared == true) {
          semErrors++;
          if (verbose == true) {
@@ -263,7 +277,7 @@ function analyzeVarDecl() {
          // We first initialize a temporary symbol
          // and then we push that to the array
          // that holds the symbols for the current scope.
-         var tempSymbol = new symbol(thisToken.value, tokenSequence[semSequenceIndex - 1].value, null, thisToken.line, thisToken.col, thisToken.programNum, scopeLevel, true, false);
+         var tempSymbol = new Symbol(thisToken.value, tokenSequence[semSequenceIndex - 1].value, null, thisToken.line, thisToken.col, thisToken.programNum, scopeLevel, true, false);
          scopeMap.cur.symbolMap.push(tempSymbol);
          if (verbose == true) {
             putMessage("SEMANTIC ANALYSIS - New symbol [" + thisToken.value + "] of type [" + tokenSequence[semSequenceIndex - 1].value + "] found at (" + thisToken.line + "," + thisToken.col + ") in scope " + scopeLevel);
@@ -482,4 +496,6 @@ function resetVals() {
    scopeLevel = 0;
 
    symbolSequence = [];
+
+   scopeMap = new ScopeTree();
 }
