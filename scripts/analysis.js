@@ -190,10 +190,35 @@ function analyzeId() {
    nextSemToken();
 }
 
-function checkParent(tempNode, tempId) {
-   if ((tempNode.cur.parent !== null) && (tempNode.cur.parent.name !== undefined)) {
-      
+function checkParentScopes(tempNode, tempId) {
+   var tempBool;
+   if (tempNode.parent.symbolMap.length > 0) {
+      for (var i = 0; i < tempNode.parent.symbolMap.length; i++) {
+         console.log(tempNode.parent.symbolMap[i].getId());
+         if (tempId == tempNode.parent.symbolMap[i].getId()) {
+            console.log("time to return");
+            tempBool = true;
+            return;
+         }
+      }
    }
+   else {
+      tempBool = false;
+   }
+   // tempNode = tempNode.parent;
+   if (tempBool == true) {
+      return true;
+   }
+   if (tempNode.parent.name !== undefined || tempNode.parent !== null) {
+      checkParentScopes(tempNode.parent, tempId);
+   }
+   // else if (tempNode.cur.symbolMap.length > 0) {
+   //    if (tempId == tempNode.cur.parent.symbolMap[i].getId()) {
+   //       return true;
+   //    }
+   // }
+   // tempNode.cur = tempNode.cur.parent;
+   return false;
 }
 
 function analyzeAssignStmt() {
@@ -215,10 +240,21 @@ function analyzeAssignStmt() {
             }
          }
       }
-      // If we didn't find it in this scope check 
+      if (declared == false) {
+         declared = checkParentScopes(scopeMap.cur, thisToken.value);
+         console.log(checkParentScopes(scopeMap.cur, thisToken.value));
+         console.log(declared);
+      }
+      // console.log(scopeMap.cur.parent.symbolMap);
+      // console.log(scopeMap.cur.parent.name);
+      // console.log(scopeMap.cur.parent.symbolMap[0].getId());
+      // If we didn't find it in this scope check
       // all of the parent scopes
       if (declared == false) {
-         declared = checkParent(scopeMap, thisToken.value);
+         semErrors++;
+         if (verbose == true) {
+            putMessage("SEMANTIC ANALYSIS - ERROR: The id [" + thisToken.value + "] was used before it was declared at (" + thisToken.line + "," + thisToken.col + ") in scope " + scopeLevel);
+         }
       }
       analyzeId();
    }
