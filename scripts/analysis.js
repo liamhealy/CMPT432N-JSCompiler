@@ -282,6 +282,21 @@ function getSymbolValue(tempNode, tempId) {
    }
 }
 
+function setSymbolValue(tempNode, tempId, thisValue) {
+   if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
+      for (var i = 0; i < tempNode.symbolMap.length; i++) {
+         if (tempId == tempNode.symbolMap[i].getId()) {
+            tempNode.symbolMap[i].isUsed = true;
+            tempNode.symbolMap[i].value = thisValue;
+            console.log(tempNode.symbolMap[i].value);
+         }
+      }
+   }
+   if (tempNode.parent != undefined || tempNode.parent != null) {
+      return setSymbolValue(tempNode.parent, tempId, thisValue);
+   }
+}
+
 function analyzeAssignStmt() {
 
    if (verbose == true) {
@@ -291,6 +306,7 @@ function analyzeAssignStmt() {
    ast.addNode("AssignmentStatement", "branch");
    
    var declared = false;
+   var tempValue = 0;
    var firstType = "";
    var secondType = "";
 
@@ -326,6 +342,7 @@ function analyzeAssignStmt() {
          // and store it as firstType before moving
          // to the next token.
          tempFirstType = checkType(scopeMap.cur, thisToken.value);
+         tempValue = getSymbolValue(scopeMap.cur, thisToken.value);
       }
       analyzeId();
    }
@@ -333,6 +350,19 @@ function analyzeAssignStmt() {
    if (thisToken.tokenId == "T_ASSIGNOP") {
       // Analyze the following expression
       nextSemToken();
+
+      if (addition == true) {
+         if (thisToken.tokenId == "T_DIGIT" && tempFirstType == "int") {
+            if (tokenSequence[semSequenceIndex + 1].tokenId != "T_INTOP" && tempFirstVal != tempValue) {
+               tempFirstVal = Number(thisToken.value);
+            }
+            else {
+               tempFirstVal = Number(tempFirstVal) + Number(thisToken.value);
+            }
+            setSymbolValue(scopeMap.cur, thisToken.value, tempFirstVal);
+         }
+      }
+
       analyzeExpr();
    }
 
