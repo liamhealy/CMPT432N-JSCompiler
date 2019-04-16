@@ -37,6 +37,15 @@ var symbolSequence = [];
 // Need to keep track of the scope
 var scopeLevel = 0;
 
+// Lets us know if we should be adding values together
+var addition = false;
+
+// Keep track of types and values for assignment statements
+var tempFirstType = "";
+var tempSecondType = "";
+var tempFirstVal;
+var tempSecondVal;
+
 function analysis() {
    // Reset global variables used here
    resetVals();
@@ -190,6 +199,22 @@ function analyzeId() {
    nextSemToken();
 }
 
+// Check the type of the variable being analyzed
+function checkType(tempNode, tempId) {
+   if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
+      for (var i = 0; i < tempNode.symbolMap.length; i++) {
+         if (tempId == tempNode.symbolMap[i].getId()) {
+            return tempNode.symbolMap[i].getType();
+         }
+      }
+   }
+   if (tempNode.parent != undefined || tempNode.parent != null) {
+      return checkType(tempNode.parent, tempId);
+   }
+}
+
+// Check to see if a var exists within the effective
+// range of its declaration
 function checkParentScopes(tempNode, tempId) {
    if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
       for (var i = 0; i < tempNode.symbolMap.length; i++) {
@@ -253,6 +278,8 @@ function analyzeAssignStmt() {
    ast.addNode("AssignmentStatement", "branch");
    
    var declared = false;
+   var firstType = "";
+   var secondType = "";
 
    if (thisToken.tokenId == "T_ID") {
       // Check to see if the variable was declared
@@ -278,8 +305,14 @@ function analyzeAssignStmt() {
       if (declared == false) {
          semErrors++;
          if (verbose == true) {
-            putMessage("SEMANTIC ANALYSIS - ERROR: The id [" + thisToken.value + "] was used before it was declared at (" + thisToken.line + "," + thisToken.col + ") in scope " + scopeLevel);
+            putMessage("SEMANTIC ANALYSIS - ERROR: The id [" + thisToken.value + "] was used before it was declared at (" + thisToken.line + "," + thisToken.col + ") in scope level " + scopeLevel);
          }
+      }
+      else {
+         // Check the type of the first var here
+         // and store it as firstType before moving
+         // to the next token.
+         tempFirstType = checkType(scopeMap.cur, thisToken.value);
       }
       analyzeId();
    }
@@ -475,12 +508,23 @@ function analyzeInt() {
       putMessage("SEMANTIC ANALYSIS - Analyzing <IntExpr>");
    }
 
-   // Handle digits through analysizeId() for now
+   if (addition == true) {
+      tempSecondVal = parseInt(thisToken.value, 10) + parseInt(tempFirstVal, 10);
+      console.log(tempSecondVal);
+   }
+
+   // Handle digits through analyzeId() for now
    analyzeId();
 
    if (thisToken.tokenId == "T_INTOP") {
+      // Set it so that the next var/digit/expression
+      // is analyzed in addition with the previous one
+      addition = true;
+      tempFirstVal = tokenSequence[semSequenceIndex - 1].value;
+
       // Might need to do something else for addition...
       nextSemToken();
+
 
       // Move back to analyzeExpr() for the second <Expr> for addition
       analyzeExpr();
@@ -588,4 +632,12 @@ function resetVals() {
    symbolSequence = [];
 
    scopeMap = new ScopeTree();
+
+   tempFirstType = "";
+
+   tempSecondType = "";
+
+   tempFirstVal;
+
+   tempSecondVal;
 }

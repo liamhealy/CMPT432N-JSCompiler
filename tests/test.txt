@@ -55,3 +55,8 @@ int a}$
     }}
 }}
 $
+
+/* Additional test cases for project three */
+
+/* 11. should lex and parse succefully but fail semantic analysis */
+{{{{{{a = 5}int a}}}}}$
