@@ -43,8 +43,8 @@ var addition = false;
 // Keep track of types and values for assignment statements
 var tempFirstType = "";
 var tempSecondType = "";
-var tempFirstVal;
-var tempSecondVal;
+var tempFirstVal = null;
+var tempSecondVal = null;
 
 function analysis() {
    // Reset global variables used here
@@ -267,6 +267,19 @@ function checkParentScopes(tempNode, tempId) {
    // // }
    // // tempNode.cur = tempNode.cur.parent;
    // return tempBool;
+}
+
+function getSymbolValue(tempNode, tempId) {
+   if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
+      for (var i = 0; i < tempNode.symbolMap.length; i++) {
+         if (tempId == tempNode.symbolMap[i].getId()) {
+            return tempNode.symbolMap[i].getId();
+         }
+      }
+   }
+   if (tempNode.parent != undefined || tempNode.parent != null) {
+      return checkParentScopes(tempNode.parent, tempId);
+   }
 }
 
 function analyzeAssignStmt() {
@@ -508,9 +521,24 @@ function analyzeInt() {
       putMessage("SEMANTIC ANALYSIS - Analyzing <IntExpr>");
    }
 
+   // Check for the + operator ahead of the digit/variable
+   if (tokenSequence[semSequenceIndex + 1].tokenId == "T_INTOP") {
+      // Set it so that the next var/digit/expression
+      // is analyzed in addition with the previous one
+      // addition = true;
+
+   }
+
    if (addition == true) {
-      tempSecondVal = parseInt(thisToken.value, 10) + parseInt(tempFirstVal, 10);
-      console.log(tempSecondVal);
+      if (tempFirstVal == null) {
+         tempFirstVal = Number(thisToken.value);
+      }
+      else {
+         tempSecondVal = Number(thisToken.value) + Number(tempFirstVal);
+         console.log(tempSecondVal);
+         // Make sure we don't continue to add
+         addition = false;
+      }
    }
 
    // Handle digits through analyzeId() for now
@@ -529,6 +557,17 @@ function analyzeInt() {
       // Move back to analyzeExpr() for the second <Expr> for addition
       analyzeExpr();
    }
+
+   if (addition == true) {
+      tempSecondVal = Number(thisToken.value) + Number(tempFirstVal);
+      console.log(tempSecondVal);
+   }
+
+   // if (addition == true) {
+   //    tempSecondVal = Number(thisToken.value) + Number(tempFirstVal);
+   //    console.log(tempSecondVal);
+   //    addition = false;
+   // }
 
 }
 
@@ -637,7 +676,9 @@ function resetVals() {
 
    tempSecondType = "";
 
-   tempFirstVal;
+   tempFirstVal = null;
 
-   tempSecondVal;
+   tempSecondVal = null;
+
+   additon = false;
 }
