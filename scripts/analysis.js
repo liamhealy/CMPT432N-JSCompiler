@@ -47,8 +47,12 @@ var tempFirstVal = null;
 var tempSecondVal = null;
 
 // Keep a variable ready to hold an id so we can
-// set a symbol's value to it's own.
-var setId;
+// set a symbol's value to it's own
+var setId = tokenSequence[semSequenceIndex];
+
+// Keep track of <PrintStatement> so that we don't
+// receive unwarrented errors
+var inPrint = false;
 
 function analysis() {
    // Reset global variables used here
@@ -624,8 +628,17 @@ function analyzeInt() {
 
    var exists = false;
    var varIsUsed = false;
-   var thisType = checkType(scopeMap.cur);
+   var thisType = checkType(scopeMap.cur, setId.value);
    // var temp = false;
+
+   if (thisToken.tokenId == "T_DIGIT" && thisType != "int") {
+      semErrors++;
+      if (verbose == true) {
+         putMessage("SEMANTIC ANALYSIS - ERROR: The variable [" + setId.value + "] at (" + setId.line + "," + setId.col + ") was expecting an assigned value of type [" + thisType + "] but instead received a value of type [int]\n");
+      }
+      nextSemToken();
+      analyzeExpr();
+   }
 
    // Check for the + operator ahead of the digit/variable
    if (tokenSequence[semSequenceIndex + 1].tokenId == "T_INTOP") {
@@ -773,19 +786,22 @@ function analyzeBoolExpr() {
 function analyzeStringExpr() {
    // We are gonna need a variable to hold the CharList
    var thisString = thisToken.value;
+   var exists = false;
+   var varIsUsed = false;
+   var thisType = checkType(scopeMap.cur, setId.value);
 
    if (verbose == true) {
       putMessage("SEMANTIC ANALYSIS - Analyzing <StringExpr>");
    }
 
-   if (tempFirstType != "string") {
-      semErrors++;
-      if (verbose == true) {
-         putMessage("SEMANTIC ANALYSIS - ERROR: variable ");
-      }
-   }
+   // if (thisType != "string") {
+   //    semErrors++;
+   //    if (verbose == true) {
+   //       putMessage("SEMANTIC ANALYSIS - ERROR: variable ");
+   //    }
+   // }
 
-   if (thisToken.tokenId == "T_OPENQUOTE") {
+   if (thisToken.tokenId == "T_OPENQUOTE" && thisType == "string") {
       // If coming from analyzeExpr(), move on and analyze <CharList>
       nextSemToken();
 
@@ -804,7 +820,148 @@ function analyzeStringExpr() {
       }
 
    }
+   else {
+      semErrors++;
+      if (verbose == true) {
+         putMessage("SEMANTIC ANALYSIS - ERROR: Variable [" + setId.value + "] at (" + setId.line + "," + setId.col + ") was expecting an assignment of type [" + thisType + "], but instead received a value of type [string]");
+      }
+      while(thisToken.tokenId != "T_CLOSEQUOTE") {
+         if (thisToken.tokenId == "T_CHAR") {
+            thisString += thisToken.value;
+         }
+         nextSemToken();
+      }
+      analyzeExpr();
+   }
 
+   // if ('0123456789'.includes(thisString)) {
+   //    semErrors++;
+   //    if (verbose == true) {
+   //       putMessage("SEMANTIC ANALYSIS - Variable [" + setId.value + "] at (" + setId.line + "," + setId.col + ") was expecting an assignment of type string, but instead received otherwise.");
+   //    }
+   // }
+
+   varIsUsed = checkIfUsed(scopeMap.cur, setId.value);
+   console.log(varIsUsed);
+   thisType = checkType(scopeMap.cur, setId.value);
+   console.log(thisType);
+   exists = checkParentScopes(scopeMap.cur, setId.value);
+   console.log(exists);
+
+   if (thisToken.tokenId == "T_INTOP") {
+      if (exists == true && thisType != "string") {
+         // setAsUsed(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value);
+         // console.log(checkIfUsed(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value));
+         semErrors++;
+         if (verbose == true) {
+            putMessage("SEMANTIC ANALYSIS - ERROR: The variable [" + setId.value + "] at (" + setId.line + "," + setId.col + ") was expecting an assigned value of type [" + thisType + "], but received a value of type [string] instead\n");
+         }
+         // The operator [" + thisToken.value + "] at (" + thisToken.line + "," + thisToken.col + ") cannot be used on two variables of different types
+         // Move on
+         // thisToken = tokenSequence[semSequenceIndex + 2];
+         nextSemToken();
+         // analyzeExpr();
+      }
+      else if (exists == false) {
+         semErrors++;
+         if (verbose == true) {
+            putMessage("SEMANTIC ANALYSIS - ERROR: The variable [" + setId.value + "] at (" + setId.line + "," + setId.col + ") was never declared\n");
+         }
+         // Move on
+         // thisToken = tokenSequence[semSequenceIndex + 2];
+         nextSemToken();
+         // analyzeExpr();
+      }
+      // else if (varIsUsed === undefined) {
+      //    semErrors++;
+      //    if (verbose == true) {
+      //       putMessage("SEMANTIC ANALYSIS - ERROR: The variable [" + tokenSequence[semSequenceIndex + 1].value + "] at (" + tokenSequence[semSequenceIndex + 1].line + "," + tokenSequence[semSequenceIndex + 1].col + ") may have been initialized but it does not hold any value");
+      //    }
+      //    // Move on
+      //    nextSemToken();
+      //    analyzeExpr();
+      // }
+      else {
+         // tempFirstVal = setId.value;
+         tempFirstVal = thisString;
+         // Might need to do something else for addition...
+         // thisToken = tokenSequence[semSequenceIndex + 2];
+         nextSemToken();
+
+         // Move back to analyzeExpr() for the second <Expr> for addition
+         // analyzeExpr();
+      }
+   }
+
+   // if (thisToken.tokenId == "T_INTOP") {
+   //    // Set it so that the next var/digit/expression
+   //    // is analyzed in addition with the previous one
+   //    if (tokenSequence[semSequenceIndex + 1].tokenId == "T_ID") {
+   //       varIsUsed = checkIfUsed(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value);
+   //       console.log(varIsUsed);
+   //       thisType = checkType(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value);
+   //       console.log(thisType);
+   //       exists = checkParentScopes(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value);
+   //       console.log(exists);
+   //       if (exists == true && thisType != "int") {
+   //          // setAsUsed(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value);
+   //          // console.log(checkIfUsed(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value));
+   //          semErrors++;
+   //          if (verbose == true) {
+   //             putMessage("SEMANTIC ANALYSIS - ERROR: The variable [" + setId.value + "] at (" + setId.line + "," + setId.col + ") was expecting an assigned value of type [int], but received a value of type [" + thisType + "] instead\n");
+   //          }
+   //          // The operator [" + thisToken.value + "] at (" + thisToken.line + "," + thisToken.col + ") cannot be used on two variables of different types
+   //          // Move on
+   //          addition = false;
+   //          // thisToken = tokenSequence[semSequenceIndex + 2];
+   //          nextSemToken();
+   //          analyzeExpr();
+   //       }
+   //       else if (exists == false) {
+   //          semErrors++;
+   //          if (verbose == true) {
+   //             putMessage("SEMANTIC ANALYSIS - ERROR: The variable [" + tokenSequence[semSequenceIndex + 1].value + "] at (" + tokenSequence[semSequenceIndex + 1].line + "," + tokenSequence[semSequenceIndex + 1].col + ") was never declared\n");
+   //          }
+   //          // Move on
+   //          addition = false;
+   //          // thisToken = tokenSequence[semSequenceIndex + 2];
+   //          nextSemToken();
+   //          analyzeExpr();
+   //       }
+   //       // else if (varIsUsed === undefined) {
+   //       //    semErrors++;
+   //       //    if (verbose == true) {
+   //       //       putMessage("SEMANTIC ANALYSIS - ERROR: The variable [" + tokenSequence[semSequenceIndex + 1].value + "] at (" + tokenSequence[semSequenceIndex + 1].line + "," + tokenSequence[semSequenceIndex + 1].col + ") may have been initialized but it does not hold any value");
+   //       //    }
+   //       //    // Move on
+   //       //    nextSemToken();
+   //       //    analyzeExpr();
+   //       // }
+   //       else {
+   //          addition = false;
+   //          tempFirstVal = tokenSequence[semSequenceIndex - 1].value;
+
+   //          // Might need to do something else for addition...
+   //          // thisToken = tokenSequence[semSequenceIndex + 2];
+   //          nextSemToken();
+
+   //          // Move back to analyzeExpr() for the second <Expr> for addition
+   //          analyzeExpr();
+   //       }
+   //    }
+   //    else if (tokenSequence[semSequenceIndex + 1].tokenId == "T_DIGIT") {
+   //       nextSemToken();
+   //       if (tempFirstVal == null) {
+   //          tempFirstVal = Number(thisToken.value);
+   //       }
+   //       else {
+   //          tempSecondVal = Number(thisToken.value) + Number(tempFirstVal);
+   //       }
+   //       addition = false;
+   //       // thisToken = tokenSequence[semSequenceIndex + 2];
+   //       analyzeExpr();
+   //    }
+   console.log(getSymbolValue(scopeMap.cur, setId));
    ast.addNode(thisString, "leaf");
    nextSemToken();
 
@@ -852,4 +1009,7 @@ function resetVals() {
    tempSecondVal = null;
 
    additon = false;
+
+   setId = tokenSequence[semSequenceIndex];
+
 }
