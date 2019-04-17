@@ -301,6 +301,20 @@ function setSymbolValue(tempNode, tempId, thisValue) {
    }
 }
 
+function setAsUsed(tempNode, tempId) {
+   if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
+      for (var i = 0; i < tempNode.symbolMap.length; i++) {
+         if (tempId == tempNode.symbolMap[i].getId()) {
+            tempNode.symbolMap[i].isUsed = true;
+            console.log(tempNode.symbolMap[i].isUsed);
+         }
+      }
+   }
+   if (tempNode.parent != undefined || tempNode.parent != null) {
+      return setAsUsed(tempNode.parent, tempId);
+   }
+}
+
 function analyzeAssignStmt() {
 
    if (verbose == true) {
@@ -345,10 +359,14 @@ function analyzeAssignStmt() {
       else {
          // Check the type of the first var here
          // and store it as firstType before moving
-         // to the next token.
-         mainVar = thisToken;
-         setId = thisToken.value;
+         // to the next token
          tempFirstType = checkType(scopeMap.cur, thisToken.value);
+
+         // Set mainVar, setId, and tempValue to values of the
+         // current token, so that they can be used here and
+         // elsewhere for analysis
+         mainVar = thisToken;
+         setId = thisToken;
          tempValue = thisToken.value;
       }
       analyzeId();
@@ -399,10 +417,10 @@ function analyzeAssignStmt() {
       // Move to analyzeExpr() and assign variables values in their respective places
       analyzeExpr();
       if (tempSecondVal != null) {
-         setSymbolValue(scopeMap.cur, setId, tempSecondVal);
+         setSymbolValue(scopeMap.cur, setId.value, tempSecondVal);
       }
       else {
-         setSymbolValue(scopeMap.cur, setId, tempFirstVal);
+         setSymbolValue(scopeMap.cur, setId.value, tempFirstVal);
       }
    }
 
@@ -594,7 +612,7 @@ function checkIfUsed(tempNode, tempId) {
       }
    }
    if (tempNode.parent != undefined || tempNode.parent != null) {
-      return checkType(tempNode.parent, tempId);
+      return checkIfUsed(tempNode.parent, tempId);
    }
 }
 
@@ -607,6 +625,7 @@ function analyzeInt() {
    var exists = false;
    var varIsUsed = false;
    var thisType = checkType(scopeMap.cur);
+   // var temp = false;
 
    // Check for the + operator ahead of the digit/variable
    if (tokenSequence[semSequenceIndex + 1].tokenId == "T_INTOP") {
@@ -642,29 +661,34 @@ function analyzeInt() {
       // Set it so that the next var/digit/expression
       // is analyzed in addition with the previous one
       if (tokenSequence[semSequenceIndex + 1].tokenId == "T_ID") {
-         varIsUsed = checkIfUsed(scopeMap.cur, tokenSequence[semSequenceIndex + 1].tokenId);
+         varIsUsed = checkIfUsed(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value);
          console.log(varIsUsed);
          thisType = checkType(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value);
          console.log(thisType);
          exists = checkParentScopes(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value);
          console.log(exists);
          if (exists == true && thisType != "int") {
+            // setAsUsed(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value);
+            // console.log(checkIfUsed(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value));
             semErrors++;
             if (verbose == true) {
-               putMessage("SEMANTIC ANALYSIS - ERROR: The operator [" + thisToken.value + "] at (" + thisToken.line + "," + thisToken.col + ") cannot be used on two variables of different types");
+               putMessage("SEMANTIC ANALYSIS - ERROR: The variable [" + setId.value + "] at (" + setId.line + "," + setId.col + ") was expecting an assigned value of type [int], but received a value of type [" + thisType + "] instead\n");
             }
+            // The operator [" + thisToken.value + "] at (" + thisToken.line + "," + thisToken.col + ") cannot be used on two variables of different types
             // Move on
             addition = false;
+            // thisToken = tokenSequence[semSequenceIndex + 2];
             nextSemToken();
             analyzeExpr();
          }
          else if (exists == false) {
             semErrors++;
             if (verbose == true) {
-               putMessage("SEMANTIC ANALYSIS - ERROR: The variable [" + tokenSequence[semSequenceIndex + 1].value + "] at (" + tokenSequence[semSequenceIndex + 1].line + "," + tokenSequence[semSequenceIndex + 1].col + ") was never declared");
+               putMessage("SEMANTIC ANALYSIS - ERROR: The variable [" + tokenSequence[semSequenceIndex + 1].value + "] at (" + tokenSequence[semSequenceIndex + 1].line + "," + tokenSequence[semSequenceIndex + 1].col + ") was never declared\n");
             }
             // Move on
             addition = false;
+            // thisToken = tokenSequence[semSequenceIndex + 2];
             nextSemToken();
             analyzeExpr();
          }
@@ -682,6 +706,7 @@ function analyzeInt() {
             tempFirstVal = tokenSequence[semSequenceIndex - 1].value;
 
             // Might need to do something else for addition...
+            // thisToken = tokenSequence[semSequenceIndex + 2];
             nextSemToken();
 
             // Move back to analyzeExpr() for the second <Expr> for addition
@@ -697,7 +722,7 @@ function analyzeInt() {
             tempSecondVal = Number(thisToken.value) + Number(tempFirstVal);
          }
          addition = false;
-         nextSemToken();
+         // thisToken = tokenSequence[semSequenceIndex + 2];
          analyzeExpr();
       }
    }
