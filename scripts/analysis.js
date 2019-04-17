@@ -206,9 +206,73 @@ function analyzePrint() {
 }
 
 function analyzeId() {
-   // For now, just add the leaf node and move on
-   ast.addNode(thisToken.value, "leaf");
-   nextSemToken();
+   
+   // var declared = false;
+   
+   // Run a scope check on the ID to see if it was initialized
+   // if (thisToken.tokenId == "T_ID") {
+   //    // Check to see if the variable was declared
+   //    if (scopeMap.cur.symbolMap.length > 0) {
+   //       for (var i = 0; i < scopeMap.cur.symbolMap.length; i++) {
+   //          if (thisToken.value == scopeMap.cur.symbolMap[i].getId()) {
+   //             declared = true;
+   //             break;
+   //          }
+   //       }
+   //    }
+   //    if (declared == false) {
+   //       declared = checkParentScopes(scopeMap.cur, thisToken.value);
+   //       // console.log(checkParentScopes(scopeMap.cur, thisToken.value));
+   //       // console.log(declared);
+   //    }
+   //    // console.log(scopeMap.cur.parent.symbolMap);
+   //    // console.log(scopeMap.cur.parent.name);
+   //    // console.log(scopeMap.cur.parent.symbolMap[0].getId());
+   //    // If we didn't find it in this scope check
+   //    // all of the parent scopes
+   //    // declare = checkParentScopes(scopeMap.cur, thisToken.value)
+   //    if (declared == false) {
+   //       semErrors++;
+   //       if (verbose == true) {
+   //          putMessage("SEMANTIC ANALYSIS - ERROR: The id [" + thisToken.value + "] was used before it was declared at (" + thisToken.line + "," + thisToken.col + ") in scope level " + scopeLevel);
+   //       }
+   //    }
+   //    else {
+   //       // // Check the type of the first var here
+   //       // // and store it as firstType before moving
+   //       // // to the next token
+   //       // tempFirstType = checkType(scopeMap.cur, thisToken.value);
+
+   //       // // Set mainVar, setId, and tempValue to values of the
+   //       // // current token, so that they can be used here and
+   //       // // elsewhere for analysis
+   //       // mainVar = thisToken;
+   //       // setId = thisToken;
+   //       // tempValue = thisToken.value;
+   //       ast.addNode(thisToken.value, "leaf");
+   //       nextSemToken();
+   //    }
+
+   //    // For now, just add the leaf node and move on
+   //    // ast.addNode(thisToken.value, "leaf");
+   //    // nextSemToken();
+   // }
+   // else {
+      
+   // }
+   var symScope = checkScopeLevels(scopeMap.cur, thisToken.value);
+   var declared = checkParentScopes(scopeMap.cur, thisToken.value);
+   if (declared == true && symScope > scopeLevel) {
+      semErrors++;
+      if (verbose == true) {
+         putMessage("SEMANTIC ANALYSIS - ERROR: The id [" + thisToken.value + "] was used before it was declared at (" + thisToken.line + "," + thisToken.col + ") in scope level " + scopeLevel);
+      }
+      nextSemToken();
+   }
+   else {
+      ast.addNode(thisToken.value, "leaf");
+      nextSemToken();
+   }
 }
 
 // Check the type of the variable being analyzed
@@ -281,6 +345,19 @@ function checkParentScopes(tempNode, tempId) {
    // return tempBool;
 }
 
+function checkScopeLevels(tempNode, tempId) {
+   if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
+      for (var i = 0; i < tempNode.symbolMap.length; i++) {
+         if (tempId == tempNode.symbolMap[i].getId()) {
+            return tempNode.symbolMap[i].getScope();
+         }
+      }
+   }
+   if (tempNode.parent != undefined || tempNode.parent != null) {
+      return checkScopeLevels(tempNode.parent, tempId);
+   }
+}
+
 function getSymbolValue(tempNode, tempId) {
    if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
       for (var i = 0; i < tempNode.symbolMap.length; i++) {
@@ -336,6 +413,8 @@ function analyzeAssignStmt() {
    var tempValue = 0;
    var firstType = "";
    var secondType = "";
+   var symScope = null;
+   var validSym = false;
 
    if (thisToken.tokenId == "T_ID") {
       // Check to see if the variable was declared
@@ -347,6 +426,8 @@ function analyzeAssignStmt() {
             }
          }
       }
+      symScope = checkScopeLevels(scopeMap.cur, thisToken.value);
+      console.log(symScope);
       if (declared == false) {
          declared = checkParentScopes(scopeMap.cur, thisToken.value);
          // console.log(checkParentScopes(scopeMap.cur, thisToken.value));
@@ -364,6 +445,12 @@ function analyzeAssignStmt() {
             putMessage("SEMANTIC ANALYSIS - ERROR: The id [" + thisToken.value + "] was used before it was declared at (" + thisToken.line + "," + thisToken.col + ") in scope level " + scopeLevel);
          }
       }
+      // else if (declared == true && symScope > scopeLevel) {
+      //    semErrors++;
+      //    if (verbose == true) {
+      //       putMessage("SEMANTIC ANALYSIS - ERROR: The id [" + thisToken.value + "] was used before it was declared at (" + thisToken.line + "," + thisToken.col + ") in scope level " + scopeLevel);
+      //    }
+      // }
       else {
          // Check the type of the first var here
          // and store it as firstType before moving
@@ -376,6 +463,7 @@ function analyzeAssignStmt() {
          mainVar = thisToken;
          setId = thisToken;
          tempValue = thisToken.value;
+         validSym = true;
       }
       analyzeId();
    }
@@ -383,11 +471,15 @@ function analyzeAssignStmt() {
    // Setting of all values will occur after this
    if (thisToken.tokenId == "T_ASSIGNOP") {
 
-      // We are about to assign a value to a symbol
-      assigning = true;
-      // Analyze the following expression
-      nextSemToken();
-
+      if (validSym == true) {
+         // We are about to assign a value to a symbol
+         assigning = true;
+         // Analyze the following expression
+         nextSemToken();
+      }
+      else {
+         nextSemToken();
+      }
       // if (addition == true) {
       //    if (thisToken.tokenId == "T_DIGIT") {
       //       if (tokenSequence[semSequenceIndex + 1].tokenId != "T_INTOP") {
