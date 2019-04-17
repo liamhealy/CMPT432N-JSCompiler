@@ -63,3 +63,6 @@ $
 
 /* 12. successfully sets int a to 9 */
 {int a a = 5 + 4}$
+
+/* 13. should return an error due to addition with two different variable types */
+{int a string b {a = 1 + b}}$
