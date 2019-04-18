@@ -404,7 +404,7 @@ function setSymbolValue(tempNode, tempId, thisValue) {
    if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
       for (var i = 0; i < tempNode.symbolMap.length; i++) {
          if (tempId == tempNode.symbolMap[i].getId()) {
-            tempNode.symbolMap[i].isUsed = true;
+            // tempNode.symbolMap[i].isUsed = true;
             tempNode.symbolMap[i].value = thisValue;
             console.log(tempNode.symbolMap[i].value);
          }
@@ -419,7 +419,7 @@ function checkIfUsed(tempNode, tempId) {
    if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
       for (var i = 0; i < tempNode.symbolMap.length; i++) {
          if (tempId == tempNode.symbolMap[i].getId()) {
-            return tempNode.symbolMap[i].isUsed = true;
+            return tempNode.symbolMap[i].isUsed;
             // tempNode.symbolMap[i].value = thisValue;
             // console.log(tempNode.symbolMap[i].value);
          }
@@ -509,6 +509,9 @@ function analyzeAssignStmt() {
          tempValue = thisToken.value;
          validSym = true;
       }
+      // if (tokenSequence[semSequenceIndex + 1].tokenId == "T_INTOP") {
+      //    assigning = true;
+      // }
       analyzeId();
    }
 
@@ -767,18 +770,18 @@ function analyzeExpr() {
    }
 }
 
-function checkIfUsed(tempNode, tempId) {
-   if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
-      for (var i = 0; i < tempNode.symbolMap.length; i++) {
-         if (tempId == tempNode.symbolMap[i].getId()) {
-            return tempNode.symbolMap[i].isUsed;
-         }
-      }
-   }
-   if (tempNode.parent != undefined || tempNode.parent != null) {
-      return checkIfUsed(tempNode.parent, tempId);
-   }
-}
+// function checkIfUsed(tempNode, tempId) {
+//    if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
+//       for (var i = 0; i < tempNode.symbolMap.length; i++) {
+//          if (tempId == tempNode.symbolMap[i].getId()) {
+//             return tempNode.symbolMap[i].isUsed;
+//          }
+//       }
+//    }
+//    if (tempNode.parent != undefined || tempNode.parent != null) {
+//       return checkIfUsed(tempNode.parent, tempId);
+//    }
+// }
 
 function analyzeInt() {
 
