@@ -48,6 +48,7 @@ var tempFirstType = "";
 var tempSecondType = "";
 var tempFirstVal = null;
 var tempSecondVal = null;
+var typeForWhile = null;
 
 // Keep a variable ready to hold an id so we can
 // set a symbol's value to it's own
@@ -270,6 +271,7 @@ function analyzeId() {
       nextSemToken();
    }
    else {
+      typeForWhile = checkType(scopeMap.cur, thisToken.value);
       ast.addNode(thisToken.value, "leaf");
       nextSemToken();
    }
@@ -867,6 +869,7 @@ function analyzeBoolExpr() {
    var varIsUsed = false;
    var varOneType = null;
    var varTwoType = null;
+   var comparingVal = null;
 
    if (verbose == true) {
       putMessage("SEMANTIC ANALYSIS - Analyzing <BoolExpr>");
@@ -884,6 +887,8 @@ function analyzeBoolExpr() {
    console.log(thisType);
    exists = checkParentScopes(scopeMap.cur, setId.value);
    console.log(exists);
+   // comparingVal = getSymbolValue(scopeMap.cur, setId.value);
+   // console.log(comparingVal);
 
    if (assigning == true) {
       if (exists == true && thisType != "boolean") {
@@ -924,36 +929,51 @@ function analyzeBoolExpr() {
          nextSemToken();
       }
    }
+   else {
+      if (thisToken.tokenId == "T_ID") {
+         
+         comparingVal = getSymbolValue(scopeMap.cur, thisToken.value);
+         console.log(comparingVal);
+         varIsUsed = checkIfUsed(scopeMap.cur, thisToken.value);
+         console.log(varIsUsed);
 
-   if (thisToken.tokenId == "T_ID" || thisToken.tokenId == "T_BOOLVAL") {
-      
-      varIsUsed = checkIfUsed(scopeMap.cur, thisToken.value);
-      console.log(varIsUsed);
+         if (varOneType == null) {
+            varOneType = checkType(scopeMap.cur, thisToken.value);
+            console.log(varOneType);  
+         }
+         else {
+            varTwoType = checkType(scopeMap.cur, thisToken.value);
+            console.log(varTwoType);
+            if (varOneType != varTwoType) {
+               semErrors++;
+               if (verbose == true) {
+                  putMessage("SEMANTIC ANALYSIS - ERROR: A variable of type [" + varOneType + "] cannot be compared to a variable of type [" + varTwoType + "]");
+               }
+               nextSemToken();
+            }
+         }
 
-      if (varOneType == null) {
-         varOneType = checkType(scopeMap.cur, thisToken.value);
-         console.log(varOneType);  
+         exists = checkParentScopes(scopeMap.cur, thisToken.value);
+         console.log(exists);
+
+
+
+         // if (thisToken.tokenId == "T_ID" && varIsUsed == false) {}
+         // Move to analyzeId() so we can put it in the AST
+         analyzeId();
       }
-      else {
-         varTwoType = checkType(scopeMap.cur, thisToken.value);
-         console.log(varTwoType);
-         if (varOneType != varTwoType) {
+      else if (thisToken.tokenId == "T_BOOLVAL") {
+         console.log(typeForWhile);
+         if (typeForWhile != "boolean") {
             semErrors++;
             if (verbose == true) {
-               putMessage("SEMANTIC ANALYSIS - ERROR: A variable of type [" + varOneType + "] cannot be compared to a variable of type [" + varTwoType + "]");
+               putMessage("SEMANTIC ANALYSIS - ERROR: A variable of type [" + typeForWhile + "] cannot be compared to a boolean value");
             }
             nextSemToken();
+            // This means that this is our first and only condiiton
          }
+         analyzeId();
       }
-
-      exists = checkParentScopes(scopeMap.cur, thisToken.value);
-      console.log(exists);
-
-
-
-      // if (thisToken.tokenId == "T_ID" && varIsUsed == false) {}
-      // Move to analyzeId() so we can put it in the AST
-      analyzeId();
    }
 
    // Check if we have a 
