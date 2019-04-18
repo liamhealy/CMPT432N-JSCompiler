@@ -34,6 +34,9 @@ function nextSemToken() {
 // Holds all generated symbols
 var symbolSequence = [];
 
+// Holds all symbols that are declared
+var declaredSymbols = [];
+
 // Need to keep track of the scope
 var scopeLevel = 0;
 
@@ -182,6 +185,8 @@ function analyzeStmt() {
 
 function analyzePrint() {
 
+   var exists = false;
+
    if (verbose == true) {
       putMessage("SEMANTIC ANALYSIS - Analyzing <PrintStatement>");
    }
@@ -192,14 +197,34 @@ function analyzePrint() {
    // Move to the left parenthesis
    nextSemToken();
    if (thisToken.tokenId == "T_LPARENTHESES") {
+      inPrint = true;
       // Move to the expression or right parenthesis
       nextSemToken();
+
+      if (thisToken.tokenId == "T_ID") {
+         exists = checkParentScopes(scopeMap.cur, thisToken.value);
+         if (exists == false) {
+            semErrors++;
+            if (verbose == true) {
+               putMessage("SEMANTIC ANALYSIS - ERROR: The variable [" + thisToken.value + "] was used before it was declared at (" + thisToken.line + "," + thisToken.col + ") in scope " + scopeLevel);
+            }
+         }
+         else {
+            ast.addNode(thisToken.value, "leaf");
+            setAsUsed(scopeMap.cur, thisToken.value);
+         }
+      }
+      else if (thisToken.tokenId == "T_BOOLVAL") {
+         ast.addNode(thisToken.value, "leaf");
+         nextSemToken();
+      }
 
       // Expression analysis will be here.
       analyzeExpr();
    }
 
    if (thisToken.tokenId == "T_RPARENTHESES") {
+      inPrint = false;
       nextSemToken();
    }
 
@@ -385,6 +410,21 @@ function setSymbolValue(tempNode, tempId, thisValue) {
    }
    if (tempNode.parent != undefined || tempNode.parent != null) {
       return setSymbolValue(tempNode.parent, tempId, thisValue);
+   }
+}
+
+function checkIfUsed(tempNode, tempId) {
+   if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
+      for (var i = 0; i < tempNode.symbolMap.length; i++) {
+         if (tempId == tempNode.symbolMap[i].getId()) {
+            return tempNode.symbolMap[i].isUsed = true;
+            // tempNode.symbolMap[i].value = thisValue;
+            // console.log(tempNode.symbolMap[i].value);
+         }
+      }
+   }
+   if (tempNode.parent != undefined || tempNode.parent != null) {
+      return checkIfUsed(tempNode.parent, tempId, thisValue);
    }
 }
 
@@ -939,7 +979,8 @@ function analyzeBoolExpr() {
 
          if (varOneType == null) {
             varOneType = checkType(scopeMap.cur, thisToken.value);
-            console.log(varOneType);  
+            console.log(varOneType);
+            setAsUsed(scopeMap.cur, thisToken.value);
          }
          else {
             varTwoType = checkType(scopeMap.cur, thisToken.value);
@@ -950,6 +991,9 @@ function analyzeBoolExpr() {
                   putMessage("SEMANTIC ANALYSIS - ERROR: A variable of type [" + varOneType + "] cannot be compared to a variable of type [" + varTwoType + "]");
                }
                nextSemToken();
+            }
+            else {
+               setAsUsed(scopeMap.cur, thisToken.value);
             }
          }
 
@@ -1230,4 +1274,6 @@ function resetVals() {
    setId = tokenSequence[semSequenceIndex];
 
    assigning = false;
+
+   declaredSymbols = [];
 }
