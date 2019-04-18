@@ -76,12 +76,13 @@ function analysis() {
    analyzeBlock();
 
    if (thisToken.tokenId == "EOP") {
+      warningCheck(declaredSymbols);
       // Output feedback
       if (semErrors == 0) {
-         putMessage("SEMANTIC ANALYSIS - Analysis finished with " + semErrors + " errors and " + semWarnings + " warnings.");
+         putMessage("SEMANTIC ANALYSIS - Analysis finished with " + semErrors + " errors and " + semWarnings + " warning(s).");
       }
       else {
-         putMessage("SEMANTIC ANALYSIS - Analysis failed with " + semErrors + " error(s) and " + semWarnings + " warnings");
+         putMessage("SEMANTIC ANALYSIS - Analysis failed with " + semErrors + " error(s) and " + semWarnings + " warning(s)");
       }
    }
 
@@ -296,6 +297,7 @@ function analyzeId() {
       nextSemToken();
    }
    else {
+      setAsUsed(scopeMap.cur, thisToken.value);
       typeForWhile = checkType(scopeMap.cur, thisToken.value);
       ast.addNode(thisToken.value, "leaf");
       nextSemToken();
@@ -647,6 +649,7 @@ function analyzeVarDecl() {
          // that holds the symbols for the current scope.
          var tempSymbol = new Symbol(thisToken.value, tokenSequence[semSequenceIndex - 1].value, null, thisToken.line, thisToken.col, programCount, scopeLevel, true, false);
          scopeMap.cur.symbolMap.push(tempSymbol);
+         declaredSymbols.push(thisToken.value);
          if (verbose == true) {
             putMessage("SEMANTIC ANALYSIS - New symbol [" + thisToken.value + "] of type [" + tokenSequence[semSequenceIndex - 1].value + "] found at (" + thisToken.line + "," + thisToken.col + ") in scope " + scopeLevel);
          }
@@ -657,6 +660,21 @@ function analyzeVarDecl() {
 
    ast.endChildren();
 
+}
+
+function warningCheck(tempArray) {
+   var symbolUsed = false;
+   var currentScope = 0;
+   for (var i = 0; i < tempArray.length; i++) {
+      symbolUsed = checkIfUsed(scopeMap.cur, tempArray[i]);
+      currentScope = checkScopeLevels(scopeMap.cur, tempArray[i]);
+      if (symbolUsed == false) {
+         semWarnings++;
+         if (verbose == true) {
+            putMessage("SEMANTIC ANALYSIS - Warning: The variable [" + tempArray[i] + "] was declared in scope " + currentScope + " but its value is never read");
+         }
+      }
+   }
 }
 
 function analyzeWhile() {
@@ -980,7 +998,7 @@ function analyzeBoolExpr() {
          if (varOneType == null) {
             varOneType = checkType(scopeMap.cur, thisToken.value);
             console.log(varOneType);
-            setAsUsed(scopeMap.cur, thisToken.value);
+            // setAsUsed(scopeMap.cur, thisToken.value);
          }
          else {
             varTwoType = checkType(scopeMap.cur, thisToken.value);
@@ -993,10 +1011,11 @@ function analyzeBoolExpr() {
                nextSemToken();
             }
             else {
-               setAsUsed(scopeMap.cur, thisToken.value);
+               // setAsUsed(scopeMap.cur, thisToken.value);
             }
          }
 
+         // setAsUsed(scopeMap.cur, thisToken.value);
          exists = checkParentScopes(scopeMap.cur, thisToken.value);
          console.log(exists);
 
