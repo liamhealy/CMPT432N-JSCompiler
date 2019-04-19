@@ -64,6 +64,8 @@ var inPrint = false;
 
 var newSymTable = "";
 
+document.getElementById("symTables").innerHTML = "";
+
 function analysis() {
    // Reset global variables used here
    resetVals();
@@ -84,7 +86,7 @@ function analysis() {
          putMessage("SEMANTIC ANALYSIS - Analysis finished with " + semErrors + " errors and " + semWarnings + " warning(s).");
          var tableHolder = createSymbolTable(scopeMap.cur);
          newSymTable += "Symbol Table for program " + programCount + ":<br><table><tr><th>ID</th><th>Type</th><th>Scope</th><th>Line</th></tr>" + tableHolder + "</table><br>";
-         document.getElementById("symTables").innerHTML = newSymTable;
+         document.getElementById("symTables").innerHTML += newSymTable;
       }
       else {
          putMessage("SEMANTIC ANALYSIS - Analysis failed with " + semErrors + " error(s) and " + semWarnings + " warning(s)");
@@ -379,7 +381,7 @@ function checkParentScopes(tempNode, tempId) {
    // return tempBool;
 }
 
-function createSymbolTable(tempNode, newRow = "") {
+function createSymbolTable(tempNode, newRow = "") { 
    if (tempNode.symbolMap.length > 0) {
       for (var i = 0; i < tempNode.symbolMap.length; i++) {
          newRow += "<tr><td>" + tempNode.symbolMap[i].getId() + "</td><td>" + tempNode.symbolMap[i].getType() + "</td><td>" + tempNode.symbolMap[i].getScope() + "</td><td>" + tempNode.symbolMap[i].getLine() + "</td></tr>";
@@ -1317,4 +1319,7 @@ function resetVals() {
    assigning = false;
 
    declaredSymbols = [];
+   
+   newSymTable = "";
+
 }

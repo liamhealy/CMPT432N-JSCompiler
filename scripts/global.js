@@ -28,6 +28,7 @@ function init () {
     tokenSequence = [];
     lexErrors = 0;
     programCount = 0;
+    document.getElementById("symTables").innerHTML = "";
 }
 
 function setVerbose () {
