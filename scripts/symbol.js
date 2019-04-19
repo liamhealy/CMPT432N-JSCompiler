@@ -31,6 +31,10 @@ class Symbol {
     getScope() {
         return this.symbolScope;
     }
+
+    getLine() {
+        return this.symbolLine;
+    }
 }
 
 

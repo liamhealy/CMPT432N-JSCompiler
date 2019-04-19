@@ -62,6 +62,8 @@ var setId = tokenSequence[semSequenceIndex];
 // that we are in <AssignmentStatement>
 var inPrint = false;
 
+var newSymTable = "";
+
 function analysis() {
    // Reset global variables used here
    resetVals();
@@ -80,6 +82,9 @@ function analysis() {
       // Output feedback
       if (semErrors == 0) {
          putMessage("SEMANTIC ANALYSIS - Analysis finished with " + semErrors + " errors and " + semWarnings + " warning(s).");
+         var tableHolder = createSymbolTable(scopeMap.cur);
+         newSymTable += "Symbol Table for program " + programCount + ":<br><table><tr><th>ID</th><th>Type</th><th>Scope</th><th>Line</th></tr>" + tableHolder + "</table><br>";
+         document.getElementById("symTables").innerHTML = newSymTable;
       }
       else {
          putMessage("SEMANTIC ANALYSIS - Analysis failed with " + semErrors + " error(s) and " + semWarnings + " warning(s)");
@@ -374,6 +379,20 @@ function checkParentScopes(tempNode, tempId) {
    // return tempBool;
 }
 
+function createSymbolTable(tempNode, newRow = "") {
+   if (tempNode.symbolMap.length > 0) {
+      for (var i = 0; i < tempNode.symbolMap.length; i++) {
+         newRow += "<tr><td>" + tempNode.symbolMap[i].getId() + "</td><td>" + tempNode.symbolMap[i].getType() + "</td><td>" + tempNode.symbolMap[i].getScope() + "</td><td>" + tempNode.symbolMap[i].getLine() + "</td></tr>";
+      }
+   }
+   if (tempNode.children != undefined || tempNode.children != null) {
+      for (var n = 0; n < tempNode.children.length; n++) {
+         newRow = createSymbolTable(tempNode.children[n], newRow);
+      }
+   }
+   return newRow;
+}
+
 function checkScopeLevels(tempNode, tempId) {
    if ((tempNode.parent != undefined || tempNode.parent != null) && tempNode.symbolMap.length > 0) {
       for (var i = 0; i < tempNode.symbolMap.length; i++) {
@@ -426,7 +445,7 @@ function checkIfUsed(tempNode, tempId) {
       }
    }
    if (tempNode.parent != undefined || tempNode.parent != null) {
-      return checkIfUsed(tempNode.parent, tempId, thisValue);
+      return checkIfUsed(tempNode.parent, tempId);
    }
 }
 
