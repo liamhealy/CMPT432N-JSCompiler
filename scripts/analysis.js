@@ -91,9 +91,16 @@ function analysis() {
          //    scopeMap.cur = scopeMap.cur.parent;
          // }
          // if (scopeMap.cur.symbolMap.length)
+         
+         // Basically a blank variable used to hold the table
          var tableHolder = createSymbolTable(scopeMap.cur);
-         console.log(scopeMap.cur.symbolMap[0]);
-         newSymTable += "Symbol Table for program " + programCount + ":<br><table><tr><th>ID</th><th>Type</th><th>Scope</th><th>Line</th></tr>" + tableHolder + "</table><br>";
+         // console.log(scopeMap.cur.symbolMap[0]);
+         
+         // Now we actually define the table here and insert tableHolder into it:
+         if (tableHolder != "") {
+            newSymTable += "Symbol Table for program " + programCount + ":<br><table cellspacing=3 style=\"border:1px;\"><tr><th>ID</th><th>Type</th><th>Scope</th><th>Line</th></tr>" + tableHolder + "</table><br>";
+         }
+            // Then display it to the <div>
          document.getElementById("symTables").innerHTML += newSymTable;
       }
       else {

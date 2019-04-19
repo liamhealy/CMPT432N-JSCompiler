@@ -15,6 +15,10 @@ textarea {
 	outline-color: limegreen;
 }
 
+td, th {
+    border: 1px solid limegreen;
+}
+
 /* input[type="button"]:focus {
 	outline-color: black;
 } */
