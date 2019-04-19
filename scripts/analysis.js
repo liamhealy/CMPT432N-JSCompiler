@@ -84,7 +84,15 @@ function analysis() {
       // Output feedback
       if (semErrors == 0) {
          putMessage("SEMANTIC ANALYSIS - Analysis finished with " + semErrors + " errors and " + semWarnings + " warning(s).");
+         // while (scopeMap.cur.parent != undefined) {
+         //    scopeMap.cur = scopeMap.cur.parent;
+         // }
+         // if (scopeMap.cur.parent != null || scopeMap.cur.parent != undefined) {
+         //    scopeMap.cur = scopeMap.cur.parent;
+         // }
+         // if (scopeMap.cur.symbolMap.length)
          var tableHolder = createSymbolTable(scopeMap.cur);
+         console.log(scopeMap.cur.symbolMap[0]);
          newSymTable += "Symbol Table for program " + programCount + ":<br><table><tr><th>ID</th><th>Type</th><th>Scope</th><th>Line</th></tr>" + tableHolder + "</table><br>";
          document.getElementById("symTables").innerHTML += newSymTable;
       }
@@ -128,6 +136,8 @@ function analyzeBlock() {
    }
 
    ast.endChildren();
+
+   scopeMap.endChildren();
 
 }
 
