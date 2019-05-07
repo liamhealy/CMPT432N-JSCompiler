@@ -154,6 +154,7 @@ function analyzeStmtList() {
 
    if (verbose == true) {
       putMessage("SEMANTIC ANALYSIS - Analyzing <StatementList>");
+      console.log(thisToken.value);
    }
    
    if (thisToken.tokenId == "T_RBRACE") {
@@ -397,6 +398,7 @@ function analyzeAssignStmt() {
    if (thisToken.tokenId == "T_ID") {
       // TODO:
       //    - Check if variable was declared in scope
+      setId = thisToken;
       var isDeclared = checkParentScopes(scopeMap.cur, thisToken.value);
       if (isDeclared == false) {
          semErrors++;
@@ -421,6 +423,12 @@ function analyzeAssignStmt() {
          console.log("Found an int = digit assingment.");
          analyzeInt();
       }
+      else if (symbolType == "string") {
+         analyzeStringExpr();
+      }
+      else if (symbolType == "boolean") {
+         analyzeBoolExpr();
+      }
       // if (validSym == true) {
       //    // We are about to assign a value to a symbol
       //    assigning = true;
@@ -431,9 +439,10 @@ function analyzeAssignStmt() {
       //    nextSemToken();
       // }
       assigning = false;
-      analyzeExpr();
+      
+      // analyzeExpr();
 
-   ast.endChildren();
+      ast.endChildren();
 
    }
 }
@@ -749,7 +758,14 @@ function analyzeInt() {
          }
       }
    }
-   analyzeExpr();
+   else if (inPrint == true && thisToken.tokenId == "T_INTOP") {
+      nextSemToken();
+      if (thisToken.tokenId == "T_ID") {
+         ast.addNode(thisToken.value, "leaf");
+         nextSemToken();
+      }
+   }
+   // analyzeExpr();
 
    if (addition == true) {
       tempSecondVal = Number(thisToken.value) + Number(tempFirstVal);
@@ -831,6 +847,7 @@ function analyzeBoolExpr() {
       else {
          // tempFirstVal = setId.value;
          tempFirstVal = thisToken.value;
+         ast.addNode(thisToken.value, "leaf");
          nextSemToken();
       }
    }
@@ -1009,81 +1026,13 @@ function analyzeStringExpr() {
          tempFirstVal = thisString;
          // Might need to do something else for addition...
          // thisToken = tokenSequence[semSequenceIndex + 2];
-         nextSemToken();
+         // nextSemToken();
 
          // Move back to analyzeExpr() for the second <Expr> for addition
          // analyzeExpr();
       }
    }
 
-   // if (thisToken.tokenId == "T_INTOP") {
-   //    // Set it so that the next var/digit/expression
-   //    // is analyzed in addition with the previous one
-   //    if (tokenSequence[semSequenceIndex + 1].tokenId == "T_ID") {
-   //       varIsUsed = checkIfUsed(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value);
-   //       console.log(varIsUsed);
-   //       thisType = checkType(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value);
-   //       console.log(thisType);
-   //       exists = checkParentScopes(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value);
-   //       console.log(exists);
-   //       if (exists == true && thisType != "int") {
-   //          // setAsUsed(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value);
-   //          // console.log(checkIfUsed(scopeMap.cur, tokenSequence[semSequenceIndex + 1].value));
-   //          semErrors++;
-   //          if (verbose == true) {
-   //             putMessage("SEMANTIC ANALYSIS - ERROR: The variable [" + setId.value + "] at (" + setId.line + "," + setId.col + ") was expecting an assigned value of type [int], but received a value of type [" + thisType + "] instead\n");
-   //          }
-   //          // The operator [" + thisToken.value + "] at (" + thisToken.line + "," + thisToken.col + ") cannot be used on two variables of different types
-   //          // Move on
-   //          addition = false;
-   //          // thisToken = tokenSequence[semSequenceIndex + 2];
-   //          nextSemToken();
-   //          analyzeExpr();
-   //       }
-   //       else if (exists == false) {
-   //          semErrors++;
-   //          if (verbose == true) {
-   //             putMessage("SEMANTIC ANALYSIS - ERROR: The variable [" + tokenSequence[semSequenceIndex + 1].value + "] at (" + tokenSequence[semSequenceIndex + 1].line + "," + tokenSequence[semSequenceIndex + 1].col + ") was never declared\n");
-   //          }
-   //          // Move on
-   //          addition = false;
-   //          // thisToken = tokenSequence[semSequenceIndex + 2];
-   //          nextSemToken();
-   //          analyzeExpr();
-   //       }
-   //       // else if (varIsUsed === undefined) {
-   //       //    semErrors++;
-   //       //    if (verbose == true) {
-   //       //       putMessage("SEMANTIC ANALYSIS - ERROR: The variable [" + tokenSequence[semSequenceIndex + 1].value + "] at (" + tokenSequence[semSequenceIndex + 1].line + "," + tokenSequence[semSequenceIndex + 1].col + ") may have been initialized but it does not hold any value");
-   //       //    }
-   //       //    // Move on
-   //       //    nextSemToken();
-   //       //    analyzeExpr();
-   //       // }
-   //       else {
-   //          addition = false;
-   //          tempFirstVal = tokenSequence[semSequenceIndex - 1].value;
-
-   //          // Might need to do something else for addition...
-   //          // thisToken = tokenSequence[semSequenceIndex + 2];
-   //          nextSemToken();
-
-   //          // Move back to analyzeExpr() for the second <Expr> for addition
-   //          analyzeExpr();
-   //       }
-   //    }
-   //    else if (tokenSequence[semSequenceIndex + 1].tokenId == "T_DIGIT") {
-   //       nextSemToken();
-   //       if (tempFirstVal == null) {
-   //          tempFirstVal = Number(thisToken.value);
-   //       }
-   //       else {
-   //          tempSecondVal = Number(thisToken.value) + Number(tempFirstVal);
-   //       }
-   //       addition = false;
-   //       // thisToken = tokenSequence[semSequenceIndex + 2];
-   //       analyzeExpr();
-   //    }
    console.log(getSymbolValue(scopeMap.cur, setId));
    ast.addNode(thisString, "leaf");
    nextSemToken();
