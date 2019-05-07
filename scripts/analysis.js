@@ -257,75 +257,8 @@ function analyzePrint() {
 }
 
 function analyzeId() {
-   
-   // var declared = false;
-   
-   // Run a scope check on the ID to see if it was initialized
-   // if (thisToken.tokenId == "T_ID") {
-   //    // Check to see if the variable was declared
-   //    if (scopeMap.cur.symbolMap.length > 0) {
-   //       for (var i = 0; i < scopeMap.cur.symbolMap.length; i++) {
-   //          if (thisToken.value == scopeMap.cur.symbolMap[i].getId()) {
-   //             declared = true;
-   //             break;
-   //          }
-   //       }
-   //    }
-   //    if (declared == false) {
-   //       declared = checkParentScopes(scopeMap.cur, thisToken.value);
-   //       // console.log(checkParentScopes(scopeMap.cur, thisToken.value));
-   //       // console.log(declared);
-   //    }
-   //    // console.log(scopeMap.cur.parent.symbolMap);
-   //    // console.log(scopeMap.cur.parent.name);
-   //    // console.log(scopeMap.cur.parent.symbolMap[0].getId());
-   //    // If we didn't find it in this scope check
-   //    // all of the parent scopes
-   //    // declare = checkParentScopes(scopeMap.cur, thisToken.value)
-   //    if (declared == false) {
-   //       semErrors++;
-   //       if (verbose == true) {
-   //          putMessage("SEMANTIC ANALYSIS - ERROR: The id [" + thisToken.value + "] was used before it was declared at (" + thisToken.line + "," + thisToken.col + ") in scope level " + scopeLevel);
-   //       }
-   //    }
-   //    else {
-   //       // // Check the type of the first var here
-   //       // // and store it as firstType before moving
-   //       // // to the next token
-   //       // tempFirstType = checkType(scopeMap.cur, thisToken.value);
 
-   //       // // Set mainVar, setId, and tempValue to values of the
-   //       // // current token, so that they can be used here and
-   //       // // elsewhere for analysis
-   //       // mainVar = thisToken;
-   //       // setId = thisToken;
-   //       // tempValue = thisToken.value;
-   //       ast.addNode(thisToken.value, "leaf");
-   //       nextSemToken();
-   //    }
-
-   //    // For now, just add the leaf node and move on
-   //    // ast.addNode(thisToken.value, "leaf");
-   //    // nextSemToken();
-   // }
-   // else {
-      
-   // }
-   var symScope = checkScopeLevels(scopeMap.cur, thisToken.value);
-   var declared = checkParentScopes(scopeMap.cur, thisToken.value);
-   if (declared == true && symScope > scopeLevel) {
-      semErrors++;
-      if (verbose == true) {
-         putMessage("SEMANTIC ANALYSIS - ERROR: The id [" + thisToken.value + "] was used before it was declared at (" + thisToken.line + "," + thisToken.col + ") in scope level " + scopeLevel);
-      }
-      nextSemToken();
-   }
-   else {
-      setAsUsed(scopeMap.cur, thisToken.value);
-      typeForWhile = checkType(scopeMap.cur, thisToken.value);
-      ast.addNode(thisToken.value, "leaf");
-      nextSemToken();
-   }
+   nextSemToken();
 }
 
 // Check the type of the variable being analyzed
@@ -356,46 +289,6 @@ function checkParentScopes(tempNode, tempId) {
       return checkParentScopes(tempNode.parent, tempId);
    }
    return false;
-   // if (tempNode.symbolMap.length > 0) {
-   //    for (var i = 0; i < tempNode.symbolMap.length; i++) {
-   //       if (tempId == tempNode.symbolMap[i].getId()) {
-   //          tempBool = true;
-   //          break;
-   //       }
-   //    }
-   // }
-
-   // if (tempBool == false) {
-   //    tempBool = checkParentScopes(tempNode, thisToken.value);
-   //    console.log(checkParentScopes(tempNode, thisToken.value));
-   //    console.log(tempBool);
-   // }
-
-   // if (tempNode.parent.symbolMap.length > 0) {
-   //    for (var i = 0; i < tempNode.parent.symbolMap.length; i++) {
-   //       console.log(tempNode.parent.symbolMap[i].getId());
-   //       if (tempId === tempNode.parent.symbolMap[i].getId()) {
-   //          console.log("time to return");
-   //          tempBool = true;
-   //          break;
-   //       }
-   //    }
-   // }
-   // // tempNode = tempNode.parent;
-   // if (tempBool == true) {
-   //    return tempBool;
-   // }
-
-   // if (tempNode.parent.name !== undefined || tempNode.parent !== null && tempBool != true) {
-   //    checkParentScopes(tempNode.parent, tempId);
-   // }
-   // // else if (tempNode.cur.symbolMap.length > 0) {
-   // //    if (tempId == tempNode.cur.parent.symbolMap[i].getId()) {
-   // //       return true;
-   // //    }
-   // // }
-   // // tempNode.cur = tempNode.cur.parent;
-   // return tempBool;
 }
 
 function createSymbolTable(tempNode, newRow = "") { 
@@ -510,29 +403,13 @@ function analyzeAssignStmt() {
       }
       symScope = checkScopeLevels(scopeMap.cur, thisToken.value);
       console.log(symScope);
-      if (declared == false) {
-         declared = checkParentScopes(scopeMap.cur, thisToken.value);
-         // console.log(checkParentScopes(scopeMap.cur, thisToken.value));
-         // console.log(declared);
-      }
-      // console.log(scopeMap.cur.parent.symbolMap);
-      // console.log(scopeMap.cur.parent.name);
-      // console.log(scopeMap.cur.parent.symbolMap[0].getId());
-      // If we didn't find it in this scope check
-      // all of the parent scopes
-      // declare = checkParentScopes(scopeMap.cur, thisToken.value)
+      declared = checkParentScopes(scopeMap.cur, thisToken.value);
       if (declared == false) {
          semErrors++;
          if (verbose == true) {
             putMessage("SEMANTIC ANALYSIS - ERROR: The id [" + thisToken.value + "] was used before it was declared at (" + thisToken.line + "," + thisToken.col + ") in scope level " + scopeLevel);
          }
       }
-      // else if (declared == true && symScope > scopeLevel) {
-      //    semErrors++;
-      //    if (verbose == true) {
-      //       putMessage("SEMANTIC ANALYSIS - ERROR: The id [" + thisToken.value + "] was used before it was declared at (" + thisToken.line + "," + thisToken.col + ") in scope level " + scopeLevel);
-      //    }
-      // }
       else {
          // Check the type of the first var here
          // and store it as firstType before moving
@@ -547,9 +424,6 @@ function analyzeAssignStmt() {
          tempValue = thisToken.value;
          validSym = true;
       }
-      // if (tokenSequence[semSequenceIndex + 1].tokenId == "T_INTOP") {
-      //    assigning = true;
-      // }
       analyzeId();
    }
 
@@ -565,72 +439,11 @@ function analyzeAssignStmt() {
       else {
          nextSemToken();
       }
-      // if (addition == true) {
-      //    if (thisToken.tokenId == "T_DIGIT") {
-      //       if (tokenSequence[semSequenceIndex + 1].tokenId != "T_INTOP") {
-      //          if (tempFirstType != thisToken.value) {
-      //             tempFirstVal = Number(thisToken.value);
-      //          }   
-      //          else {
-      //             tempFirstVal = Number(tempFirstVal) + Number(thisToken.value);
-      //          }
-      //       }
-      //    }
-      //    else if (thisToken.tokenId == "T_ID") {
-            
-      //    }
-      // }
-      // addition = true;
-      // if (addition == true) {
-      //    if (thisToken.tokenId == "T_DIGIT") {
-      //       if (tempFirstType == "int") {
-      //          if (tokenSequence[semSequenceIndex + 1].tokenId != "T_INTOP" && tempFirstVal != tempValue) {
-      //             tempFirstVal = Number(thisToken.value);
-      //          }
-      //          else {
-      //             tempFirstVal = Number(tempFirstVal) + Number(thisToken.value);
-      //          }
-      //       }
-      //    }
-      //    else if (thisToken.tokenId == "T_ID" && tempFirstType == "int") {
-      //       console.log("reached.");
-      //       var newType = checkType(scopeMap.cur, thisToken.value);
-      //       console.log(newType);
-      //    }
-         // console.log("at least raching this");
-         // setSymbolValue(scopeMap.cur, tempValue, tempFirstVal);
-      
-      // setSymbolValue(scopeMap.cur, tempValue, tempFirstVal);
-
-      // Move to analyzeExpr() and assign variables values in their respective places
       analyzeExpr();
-      if (tempSecondVal != null) {
-         setSymbolValue(scopeMap.cur, setId.value, tempSecondVal);
-      }
-      else {
-         setSymbolValue(scopeMap.cur, setId.value, tempFirstVal);
-      }
-      assigning = false;
-   }
 
    ast.endChildren();
 
 }
-
-// function checkIfRedeclared(tempNode, tempToken, tempScope) {
-//    var i = 0;
-//    var tempSymbol = tempNode.cur.symbolMap[i];
-//    while (i < tempNode.cur.symbolMap.length) {
-//       tempSymbol = tempNode.cur.symbolMap[i];
-//       if (tempSymbol.symbolId == tempToken.value && tempSymbol.symbolScope == tempScope) {
-//          return true;
-//       }
-//       else {
-//          i++;
-//       }
-//    }
-//    return false;
-// }
 
 function analyzeVarDecl() {
    /* TODO:
