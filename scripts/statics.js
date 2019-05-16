@@ -20,9 +20,9 @@ function StaticData() {
         this.contents.push(data);
     };
 
-    this.getData = function(tempVariable, tempScope) {
+    this.getData = function(tempVariable) {
         for (var i = 0; i < this.contents.length; i++) {
-            if (this.contents[i].variable == tempVariable && this.contents[i].scope == tempScope) {
+            if (this.contents[i].variable.name == tempVariable.name) {
                 return this.contents[i];
             }
         }

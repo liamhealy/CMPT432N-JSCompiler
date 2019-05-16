@@ -53,7 +53,7 @@ function checkTree(treePosition, node) {
     
     console.log(currentScope);
     if (verbose == true) {
-        putMessage("CODE GEN - Checking <" + treePosition.name + "> ...");
+        putMessage("CODE GEN - Found a <" + treePosition.name + "> ...");
     }
 
     // Gonna try and go with an If-Else format here:
@@ -80,7 +80,7 @@ function checkTree(treePosition, node) {
         checkPrintStmt();
     }
     else if (('0123456789').includes(treePosition.name)) {
-        checkDigit();
+        checkDigit(treePosition, node);
     }
 }
 
@@ -99,7 +99,7 @@ function checkVarDecl(children, node) {
     }
 
     sdt.addData("T" + staticAddress, children[1], currentScope, 0);
-    var newTemp = sdt.getData(children[1], currentScope);
+    var newTemp = sdt.getData(children[1]);
     
     console.log(newTemp.temp);
     loadHex("VarDecl");
@@ -112,12 +112,20 @@ function checkAssignStmt(children, node) {
     if (verbose == true) {
         putMessage("CODE GEN - Working on <AssignmentStatement>");
     }
-
     // Gotta get ready for an addition expression
     // or to simply add the value to the code
     checkTree(children[1], node);
+    // for (var i = 0; i < sdt.contents.length; i++) {
+    //     console.log(sdt.contents[i].variable);
+    //     console.log(children[0]);
+    //     if (sdt.contents[i].variable == children[0].name) {
+    //         code.push(sdt.contents[i].temp);
+    //         code.push("XX");
+    //     }
+    // }
+    console.log(children[0]);
 
-    var newTemp = sdt.getData(children[0], currentScope);
+    var newTemp = sdt.getData(children[0]);
 
     code.push(newTemp.temp);
     code.push("XX");
@@ -133,7 +141,7 @@ function checkDigit(children, node) {
         putMessage("CODE GEN - Checking a Digit");
     }
     code.push("A9");
-    code.push("0" + children);
+    code.push("0" + children.name);
     code.push("8D");
 }
 
