@@ -73,11 +73,14 @@ function checkTree(treePosition, node) {
     }
     else if (treePosition.name == "AssignmentStatement") {
         // We obviously need to change this...
-        checkAssignStmt();
+        checkAssignStmt(treePosition.children, node);
     }
     else if (treePosition.name == "PrintStatement") {
         // We obviously need to change this...
         checkPrintStmt();
+    }
+    else if (('0123456789').includes(treePosition.name)) {
+        checkDigit();
     }
 }
 
@@ -96,7 +99,7 @@ function checkVarDecl(children, node) {
     }
 
     sdt.addData("T" + staticAddress, children[1], currentScope, 0);
-    var newTemp = sdt.getData(children[1]);
+    var newTemp = sdt.getData(children[1], currentScope);
     
     console.log(newTemp.temp);
     loadHex("VarDecl");
@@ -105,12 +108,33 @@ function checkVarDecl(children, node) {
     staticAddress++;
 }
 
-function checkAssignStmt() {
+function checkAssignStmt(children, node) {
+    if (verbose == true) {
+        putMessage("CODE GEN - Working on <AssignmentStatement>");
+    }
 
+    // Gotta get ready for an addition expression
+    // or to simply add the value to the code
+    checkTree(children[1], node);
+
+    var newTemp = sdt.getData(children[0], currentScope);
+
+    code.push(newTemp.temp);
+    code.push("XX");
 }
 
 function checkPrintStmt() {
 
+}
+
+function checkDigit(children, node) {
+    // Use this just to add the digit to the code
+    if (verbose == true) {
+        putMessage("CODE GEN - Checking a Digit");
+    }
+    code.push("A9");
+    code.push("0" + children);
+    code.push("8D");
 }
 
 function loadHex(randomString) {
@@ -155,4 +179,6 @@ function resetGenVals() {
     currentScope = 0;
 
     staticAddress = 0;
+
+    finalCode = "";
 }

@@ -259,7 +259,7 @@ function analyzePrint() {
 
 function analyzeId() {
 
-   ast.addNode(thisToken.value, "leaf");
+   ast.addNode(thisToken.value, "leaf", scopeLevel, thisToken.tokenId);
    nextSemToken();
 }
 
