@@ -10,8 +10,13 @@ var code = [];
 // take our ast from semantic analysis
 var ourAst = new Tree();
 
+// declare a new Static Data Table
+var sdt = new StaticData();
+
 // keep track of the current scope level
 var currentScope = 0;
+
+// var staticAddress = 0;
 
 function generate(previousAst) {
 
