@@ -7,6 +7,9 @@
 // array for us to store the code in
 var code = [];
 
+// this is going to store the final code translation
+var finalCode = "";
+
 // take our ast from semantic analysis
 var ourAst = new Tree();
 
@@ -16,7 +19,8 @@ var sdt = new StaticData();
 // keep track of the current scope level
 var currentScope = 0;
 
-// var staticAddress = 0;
+// keep a static address variable for our table
+var staticAddress = 0;
 
 function generate(previousAst) {
 
@@ -25,6 +29,18 @@ function generate(previousAst) {
     ourAst = previousAst;
 
     checkTree(ourAst.root, 0);
+
+    patchHex();
+    // Will un-comment this when we are ready to go
+    // for (var i = 0; i < code.length; i++) {
+    //     if (i > 1 && i % 7 === 0) {
+    //         finalCode += code[i] + "\n";
+    //     }
+    //     else {
+    //         finalCode += code[i] + " ";
+    //     }
+    // }
+    // putMessage(finalCode);
 }
 
 function checkTree(treePosition, node) {
@@ -34,7 +50,6 @@ function checkTree(treePosition, node) {
     // VarDecl, AssignmentStatement and PrintStatement with a working project
     // 1,2 and 3 will score me a 50 (100/200) so I'll start there.
     
-    currentScope = treePosition.scope;
     console.log(currentScope);
     if (verbose == true) {
         putMessage("CODE GEN - Checking <" + treePosition.name + "> ...");
@@ -48,11 +63,12 @@ function checkTree(treePosition, node) {
         checkIn(treePosition.children, node);
     }
     else if (treePosition.name == "Block") {
+        currentScope = treePosition.scope;
         checkIn(treePosition.children, node);
     }
     else if (treePosition.name == "VarDecl") {
         // We obviously need to change this...
-        checkVarDecl();
+        checkVarDecl(treePosition.children, node);
     }
     else if (treePosition.name == "AssignmentStatement") {
         // We obviously need to change this...
@@ -72,8 +88,20 @@ function checkIn(children, node) {
     }
 }
 
-function checkVarDecl() {
+function checkVarDecl(children, node) {
+    // TODO: add the hex data to code[]? Not exactly sure yet
+    if (verbose == true) {
+        putMessage("CODE GEN - Working on <VarDecl>");
+    }
 
+    sdt.addData("T" + staticAddress, children[1], currentScope, 0);
+    var newTemp = sdt.getData(children[1]);
+    
+    console.log(newTemp.temp);
+    loadHex("VarDecl");
+    code.push(newTemp.temp);
+    code.push("XX");
+    staticAddress++;
 }
 
 function checkAssignStmt() {
@@ -82,4 +110,28 @@ function checkAssignStmt() {
 
 function checkPrintStmt() {
 
+}
+
+function loadHex(randomString) {
+    if (randomString == "VarDecl") {
+        code.push("A9");
+        code.push("00");
+        code.push("8D");
+    }
+}
+
+function patchHex() {
+
+}
+
+function resetGenVals() {
+    code = [];
+
+    ourAst = new Tree();
+
+    sdt = new StaticData();
+
+    currentScope = 0;
+
+    staticAddress = 0;
 }
