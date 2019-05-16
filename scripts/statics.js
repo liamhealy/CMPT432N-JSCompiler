@@ -13,9 +13,9 @@ function StaticData() {
         var data = { temp: temp,
                      variable: variable,
                      scope: scope,
-                     offeset: offset
+                     offset: offset
                    };
-                   
+
         //push the new data to the contents of this table
         this.contents.push(data);
     };
@@ -24,6 +24,23 @@ function StaticData() {
         for (var i = 0; i < this.contents.length; i++) {
             if (this.contents[i].variable == tempVariable) {
                 return this.contents[i];
+            }
+        }
+    }
+
+    this.has = function(randomTemp) {
+        for (var i = 0; i < this.contents.length; i++) {
+            if (this.contents[i].temp == randomTemp) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    this.setOffset = function(randomTemp, newAddress) {
+        for (var i = 0; i < this.contents.length; i++) {
+            if (this.contents[i].temp == randomTemp) {
+                this.contents[i].offset = newAddress;
             }
         }
     }

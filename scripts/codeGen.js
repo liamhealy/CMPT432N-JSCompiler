@@ -31,16 +31,17 @@ function generate(previousAst) {
     checkTree(ourAst.root, 0);
 
     patchHex();
-    // Will un-comment this when we are ready to go
-    // for (var i = 0; i < code.length; i++) {
-    //     if (i > 1 && i % 7 === 0) {
-    //         finalCode += code[i] + "\n";
-    //     }
-    //     else {
-    //         finalCode += code[i] + " ";
-    //     }
-    // }
-    // putMessage(finalCode);
+
+    // Will un-comment/re-comment this when needed
+    for (var i = 0; i < code.length; i++) {
+        if (i > 1 && i % 7 === 0) {
+            finalCode += code[i] + "\n";
+        }
+        else {
+            finalCode += code[i] + " ";
+        }
+    }
+    putMessage(finalCode);
 }
 
 function checkTree(treePosition, node) {
@@ -121,7 +122,27 @@ function loadHex(randomString) {
 }
 
 function patchHex() {
+    // Reapproaching backpatching...
 
+    if (verbose == true) {
+        putMessage("CODE GEN - Backpatching...");
+    }
+    var tempAddress = 0;
+    var bytes = sdt.contents.length;
+    var storage = 48 - bytes;
+    var hex = storage;
+
+    for (var i = 0; i < bytes; i++) {
+        hex = storage;
+        for (var j = 0; j < code.length; j++) {
+            if (code[j] == sdt.contents[i].temp) {
+                sdt.contents[i].offset = hex.toString(16).toUpperCase() + "00";
+                code[j] = hex.toString(16).toUpperCase();
+                code[j + 1] = "00";
+                storage++;
+            }   
+        }
+    }
 }
 
 function resetGenVals() {
