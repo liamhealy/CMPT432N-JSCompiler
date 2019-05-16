@@ -826,10 +826,11 @@ function parseEOP() {
         // Check analysis errors and warnings here so that the order of the output is consistent
         if (semErrors == 0) {
             putMessage("AST for program " + programCount + "\n" + ast.toString());
+            generate();
         }
         else {
             // putMessage("AST for program " + programCount + "\n" + ast.toString())
-            putMessage("Symbol table and AST not displayed due to error(s) detected during semantic analysis")
+            putMessage("Symbol table and AST not displayed due to error(s) detected during semantic analysis");
         }
     }
     return;
