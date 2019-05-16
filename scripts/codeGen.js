@@ -10,6 +10,9 @@ var code = [];
 // take our ast from semantic analysis
 var ourAst = new Tree();
 
+// keep track of the current scope level
+var currentScope = 0;
+
 function generate(previousAst) {
 
     putMessage("CODE GEN - Beginning code generation for Program " + programCount);
@@ -26,28 +29,52 @@ function checkTree(treePosition, node) {
     // VarDecl, AssignmentStatement and PrintStatement with a working project
     // 1,2 and 3 will score me a 50 (100/200) so I'll start there.
     
+    currentScope = treePosition.scope;
+    console.log(currentScope);
+    if (verbose == true) {
+        putMessage("CODE GEN - Checking <" + treePosition.name + "> ...");
+    }
+
     // Gonna try and go with an If-Else format here:
     if (treePosition.name == "Root") {
-        putMessage("Awesome, we found the root.");
         checkIn(treePosition.children, node);
     }
     else if (treePosition.name == "Program") {
-        putMessage("Cool, we found <Program> too.");
         checkIn(treePosition.children, node);
     }
     else if (treePosition.name == "Block") {
-        putMessage("Cool, we found <Block> too.");
-        checkIn(treePosition, node);
+        checkIn(treePosition.children, node);
+    }
+    else if (treePosition.name == "VarDecl") {
+        // We obviously need to change this...
+        checkVarDecl();
+    }
+    else if (treePosition.name == "AssignmentStatement") {
+        // We obviously need to change this...
+        checkAssignStmt();
+    }
+    else if (treePosition.name == "PrintStatement") {
+        // We obviously need to change this...
+        checkPrintStmt();
     }
 }
 
 function checkIn(children, node) {
-    if (verbose == true) {
-        putMessage("CODE GEN - Checking <...> ...");
-    }
     console.log(children);
     // See what 'children' we have here and check them
     for (var i = 0; i < children.length; i++) {
         checkTree(children[i], node);
     }
+}
+
+function checkVarDecl() {
+
+}
+
+function checkAssignStmt() {
+
+}
+
+function checkPrintStmt() {
+
 }

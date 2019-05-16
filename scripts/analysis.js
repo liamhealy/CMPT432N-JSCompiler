@@ -124,7 +124,7 @@ function analyzeBlock() {
 
       scopeMap.addNode("Scope " + scopeLevel, "branch", scopeLevel);
 
-      ast.addNode("Block", "branch");
+      ast.addNode("Block", "branch", scopeLevel);
       
       nextSemToken();
    }
