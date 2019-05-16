@@ -826,7 +826,7 @@ function parseEOP() {
         // Check analysis errors and warnings here so that the order of the output is consistent
         if (semErrors == 0) {
             putMessage("AST for program " + programCount + "\n" + ast.toString());
-            generate();
+            generate(ast);
         }
         else {
             // putMessage("AST for program " + programCount + "\n" + ast.toString())

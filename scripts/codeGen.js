@@ -8,12 +8,14 @@
 var code = [];
 
 // take our ast from semantic analysis
-var ourAst = ast;
+var ourAst = new Tree();
 
-function generate() {
+function generate(previousAst) {
 
     putMessage("CODE GEN - Beginning code generation for Program " + programCount);
     
+    ourAst = previousAst;
+
     checkTree(ourAst.root, 0);
 }
 
@@ -27,11 +29,11 @@ function checkTree(treePosition, node) {
     // Gonna try and go with an If-Else format here:
     if (treePosition.name == "Root") {
         putMessage("Awesome, we found the root.");
-        checkIn(treePosition, node);
+        checkIn(treePosition.children, node);
     }
     else if (treePosition.name == "Program") {
         putMessage("Cool, we found <Program> too.");
-        checkIn(treePosition, node);
+        checkIn(treePosition.children, node);
     }
     else if (treePosition.name == "Block") {
         putMessage("Cool, we found <Block> too.");
@@ -39,12 +41,13 @@ function checkTree(treePosition, node) {
     }
 }
 
-function checkIn(treePosition, node) {
+function checkIn(children, node) {
     if (verbose == true) {
-        putMessage("CODE GEN - Checking <" + treePosition.name + ">...");
+        putMessage("CODE GEN - Checking <...> ...");
     }
+    console.log(children);
     // See what 'children' we have here and check them
-    for (var i = 0; i < treePosition.length; i++) {
-        checkTree(treePosition.cur.children[i], node);
+    for (var i = 0; i < children.length; i++) {
+        checkTree(children[i], node);
     }
 }
