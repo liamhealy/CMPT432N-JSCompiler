@@ -70,7 +70,7 @@ function checkTree(treePosition, node) {
     
     console.log(currentScope);
     if (verbose == true) {
-        putMessage("CODE GEN - Found a <" + treePosition.name + "> ...");
+        putMessage("CODE GEN - Found " + treePosition.name + " ...");
     }
 
     // Gonna try and go with an If-Else format here:
@@ -151,6 +151,7 @@ function checkAssignStmt(children, node) {
     var newTemp = sdt.getData(children[0]);
     tempAddress = newTemp;
 
+    code.push("8D");
     console.log(newTemp.temp);
     code.push(newTemp.temp);
     code.push("XX");
@@ -210,7 +211,6 @@ function checkDigit(children, node) {
     }
     code.push("A9");
     code.push("0" + children.name);
-    code.push("8D");
 }
 
 function checkBoolean(children, node) {
@@ -254,7 +254,6 @@ function checkBoolean(children, node) {
     console.log(stringPointer);
     code.push("A9");
     code.push(stringPointer.toString(16).toUpperCase());
-    code.push("8D");
 }
 
 function checkString(children, node) {
@@ -289,7 +288,6 @@ function checkString(children, node) {
     console.log(stringPointer);
     code.push("A9");
     code.push(stringPointer.toString(16).toUpperCase());
-    code.push("8D");
 }
 
 function loadHex(randomString) {
