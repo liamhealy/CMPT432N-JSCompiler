@@ -924,7 +924,7 @@ function analyzeBoolExpr() {
 
 function analyzeStringExpr() {
    // We are gonna need a variable to hold the CharList
-   var thisString = thisToken.value;
+   var thisString = "";
    var exists = false;
    var varIsUsed = false;
    var thisType = checkType(scopeMap.cur, setId.value);
@@ -954,9 +954,9 @@ function analyzeStringExpr() {
 
       // nextSemToken();
 
-      if (thisToken.tokenId == "T_CLOSEQUOTE") {
-         thisString += thisToken.value;
-      }
+      // if (thisToken.tokenId == "T_CLOSEQUOTE") {
+      //    thisString += thisToken.value;
+      // }
 
    }
    else {

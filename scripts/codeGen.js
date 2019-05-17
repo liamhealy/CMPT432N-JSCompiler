@@ -7,6 +7,9 @@
 // array for us to store the code in
 var code = [];
 
+// array for us to store heap value + size
+var heap = [];
+
 // this is going to store the final code translation
 var finalCode = "";
 
@@ -25,7 +28,12 @@ var staticAddress = 0;
 // keep track of where we are in terms of the heap
 var heapPointer = 256;
 
+// keep track of where our latest string is
+var stringPointer = null;
+
 function generate(previousAst) {
+
+    document.getElementById("codeTranslation").textContent = "";
 
     putMessage("CODE GEN - Beginning code generation for Program " + programCount);
     
@@ -35,16 +43,16 @@ function generate(previousAst) {
 
     patchHex();
 
+    console.log(sdt.contents);
     // Will un-comment/re-comment this when needed
-    for (var i = 0; i < code.length; i++) {
-        if (i > 1 && i % 7 === 0) {
-            finalCode += code[i] + "\n";
-        }
-        else {
-            finalCode += code[i] + " ";
-        }
+    for (var i = 0; i < heap.length; i++) {
+        code.push(heap[i]);
     }
-    putMessage(finalCode);
+    for (var i = 0; i < code.length; i++) {
+        document.getElementById("codeTranslation").textContent += code[i] + " ";
+    }
+
+    resetGenVals();
 }
 
 function checkTree(treePosition, node) {
@@ -135,7 +143,7 @@ function checkAssignStmt(children, node) {
     console.log(children[1]);
 
     var newTemp = sdt.getData(children[0]);
-
+    console.log(newTemp.temp);
     code.push(newTemp.temp);
     code.push("XX");
 }
@@ -158,6 +166,8 @@ function checkBoolean(children, node) {
     if (verbose == true) {
         putMessage("CODE GEN - Checking a boolean Value");
     }
+    
+    //TODO: store true and false in heap.
     code.push("A9");
     if (children.name == "true") {
         code.push("01");
@@ -172,13 +182,34 @@ function checkString(children, node) {
     if (verbose == true) {
         putMessage("CODE GEN - Checking a string");
     }
-
+    
+    heap.unshift("00");
+    heapPointer--;
+    
     // We need to add the values to the heap
     console.log(heapPointer.toString(16));
 
     var stringLength = children.name.length;
     console.log(stringLength);
     console.log(children.name);
+
+    // Going to store the size of the heap somewhere
+    // and put the values in an array, which I will then
+    // concatenate to the code[] array.
+    var tempChar = "";
+    var tempString = "" + children.name + "";
+    for (var i = 0; i < stringLength; i++) {
+        tempChar = tempString.charCodeAt(i).toString(16).toUpperCase();
+        heap.unshift(tempChar);
+        heapPointer--;
+    }
+    // Store the static pointer
+    stringPointer = heapPointer;
+    
+    // Add it to the code
+    console.log(stringPointer);
+    code.push("A9");
+    code.push(stringPointer.toString(16).toUpperCase());
 }
 
 function loadHex(randomString) {
@@ -207,14 +238,21 @@ function patchHex() {
                 sdt.contents[i].offset = hex.toString(16).toUpperCase() + "00";
                 code[j] = hex.toString(16).toUpperCase();
                 code[j + 1] = "00";
-                storage++;
-            }   
+            }
         }
+        storage++;
+    }
+    for (var i = code.length; i < heapPointer; i++) {
+        code.push("00");
     }
 }
 
 function resetGenVals() {
     code = [];
+
+    heap = [];
+
+    finalCode = "";
 
     ourAst = new Tree();
 
@@ -224,5 +262,7 @@ function resetGenVals() {
 
     staticAddress = 0;
 
-    finalCode = "";
+    heapPointer = 256;
+
+    stringPointer = null;
 }
