@@ -46,14 +46,17 @@ function generate(previousAst) {
 
     patchHex();
 
+    putMessage("CODE GEN - Finished - Code generated below next to symbol table");
     console.log(sdt.contents);
     // Will un-comment/re-comment this when needed
+    document.getElementById("codeTranslation").textContent += "Program " + programCount + ":\n";
     for (var i = 0; i < heap.length; i++) {
         code.push(heap[i]);
     }
     for (var i = 0; i < code.length; i++) {
         document.getElementById("codeTranslation").textContent += code[i] + " ";
     }
+    document.getElementById("codeTranslation").textContent += "\n" + "-----------------";
 
     resetGenVals();
 }
@@ -91,7 +94,7 @@ function checkTree(treePosition, node) {
     }
     else if (treePosition.name == "PrintStatement") {
         // We obviously need to change this...
-        checkPrintStmt();
+        checkPrintStmt(treePosition.children, node);
     }
     else if (('0123456789').includes(treePosition.name)) {
         checkDigit(treePosition, node);
@@ -153,7 +156,50 @@ function checkAssignStmt(children, node) {
     code.push("XX");
 }
 
-function checkPrintStmt() {
+function checkPrintStmt(children, node) {
+    if (verbose == true) {
+        putMessage("CODE GEN - Checking a PrintStatement");
+    }
+    // We're looking at an int, string (CharList), boolean
+    // or other expression
+    console.log(children[0]);
+
+    if (children[0].type == "T_ID") {
+        // Load the Y-register up with the contents of the Id
+        var yAddress = sdt.getData(children[0]);
+        var type = checkType(scopeMap.cur, children[0].name);
+
+        // How are we gonna get the type?
+        // Maybe the scopeMap?
+
+        if (type == "string") {
+            code.push("AC");
+            code.push(yAddress.temp);
+            code.push("XX");
+            // Load the x register with 1
+            code.push("A2");
+            code.push("02");
+            code.push("FF");
+        }
+        else if (type == "int") {
+            code.push("AC");
+            code.push(yAddress.temp);
+            code.push("XX");
+            // Load the x register with 1
+            code.push("A2");
+            code.push("01");
+            code.push("FF");
+        }
+        else if (type == "boolean") {
+            code.push("AC");
+            code.push(yAddress.temp);
+            code.push("XX");
+            // Load the x register with 1
+            code.push("A2");
+            code.push("02");
+            code.push("FF");
+        }
+    }
 
 }
 
@@ -196,7 +242,7 @@ function checkBoolean(children, node) {
     // concatenate to the code[] array.
     var tempChar = "";
     var tempString = "" + children.name + "";
-    for (var i = 0; i < stringLength; i++) {
+    for (var i = stringLength - 1; i >= 0; i--) {
         tempChar = tempString.charCodeAt(i).toString(16).toUpperCase();
         heap.unshift(tempChar);
         heapPointer--;
@@ -231,7 +277,7 @@ function checkString(children, node) {
     // concatenate to the code[] array.
     var tempChar = "";
     var tempString = "" + children.name + "";
-    for (var i = 0; i < stringLength; i++) {
+    for (var i = stringLength - 1; i >= 0; i--) {
         tempChar = tempString.charCodeAt(i).toString(16).toUpperCase();
         heap.unshift(tempChar);
         heapPointer--;
