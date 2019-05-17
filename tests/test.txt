@@ -72,3 +72,17 @@ $
 
 /* 15. should return an error regarding int b's assigned value */
 {int a while(a == 1){print(a)}{int b b = false}}$
+
+/* Additional test cases for project four */
+
+/*16. -based on one of Prof. Labouseur's tests
+{
+int a
+string c
+a = 5
+c = "inta"
+/* is lex still working */
+print(c)
+print(a)
+}$
+

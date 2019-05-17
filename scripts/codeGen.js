@@ -33,6 +33,8 @@ var stringPointer = null;
 
 // have a variable ready to hold an address for certain cases
 var tempAddress = null;
+var tempAddressOne = "X1";
+var tempAddressTwo = "X2";
 
 function generate(previousAst) {
 
@@ -154,6 +156,26 @@ function checkAssignStmt(children, node) {
     code.push("8D");
     console.log(newTemp.temp);
     code.push(newTemp.temp);
+    code.push("XX");
+}
+
+function checkAddition(children, node) {
+    if (verbose == true) {
+        putMessage("CODE GEN - Checking addition expression");
+    }
+
+    var tempAddition = children[1].name;
+
+    checkTree(children[1], node);
+    // Store what is found in tree above here:
+    code.push("8D");
+    code.push(tempAddressOne);
+    code.push("XX");
+    // Load the data and add contents of the original address
+    code.push("A9");
+    code.push(tempAddition.toString(16).toUpperCase());
+    code.push("6D");
+    code.push(tempAddressOne);
     code.push("XX");
 }
 
@@ -308,6 +330,8 @@ function patchHex() {
     var bytes = sdt.contents.length;
     var storage = 48 - bytes;
     var hex = storage;
+    var tempOne = code.length + sdt.contents.length;
+    var tempTwo = tempOne + 1;
 
     for (var i = 0; i < bytes; i++) {
         hex = storage;
@@ -317,9 +341,18 @@ function patchHex() {
                 code[j] = hex.toString(16).toUpperCase();
                 code[j + 1] = "00";
             }
+            else if (code[j] == tempAddressOne) {
+                code[j] = tempOne.toString(16).toUpperCase();
+                code[j + 1] = "00";
+            }
+            else if (code[j] == tempAddressTwo) {
+                code[j] = tempTwo.toString(16).toString();
+                code[j + 1] = "00";
+            }
         }
         storage++;
     }
+
     for (var i = code.length; i < heapPointer; i++) {
         code.push("00");
     }
