@@ -1034,7 +1034,7 @@ function analyzeStringExpr() {
    }
 
    console.log(getSymbolValue(scopeMap.cur, setId));
-   ast.addNode(thisString, "leaf");
+   ast.addNode(thisString, "leaf", scopeLevel, "string");
    nextSemToken();
 
    // Not sure if I am storing CharList efficiently and safely

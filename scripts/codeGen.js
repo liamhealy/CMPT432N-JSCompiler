@@ -22,6 +22,9 @@ var currentScope = 0;
 // keep a static address variable for our table
 var staticAddress = 0;
 
+// keep track of where we are in terms of the heap
+var heapPointer = 256;
+
 function generate(previousAst) {
 
     putMessage("CODE GEN - Beginning code generation for Program " + programCount);
@@ -82,6 +85,12 @@ function checkTree(treePosition, node) {
     else if (('0123456789').includes(treePosition.name)) {
         checkDigit(treePosition, node);
     }
+    else if (treePosition.name == "true" || treePosition.name == "false") {
+        checkBoolean(treePosition, node);
+    }
+    else if (treePosition.type == "string") {
+        checkString(treePosition, node);
+    }
 }
 
 function checkIn(children, node) {
@@ -123,7 +132,7 @@ function checkAssignStmt(children, node) {
     //         code.push("XX");
     //     }
     // }
-    console.log(children[0]);
+    console.log(children[1]);
 
     var newTemp = sdt.getData(children[0]);
 
@@ -143,6 +152,33 @@ function checkDigit(children, node) {
     code.push("A9");
     code.push("0" + children.name);
     code.push("8D");
+}
+
+function checkBoolean(children, node) {
+    if (verbose == true) {
+        putMessage("CODE GEN - Checking a boolean Value");
+    }
+    code.push("A9");
+    if (children.name == "true") {
+        code.push("01");
+    }
+    else {
+        code.push("00");
+    }
+    code.push("8D");
+}
+
+function checkString(children, node) {
+    if (verbose == true) {
+        putMessage("CODE GEN - Checking a string");
+    }
+
+    // We need to add the values to the heap
+    console.log(heapPointer.toString(16));
+
+    var stringLength = children.name.length;
+    console.log(stringLength);
+    console.log(children.name);
 }
 
 function loadHex(randomString) {
