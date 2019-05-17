@@ -38,7 +38,7 @@ var tempAddressTwo = "X2";
 
 function generate(previousAst) {
 
-    document.getElementById("codeTranslation").textContent = "";
+    // document.getElementById("codeTranslation").textContent = "";
 
     putMessage("CODE GEN - Beginning code generation for Program " + programCount);
     
@@ -69,7 +69,7 @@ function checkTree(treePosition, node) {
     // I think we're going to need separate functions for everything there.
     // VarDecl, AssignmentStatement and PrintStatement with a working project
     // 1,2 and 3 will score me a 50 (100/200) so I'll start there.
-    
+    console.log(treePosition);
     console.log(currentScope);
     if (verbose == true) {
         putMessage("CODE GEN - Found " + treePosition.name + " ...");
@@ -106,6 +106,9 @@ function checkTree(treePosition, node) {
     }
     else if (treePosition.type == "string") {
         checkString(treePosition, node);
+    }
+    else if (treePosition.name == "Addition") {
+        checkAddition(treePosition, node);
     }
 }
 
@@ -164,9 +167,12 @@ function checkAddition(children, node) {
         putMessage("CODE GEN - Checking addition expression");
     }
 
-    var tempAddition = children[1].name;
+    // Store the value we are adding to the variable
+    var tempAddition = children.children[0].name;
+    console.log(children[1]);
 
-    checkTree(children[1], node);
+    // Grab the variable in the expression
+    checkTree(children.children[1], node);
     // Store what is found in tree above here:
     code.push("8D");
     code.push(tempAddressOne);
@@ -175,6 +181,7 @@ function checkAddition(children, node) {
     code.push("A9");
     code.push(tempAddition.toString(16).toUpperCase());
     code.push("6D");
+    // ^Add with carry
     code.push(tempAddressOne);
     code.push("XX");
 }
@@ -222,6 +229,23 @@ function checkPrintStmt(children, node) {
             code.push("02");
             code.push("FF");
         }
+    }
+    else {
+        // For printing expressions like 5 + a
+        console.log(children);
+        checkTree(children[0], node);
+
+        // Feels like I'm sort of hacking these in
+        // but I can't think of a better way to do it
+        code.push("A2");            // Load X register
+        code.push("01");            // Ready to print contents of Y register
+        code.push("8D");            // Store the accumulator in memory
+        code.push(tempAddressOne);  // Put the temporary address we use in the code
+        code.push("XX");
+        code.push("AC");            // Load Y register
+        code.push(tempAddressOne);  // Another of our temporary addresses
+        code.push("XX");            
+        code.push("FF");            // And the system call
     }
 
 }

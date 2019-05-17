@@ -662,6 +662,7 @@ function analyzeInt() {
    if (tokenSequence[semSequenceIndex + 1].tokenId == "T_INTOP") {
       // Set it so that the next var/digit/expression
       // is analyzed in addition with the previous one
+      ast.addNode("Addition", "branch");
       addition = true;
    }
    else {
@@ -770,6 +771,7 @@ function analyzeInt() {
    if (addition == true) {
       tempSecondVal = Number(thisToken.value) + Number(tempFirstVal);
       console.log(tempSecondVal);
+      ast.endChildren();
    }
 
    exists = false;
