@@ -31,6 +31,9 @@ var heapPointer = 256;
 // keep track of where our latest string is
 var stringPointer = null;
 
+// have a variable ready to hold an address for certain cases
+var tempAddress = null;
+
 function generate(previousAst) {
 
     document.getElementById("codeTranslation").textContent = "";
@@ -143,6 +146,8 @@ function checkAssignStmt(children, node) {
     console.log(children[1]);
 
     var newTemp = sdt.getData(children[0]);
+    tempAddress = newTemp;
+
     console.log(newTemp.temp);
     code.push(newTemp.temp);
     code.push("XX");
@@ -175,14 +180,7 @@ function checkBoolean(children, node) {
     else {
         code.push("00");
     }
-    code.push("8D");
-}
 
-function checkString(children, node) {
-    if (verbose == true) {
-        putMessage("CODE GEN - Checking a string");
-    }
-    
     heap.unshift("00");
     heapPointer--;
     
@@ -210,6 +208,42 @@ function checkString(children, node) {
     console.log(stringPointer);
     code.push("A9");
     code.push(stringPointer.toString(16).toUpperCase());
+    code.push("8D");
+}
+
+function checkString(children, node) {
+    if (verbose == true) {
+        putMessage("CODE GEN - Checking a string");
+    }
+
+    heap.unshift("00");
+    heapPointer--;
+    
+    // We need to add the values to the heap
+    console.log(heapPointer.toString(16));
+
+    var stringLength = children.name.length;
+    console.log(stringLength);
+    console.log(children.name);
+
+    // Going to store the size of the heap somewhere
+    // and put the values in an array, which I will then
+    // concatenate to the code[] array.
+    var tempChar = "";
+    var tempString = "" + children.name + "";
+    for (var i = 0; i < stringLength; i++) {
+        tempChar = tempString.charCodeAt(i).toString(16).toUpperCase();
+        heap.unshift(tempChar);
+        heapPointer--;
+    }
+    // Store the static pointer
+    stringPointer = heapPointer;
+    
+    // Add it to the code
+    console.log(stringPointer);
+    code.push("A9");
+    code.push(stringPointer.toString(16).toUpperCase());
+    code.push("8D");
 }
 
 function loadHex(randomString) {
@@ -265,4 +299,6 @@ function resetGenVals() {
     heapPointer = 256;
 
     stringPointer = null;
+
+    tempAddress = null;
 }
