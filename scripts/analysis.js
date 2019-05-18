@@ -429,6 +429,9 @@ function analyzeAssignStmt() {
       else if (symbolType == "boolean") {
          analyzeBoolExpr();
       }
+      else {
+         analyzeId();
+      }
       // if (validSym == true) {
       //    // We are about to assign a value to a symbol
       //    assigning = true;
@@ -849,7 +852,7 @@ function analyzeBoolExpr() {
       else {
          // tempFirstVal = setId.value;
          tempFirstVal = thisToken.value;
-         ast.addNode(thisToken.value, "leaf");
+         ast.addNode(thisToken.value, "leaf", "boolean");
          nextSemToken();
       }
    }

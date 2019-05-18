@@ -44,11 +44,14 @@ var genTableHolder = "";
 var finalCode = "";
 document.getElementById("codeTranslation").innerHTML = "";
 
+// Error Counter:
+var genErrors = 0;
+
 function generate(previousAst) {
 
     resetGenVals();
 
-    // document.getElementById("codeTranslation").textContent = "";
+    document.getElementById("codeTranslation").innerHTML = "";
 
     putMessage("CODE GEN - Beginning code generation for Program " + programCount);
     
@@ -58,29 +61,39 @@ function generate(previousAst) {
 
     checkTree(ourAst.root, 0);
 
-    patchHex(code);
+    if (code.length > 256) {
+        genErrors++;
+        if (verbose == true) {
+            grepyOutput("CODE GEN - Error: program exceeds maximum size!");
+        }
+        grepyOutput("CODE GEN - No code displayed due to CODE GEN error(s).");
+    }
+    else {
 
-    putMessage("CODE GEN - Finished - Code generated below next to symbol table");
-    console.log(sdt.contents);
-    // // Will un-comment/re-comment this when needed
-    // document.getElementById("codeTranslation").textContent += "Program " + programCount + ":\n";
-    for (var i = 0; i < heap.length; i++) {
-        code.push(heap[i]);
-    }
-    for (var i = 0; i < code.length; i++) {
-        finalCode += code[i] + " ";
-    }
-    // document.getElementById("codeTranslation").textContent += "\n" + "-----------------";
+        patchHex(code);
 
-    genTableHolder = createGenTable(finalCode);
-    // console.log(scopeMap.cur.symbolMap[0]);
-    
-    // Now we actually define the table here and insert tableHolder into it:
-    if (genTableHolder != "") {
-       newGenTable += "Code Generation for program " + programCount + ": <br><table cellspacing=3 style=\"border:1px;\"><tr><th>Code:</th></tr>" + genTableHolder + "</table><br>";
+        putMessage("CODE GEN - Finished - Code generated below next to symbol table");
+        console.log(sdt.contents);
+        // // Will un-comment/re-comment this when needed
+        // document.getElementById("codeTranslation").textContent += "Program " + programCount + ":\n";
+        for (var i = 0; i < heap.length; i++) {
+            code.push(heap[i]);
+        }
+        for (var i = 0; i < code.length; i++) {
+            finalCode += code[i] + " ";
+        }
+        // document.getElementById("codeTranslation").textContent += "\n" + "-----------------";
+
+        genTableHolder = createGenTable(finalCode);
+        // console.log(scopeMap.cur.symbolMap[0]);
+
+        // Now we actually define the table here and insert tableHolder into it:
+        if (genTableHolder != "") {
+           newGenTable += "Code Generation for program " + programCount + ": <br><table cellspacing=3 style=\"border:1px;\"><tr><th>Code:</th></tr>" + genTableHolder + "</table><br>";
+        }
+           // Then display it to the <div>
+        document.getElementById("codeTranslation").innerHTML += newGenTable;
     }
-       // Then display it to the <div>
-    document.getElementById("codeTranslation").innerHTML += newGenTable;
 }
 
 function createGenTable(finalCode) {
@@ -139,6 +152,9 @@ function checkTree(treePosition, node) {
     else if (treePosition.type == "string") {
         checkString(treePosition, node);
     }
+    else if ('abcdefghijklmnopqrstuvwxyz'.includes(treePosition.name)) {
+        checkId(treePosition, node);
+    }
     else if (treePosition.name == "Addition") {
         checkAddition(treePosition, node);
     }
@@ -174,6 +190,7 @@ function checkAssignStmt(children, node) {
     }
     // Gotta get ready for an addition expression
     // or to simply add the value to the code
+    console.log(children[1]);
     checkTree(children[1], node);
     // for (var i = 0; i < sdt.contents.length; i++) {
     //     console.log(sdt.contents[i].variable);
@@ -183,7 +200,6 @@ function checkAssignStmt(children, node) {
     //         code.push("XX");
     //     }
     // }
-    console.log(children[1]);
 
     var newTemp = sdt.getData(children[0]);
     tempAddress = newTemp;
@@ -260,11 +276,11 @@ function checkPrintStmt(children, node) {
         }
         else if (type == "boolean") {
             code.push("AC");
-            code.push(yAddress.temp);
+            code.push(tempAddressOne);
             code.push("XX");
             // Load the x register with 1
             code.push("A2");
-            code.push("02");
+            code.push("01");
             code.push("FF");
         }
     }
@@ -326,7 +342,19 @@ function checkPrintStmt(children, node) {
         code.push("XX");            
         code.push("FF");            // And the system call
     }
-    code.push("00");
+    // code.push("00");
+}
+
+function checkId(children, node) {
+    if (verbose == true) {
+        putMessage("CODE GEN - Checking an ID");
+    }
+    // check and make sure we have it in our sdt
+    var tempId = sdt.getData(children);
+
+    code.push("AD");
+    code.push(tempId.temp);
+    code.push("XX");
 }
 
 function checkDigit(children, node) {
@@ -334,8 +362,9 @@ function checkDigit(children, node) {
     if (verbose == true) {
         putMessage("CODE GEN - Checking a Digit");
     }
+    var tempName = children.name;
     code.push("A9");
-    code.push("0" + children.name);
+    code.push("0" + tempName.toString(16).toUpperCase());
 }
 
 function checkBoolean(children, node) {
@@ -346,7 +375,7 @@ function checkBoolean(children, node) {
     // Get our heap ready for whatever is next
     truePointer = loadHeap("true", truePointer);
 
-    falsePointer = loadHeap("true", falsePointer);
+    falsePointer = loadHeap("false", falsePointer);
     
     //TODO: store true and false in heap.
     code.push("A9");
@@ -360,33 +389,46 @@ function checkBoolean(children, node) {
     // Do we need some of this still? Thanks
     // to loadHeap() we have the heap ready
     // and our pointers as well...
-    heap.unshift("00");
-    heapPointer--;
+    // heap.unshift("00");
+    // heapPointer--;
     
-    // We need to add the values to the heap
-    console.log(heapPointer.toString(16));
+    // // We need to add the values to the heap
+    // console.log(heapPointer.toString(16));
 
-    var stringLength = children.name.length;
-    console.log(stringLength);
-    console.log(children.name);
+    // var stringLength = children.name.length;
+    // console.log(stringLength);
+    // console.log(children.name);
 
-    // Going to store the size of the heap somewhere
-    // and put the values in an array, which I will then
-    // concatenate to the code[] array.
-    var tempChar = "";
-    var tempString = "" + children.name + "";
-    for (var i = stringLength - 1; i >= 0; i--) {
-        tempChar = tempString.charCodeAt(i).toString(16).toUpperCase();
-        heap.unshift(tempChar);
-        heapPointer--;
-    }
-    // Store the static pointer
-    stringPointer = heapPointer;
+    // // Going to store the size of the heap somewhere
+    // // and put the values in an array, which I will then
+    // // concatenate to the code[] array.
+    // var tempChar = "";
+    // var tempString = "" + children.name + "";
+    // for (var i = stringLength - 1; i >= 0; i--) {
+    //     tempChar = tempString.charCodeAt(i).toString(16).toUpperCase();
+    //     heap.unshift(tempChar);
+    //     heapPointer--;
+    // }
+    // // Store the static pointer
+    // stringPointer = heapPointer;
     
     // Add it to the code
-    console.log(stringPointer);
-    code.push("A9");
-    code.push(stringPointer.toString(16).toUpperCase());
+    code.push("8D");
+    code.push(tempAddress.temp);
+    code.push("XX");
+    code.push("A2");
+    code.push("01");
+    code.push("EC");
+    code.push(tempAddress.temp);
+    code.push("XX");
+
+    // code.push(tempAddressOne);
+    // if (children.name == "true") {
+    //     code.push(truePointer.toString(16).toUpperCase());
+    // }
+    // else {
+    //     code.push(falsePointer.toString(16).toUpperCase());
+    // }
 }
 
 function checkString(children, node) {
