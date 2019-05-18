@@ -201,17 +201,23 @@ function checkAddition(children, node) {
 
     // Store the value we are adding to the variable
     var tempAddition = children.children[0].name;
-    console.log(children[1]);
+    console.log(children);
 
     // Grab the variable in the expression
-    checkTree(children.children[1], node);
+    if (children.children[1] == undefined) {
+        checkTree(children.children[0], node);
+    }
+    else {
+        checkTree(children.children[1], node);
+    }
+    var hexAddition = tempAddition.toString(16).toUpperCase();
     // Store what is found in tree above here:
     code.push("8D");
     code.push(tempAddressOne);
     code.push("XX");
     // Load the data and add contents of the original address
     code.push("A9");
-    code.push(tempAddition.toString(16).toUpperCase());
+    code.push(hexAddition);
     code.push("6D");
     // ^Add with carry
     code.push(tempAddressOne);
@@ -299,6 +305,8 @@ function checkPrintStmt(children, node) {
         code.push("02");
         // System call here?
         code.push("FF");
+        // Add '00' just to keep it clean
+        code.push("00");
     }
     else {
         // Currently I am only using this section to print int values:
@@ -318,7 +326,7 @@ function checkPrintStmt(children, node) {
         code.push("XX");            
         code.push("FF");            // And the system call
     }
-
+    code.push("00");
 }
 
 function checkDigit(children, node) {
