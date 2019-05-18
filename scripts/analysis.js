@@ -98,7 +98,7 @@ function analysis() {
          
          // Now we actually define the table here and insert tableHolder into it:
          if (tableHolder != "") {
-            newSymTable += "Symbol Table for program " + programCount + ":<br><table cellspacing=3 style=\"border:1px;\"><tr><th>ID</th><th>Type</th><th>Scope</th><th>Line</th></tr>" + tableHolder + "</table><br>";
+            newSymTable += "Symbol Table for program " + programCount + ": <br><table cellspacing=3 style=\"border:1px;\"><tr><th>ID</th><th>Type</th><th>Scope</th><th>Line</th></tr>" + tableHolder + "</table><br>";
          }
             // Then display it to the <div>
          document.getElementById("symTables").innerHTML += newSymTable;

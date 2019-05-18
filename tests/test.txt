@@ -75,7 +75,14 @@ $
 
 /* Additional test cases for project four */
 
-/*16. -based on one of Prof. Labouseur's tests
+/* 18. basic VarDecl, AssignmentStatement and PrintStatement */
+{
+int a
+a = 5
+print(a)
+}$
+
+/*17. -based on one of Prof. Labouseur's tests
 {
 int a
 string c

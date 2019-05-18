@@ -27,6 +27,8 @@ var staticAddress = 0;
 
 // keep track of where we are in terms of the heap
 var heapPointer = 256;
+var truePointer = null;
+var falsePointer = null;
 
 // keep track of where our latest string is
 var stringPointer = null;
@@ -36,7 +38,15 @@ var tempAddress = null;
 var tempAddressOne = "X1";
 var tempAddressTwo = "X2";
 
+// Variables only used to store our Code Gen info and table
+var newGenTable = "";
+var genTableHolder = "";
+var finalCode = "";
+document.getElementById("codeTranslation").innerHTML = "";
+
 function generate(previousAst) {
+
+    resetGenVals();
 
     // document.getElementById("codeTranslation").textContent = "";
 
@@ -44,24 +54,46 @@ function generate(previousAst) {
     
     ourAst = previousAst;
 
+    console.log(heapPointer);
+
     checkTree(ourAst.root, 0);
 
-    patchHex();
+    patchHex(code);
 
     putMessage("CODE GEN - Finished - Code generated below next to symbol table");
     console.log(sdt.contents);
-    // Will un-comment/re-comment this when needed
-    document.getElementById("codeTranslation").textContent += "Program " + programCount + ":\n";
+    // // Will un-comment/re-comment this when needed
+    // document.getElementById("codeTranslation").textContent += "Program " + programCount + ":\n";
     for (var i = 0; i < heap.length; i++) {
         code.push(heap[i]);
     }
     for (var i = 0; i < code.length; i++) {
-        document.getElementById("codeTranslation").textContent += code[i] + " ";
+        finalCode += code[i] + " ";
     }
-    document.getElementById("codeTranslation").textContent += "\n" + "-----------------";
+    // document.getElementById("codeTranslation").textContent += "\n" + "-----------------";
 
-    resetGenVals();
+    genTableHolder = createGenTable(finalCode);
+    // console.log(scopeMap.cur.symbolMap[0]);
+    
+    // Now we actually define the table here and insert tableHolder into it:
+    if (genTableHolder != "") {
+       newGenTable += "Code Generation for program " + programCount + ": <br><table cellspacing=3 style=\"border:1px;\"><tr><th>Code:</th></tr>" + genTableHolder + "</table><br>";
+    }
+       // Then display it to the <div>
+    document.getElementById("codeTranslation").innerHTML += newGenTable;
 }
+
+function createGenTable(finalCode) {
+    
+    var tempTable = "";
+
+    if (finalCode.length > 0) {
+        tempTable += "<tr><td>" + finalCode + "</td></tr>";
+    }
+
+    return tempTable;
+
+ }
 
 function checkTree(treePosition, node) {
     // Our AST contains Root, Program, Block, and Statement nodes,
@@ -72,7 +104,7 @@ function checkTree(treePosition, node) {
     console.log(treePosition);
     console.log(currentScope);
     if (verbose == true) {
-        putMessage("CODE GEN - Found " + treePosition.name + " ...");
+        putMessage("CODE GEN - Checking the AST...");
     }
 
     // Gonna try and go with an If-Else format here:
@@ -230,8 +262,47 @@ function checkPrintStmt(children, node) {
             code.push("FF");
         }
     }
+    else if (children[0].type == "string") {
+        // This is what we'll work with for CharList's
+        heap.unshift("00");
+        heapPointer--;
+        
+        var stringLength = children[0].name.length;
+        console.log(stringLength);
+        console.log(children[0].name);
+
+        // Going to store the size of the heap somewhere
+        // and put the values in an array, which I will then
+        // concatenate to the code[] array.
+        var tempChar = "";
+        var tempString = children[0].name;
+        for (var i = stringLength - 1; i >= 0; i--) {
+            tempChar = tempString.charCodeAt(i).toString(16).toUpperCase();
+            heap.unshift(tempChar);
+            heapPointer--;
+        }
+
+        var tempPointer = heapPointer.toString(16).toUpperCase();
+        // Load from memory
+        code.push("AD");
+        // In this case the heap pointer is our address
+        code.push(tempPointer);
+        code.push("XX");
+        // Load the x register with 1
+        code.push("A0");
+        code.push(tempPointer);
+        code.push("8D");
+        code.push(tempAddressOne);
+        code.push("XX");
+        // Load x and use string print op code
+        code.push("A2");
+        code.push("02");
+        // System call here?
+        code.push("FF");
+    }
     else {
-        // For printing expressions like 5 + a
+        // Currently I am only using this section to print int values:
+        // (printing expressions like 5 + a)
         console.log(children);
         checkTree(children[0], node);
 
@@ -264,6 +335,11 @@ function checkBoolean(children, node) {
         putMessage("CODE GEN - Checking a boolean Value");
     }
     
+    // Get our heap ready for whatever is next
+    truePointer = loadHeap("true", truePointer);
+
+    falsePointer = loadHeap("true", falsePointer);
+    
     //TODO: store true and false in heap.
     code.push("A9");
     if (children.name == "true") {
@@ -273,6 +349,9 @@ function checkBoolean(children, node) {
         code.push("00");
     }
 
+    // Do we need some of this still? Thanks
+    // to loadHeap() we have the heap ready
+    // and our pointers as well...
     heap.unshift("00");
     heapPointer--;
     
@@ -344,7 +423,32 @@ function loadHex(randomString) {
     }
 }
 
-function patchHex() {
+function loadHeap(tempBool, boolPointer) {
+    heap.unshift("00");
+    heapPointer--;
+    
+    // We need to add the values to the heap
+    console.log(heapPointer.toString(16));
+
+    var stringLength = tempBool.length;
+    console.log(stringLength);
+
+    // Going to store the size of the heap somewhere
+    // and put the values in an array, which I will then
+    // concatenate to the code[] array.
+    var tempChar = "";
+    var tempString = tempBool;
+    for (var i = stringLength - 1; i >= 0; i--) {
+        tempChar = tempString.charCodeAt(i).toString(16).toUpperCase();
+        heap.unshift(tempChar);
+        heapPointer--;
+    }
+    // Store the static pointer
+    boolPointer = heapPointer;
+    return boolPointer;
+}
+
+function patchHex(rawCode) {
     // Reapproaching backpatching...
 
     if (verbose == true) {
@@ -354,30 +458,35 @@ function patchHex() {
     var bytes = sdt.contents.length;
     var storage = 48 - bytes;
     var hex = storage;
-    var tempOne = code.length + sdt.contents.length;
+    var tempOne = rawCode.length + sdt.contents.length;
     var tempTwo = tempOne + 1;
 
     for (var i = 0; i < bytes; i++) {
         hex = storage;
-        for (var j = 0; j < code.length; j++) {
-            if (code[j] == sdt.contents[i].temp) {
+        for (var j = 0; j < rawCode.length; j++) {
+            if (rawCode[j] == sdt.contents[i].temp) {
                 sdt.contents[i].offset = hex.toString(16).toUpperCase() + "00";
-                code[j] = hex.toString(16).toUpperCase();
-                code[j + 1] = "00";
-            }
-            else if (code[j] == tempAddressOne) {
-                code[j] = tempOne.toString(16).toUpperCase();
-                code[j + 1] = "00";
-            }
-            else if (code[j] == tempAddressTwo) {
-                code[j] = tempTwo.toString(16).toString();
-                code[j + 1] = "00";
+                rawCode[j] = hex.toString(16).toUpperCase();
+                rawCode[j + 1] = "00";
             }
         }
         storage++;
     }
+    for (var i = 0; i < rawCode.length; i++) {
+        if (rawCode[i] == tempAddressOne) {
+            rawCode[i] = tempOne.toString(16).toUpperCase();
+            rawCode[i + 1] = "00";
+        }
+        else if (rawCode[i] == tempAddressTwo) {
+            rawCode[i] = tempTwo.toString(16).toUpperCase();
+            rawCode[i + 1] = "00";
+        }
+        else if (rawCode[i] == "XX") {
+            rawCode[i] = "00";
+        }
+    }
 
-    for (var i = code.length; i < heapPointer; i++) {
+    for (var i = rawCode.length; i < heapPointer; i++) {
         code.push("00");
     }
 }
@@ -402,4 +511,20 @@ function resetGenVals() {
     stringPointer = null;
 
     tempAddress = null;
+
+    truePointer = null;
+    
+    falsePointer = null;       
+    
+    tempAddress = null;
+    
+    tempAddressOne = "X1";
+    
+    tempAddressTwo = "X2";
+
+    newGenTable = "";
+
+    genTableHolder = "";
+    
+    finalCode = "";
 }
