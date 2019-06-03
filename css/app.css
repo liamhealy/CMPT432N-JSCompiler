@@ -1,0 +1,24 @@
+/*
+.navbar {
+	font-family: 'Roboto', sans-serif;
+}
+*/
+
+.ubuntuFont {
+	font-family: 'Ubuntu', sans-serif;
+}
+
+textarea {
+	width: 625px;
+	height:250px;
+	font-family: 'Ubuntu', sans-serif;
+	outline-color: limegreen;
+}
+
+td, th {
+    border: 1px solid limegreen;
+}
+
+/* input[type="button"]:focus {
+	outline-color: black;
+} */

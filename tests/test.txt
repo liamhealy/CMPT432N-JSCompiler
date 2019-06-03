@@ -1,0 +1,95 @@
+/* Test Cases for Project Two */
+
+/* 1. (both programs should lex and parse successfully) */
+{{{print(true)}}print(a)}${{print("liam")}}$
+
+/* 2. ugly AssignmentStatement (should lex, but not parse) */
+{{aa = true}}$
+
+/* 3. basic AssignmentStatement (should lex and parse successfully) */
+{{a = 3 + 2}}$
+
+/* 4. (should lex and parse successfully) */
+{
+    {int    a}
+a = false
+}$
+
+/* 5. (should lex and parse successfully) */
+{
+    {
+        while (a == 5) {
+            print(a)
+        }
+    }
+}$
+
+/* 6. Expecting an ID */
+{int + a}$
+
+/* 7. Expecting a valid expression */
+{while(a == )}$
+
+/* 8. Expecting [ ) ] following 0 */
+{print(007)}$
+
+/* 9. Mess of Statements (should lex and parse successfully) */
+{{
+    {
+        {
+            print(a)
+        }
+    }
+    if (b == true)
+}
+int a}$
+
+/* 10. should lex successfully but fail in parser */
+{{
+    {{
+        }
+    }
+    {
+    }}
+    }
+    }}
+}}
+$
+
+/* Additional test cases for project three */
+
+/* 11. should lex and parse succefully but fail semantic analysis */
+{{{{{{a = 5}int a}}}}}$
+
+/* 12. successfully sets int a to 9 */
+{int a a = 5 + 4}$
+
+/* 13. should return an error due to addition with two different variable types */
+{int a string b {a = 1 + b}}$
+
+/* 14. should return an error due to the same reason as the test case above */
+{int a {string b{{a = 3 + b int c}}int d}}$
+
+/* 15. should return an error regarding int b's assigned value */
+{int a while(a == 1){print(a)}{int b b = false}}$
+
+/* Additional test cases for project four */
+
+/* 18. basic VarDecl, AssignmentStatement and PrintStatement */
+{
+int a
+a = 5
+print(a)
+}$
+
+/*17. -based on one of Prof. Labouseur's tests
+{
+int a
+string c
+a = 5
+c = "inta"
+/* is lex still working */
+print(c)
+print(a)
+}$
+
